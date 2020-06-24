@@ -1,0 +1,16 @@
+# action.yml
+name: 'AOCIntegTest'
+description: 'AOCIntegTest performs end-to-end integration test on the AOCAgent'
+inputs:
+  task:
+    description: 'task'
+    required: true
+    default: 'EC2Test'
+outputs:
+  time: # id of output
+    description: 'The time we greeted you'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.task }}

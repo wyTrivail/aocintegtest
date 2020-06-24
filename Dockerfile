@@ -14,4 +14,4 @@ RUN tar -xvf aocintegtest.tar
 
 # run
 WORKDIR /app/aocintegtest
-CMD bin/aocintegtest
+ENTRYPOINT bin/aocintegtest

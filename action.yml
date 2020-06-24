@@ -4,7 +4,7 @@ description: 'AOCIntegTest performs end-to-end integration test on the AOCAgent'
 inputs:
   task:
     description: 'task'
-    required: true
+    required: false
     default: 'EC2Test'
 outputs:
   time: # id of output
@@ -12,5 +12,3 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.task }}

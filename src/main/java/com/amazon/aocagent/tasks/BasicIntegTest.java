@@ -1,4 +1,4 @@
-package com.amazon.aocagent.integtests;
+package com.amazon.aocagent.tasks;
 
 
 import org.apache.logging.log4j.LogManager;

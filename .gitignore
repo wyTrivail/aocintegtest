@@ -4,7 +4,12 @@
 
 # Ignore Gradle build output directory
 build
+out
 
 # Ignore Intellij Idea generated files
 .idea
 *.iml
+lombok.config
+
+# Ignore testing dirs
+local-packages

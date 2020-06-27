@@ -3,10 +3,58 @@
  */
 package com.amazon.aocagent;
 
-import com.amazon.aocagent.integtests.BasicIntegTest;
+import com.amazon.aocagent.models.Context;
+import com.amazon.aocagent.enums.GenericConstants;
+import com.amazon.aocagent.enums.Stack;
+import com.amazon.aocagent.tasks.ITask;
+import picocli.CommandLine;
 
-public class App {
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.concurrent.Callable;
+
+@CommandLine.Command(name = "aocintegtest", mixinStandardHelpOptions = true, version = "aocintegtest 1.0",
+        description = "use for integtest and releases of the aocagent")
+public class App implements Callable<Integer> {
+    @CommandLine.Option(names = {"-t", "--task"}, description = "EC2Test, ECSTest, EKSTest, ...")
+    private String taskName = "EC2Test";
+
+    @CommandLine.Option(names = {"-s", "--stack"}, description = "DEV_BRANCH, MASTER_BRANCH, RELEASE, HKG_RELEASE...")
+    private String stackName = "DEV_BRANCH";
+
+    @CommandLine.Option(names = {"-l", "--local-packages-dir"}, description = "we will read all the packages, version file from this directory, default value is local-packages")
+    private String localPackagesDir = GenericConstants.LOCAL_PACKAGES_DIR.getVal();
+
     public static void main(String[] args) {
-        new BasicIntegTest().execute();
+        int exitCode = new CommandLine(new App()).execute(args);
+        System.exit(exitCode);
+    }
+
+    @Override
+    public Integer call() throws Exception {
+        ITask task = (ITask) Class.forName("com.amazon.aocagent.tasks." + taskName).newInstance();
+        task.init(this.buildContext());
+        task.execute();
+        return 0;
+    }
+
+    private Context buildContext() throws IOException {
+        Context context = new Context();
+
+        Stack stack = Stack.valueOf(this.stackName);
+        context.setStack(stack);
+
+        context.setLocalPackagesDir(this.localPackagesDir);
+
+        /**
+         * get aoc version from the current working directory: "local-packages/VERSION"
+         */
+        String version = new String(Files.readAllBytes(Paths.get(this.localPackagesDir + "/VERSION")), StandardCharsets.UTF_8);
+        context.setAgentVersion(version);
+
+
+        return context;
     }
 }

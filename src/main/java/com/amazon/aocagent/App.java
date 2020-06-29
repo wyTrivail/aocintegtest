@@ -6,6 +6,7 @@ package com.amazon.aocagent;
 
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.enums.Stack;
+import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.tasks.ITask;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
+import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
 
@@ -23,6 +25,7 @@ import picocli.CommandLine;
     mixinStandardHelpOptions = true,
     version = "aocintegtest 1.0",
     description = "use for integtest and releases of the aocagent")
+@Log4j2
 public class App implements Callable<Integer> {
   @CommandLine.Option(
       names = {"-t", "--task"},
@@ -49,7 +52,12 @@ public class App implements Callable<Integer> {
   public Integer call() throws Exception {
     ITask task = (ITask) Class.forName("com.amazon.aocagent.tasks." + taskName).newInstance();
     task.init(this.buildContext());
-    task.execute();
+
+    try {
+      task.execute();
+    } catch (BaseException ex) {
+      log.error(ex.getMessage());
+    }
     return 0;
   }
 

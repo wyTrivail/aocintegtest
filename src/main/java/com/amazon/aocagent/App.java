@@ -57,6 +57,7 @@ public class App implements Callable<Integer> {
       task.execute();
     } catch (BaseException ex) {
       log.error(ex.getMessage());
+      return 1;
     }
     return 0;
   }

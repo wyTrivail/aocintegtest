@@ -4,12 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum GenericConstants {
-    PACKAGE_NAME_PREFIX("aocagent."),
-    LOCAL_PACKAGES_DIR("local-packages"),
-    ;
+  PACKAGE_NAME_PREFIX("aocagent."),
+  LOCAL_PACKAGES_DIR("build/packages"),
+  ;
 
-    private String val;
-    GenericConstants(String val){
-        this.val = val;
-    }
+  private String val;
+
+  GenericConstants(String val) {
+    this.val = val;
+  }
 }

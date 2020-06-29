@@ -15,6 +15,19 @@ plugins {
 
     // lombok
     id "io.freefair.lombok" version "5.1.0"
+
+    // check style
+    id 'checkstyle'
+
+}
+
+tasks.withType(Checkstyle) {
+    checkstyle {
+        toolVersion '8.33'
+        configFile = new File(rootDir, "src/main/resources/checkstyle.xml")
+        maxWarnings = 0
+        ignoreFailures = false
+    }
 }
 
 repositories {

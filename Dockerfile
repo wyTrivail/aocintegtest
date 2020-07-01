@@ -13,4 +13,4 @@ WORKDIR /app
 RUN tar -xvf aocintegtest.tar
 
 # run
-ENTRYPOINT /app/aocintegtest/bin/aocintegtest
+ENTRYPOINT ["/app/aocintegtest/bin/aocintegtest"]

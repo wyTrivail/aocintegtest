@@ -6,6 +6,7 @@ package com.amazon.aocagent;
 
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.enums.Stack;
+import com.amazon.aocagent.enums.TestAMI;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.tasks.ITask;
@@ -43,6 +44,26 @@ public class App implements Callable<Integer> {
           "read packages, version file from this directory, default value is build/packages")
   private String localPackagesDir = GenericConstants.LOCAL_PACKAGES_DIR.getVal();
 
+  @CommandLine.Option(
+      names = {"-r", "--region"},
+      description =
+          "region will be used to create the testing resource like EC2 Instance,"
+              + " and be used to perform regionlized release, the default value is us-west-2"
+  )
+  private String region = GenericConstants.DEFAULT_REGION.getVal();
+
+  @CommandLine.Option(
+      names = {"-a", "--ami"},
+      description = "the ami used for ec2 integ-test, default value is AMAZON_LINUX2"
+  )
+  private String testingAMI = TestAMI.AMAZON_LINUX2.name();
+
+  @CommandLine.Option(
+      names = {"-c", "--ssh-cert-path"},
+      description = "the path of ssh cert, default val is ~/.ssh/cwagent-test-2017-06-07"
+  )
+  private String sshCertPath = GenericConstants.SSH_CERT_DEFAULT_PATH.getVal();
+
   public static void main(String[] args) {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
@@ -76,6 +97,12 @@ public class App implements Callable<Integer> {
             Files.readAllBytes(Paths.get(this.localPackagesDir + "/VERSION")),
             StandardCharsets.UTF_8);
     context.setAgentVersion(version);
+
+    context.setRegion(this.region);
+
+    context.setTestingAMI(TestAMI.valueOf(this.testingAMI));
+
+    context.setSshCertPath(this.sshCertPath);
 
     return context;
   }

@@ -21,7 +21,7 @@ public class S3Release implements ITask {
   private String s3Bucket;
 
   @Override
-  public void init(Context context) throws Exception {
+  public void init(final Context context) throws Exception {
     this.context = context;
 
     // the global bucket is in us-east-1

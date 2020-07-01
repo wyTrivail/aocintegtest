@@ -17,7 +17,7 @@ public enum GenericConstants {
 
   // ssh related
   SSH_KEY_NAME("cwagent-test-2017-06-07"),
-  SSH_CERT_DEFAULT_PATH("~/.ssh/cwagent-test-2017-06-07.pem"),
+  SSH_CERT_DEFAULT_PATH("build/packages/sshkey.pem"),
   SSH_TIMEOUT("30000"), //ms
 
   // retry

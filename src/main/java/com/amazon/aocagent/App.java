@@ -4,7 +4,6 @@
 
 package com.amazon.aocagent;
 
-import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.enums.Stack;
 import com.amazon.aocagent.enums.TestAMI;
 import com.amazon.aocagent.exception.BaseException;
@@ -30,39 +29,48 @@ import picocli.CommandLine;
 public class App implements Callable<Integer> {
   @CommandLine.Option(
       names = {"-t", "--task"},
-      description = "EC2Test, ECSTest, EKSTest, ...")
-  private String taskName = "S3Release";
+      description = "EC2Test, ECSTest, EKSTest, ...",
+      defaultValue = "S3Release"
+  )
+  private String taskName;
 
   @CommandLine.Option(
       names = {"-s", "--stack"},
-      description = "TEST, RELEASE, HKG_RELEASE...")
+      description = "TEST, RELEASE, HKG_RELEASE...",
+      defaultValue = "TEST"
+  )
   private String stackName = "TEST";
 
   @CommandLine.Option(
       names = {"-l", "--local-packages-dir"},
       description =
-          "read packages, version file from this directory, default value is build/packages")
-  private String localPackagesDir = GenericConstants.LOCAL_PACKAGES_DIR.getVal();
+          "read packages, version file from this directory, default value is build/packages",
+      defaultValue = "build/packages"
+  )
+  private String localPackagesDir;
 
   @CommandLine.Option(
       names = {"-r", "--region"},
       description =
           "region will be used to create the testing resource like EC2 Instance,"
-              + " and be used to perform regionlized release, the default value is us-west-2"
+              + " and be used to perform regionlized release, the default value is us-west-2",
+      defaultValue = "us-west-2"
   )
-  private String region = GenericConstants.DEFAULT_REGION.getVal();
+  private String region;
 
   @CommandLine.Option(
       names = {"-a", "--ami"},
-      description = "the ami used for ec2 integ-test, default value is AMAZON_LINUX2"
+      description = "the ami used for ec2 integ-test, default value is AMAZON_LINUX2",
+      defaultValue = "AMAZON_LINUX2"
   )
-  private String testingAMI = TestAMI.AMAZON_LINUX2.name();
+  private String testingAMI;
 
   @CommandLine.Option(
       names = {"-c", "--ssh-cert-path"},
-      description = "the path of ssh cert, default val is ~/.ssh/cwagent-test-2017-06-07"
+      description = "the path of ssh cert, default val is build/packages/sshkey.pem",
+      defaultValue = "build/packages/sshkey.pem"
   )
-  private String sshCertPath = GenericConstants.SSH_CERT_DEFAULT_PATH.getVal();
+  private String sshCertPath;
 
   public static void main(String[] args) {
     int exitCode = new CommandLine(new App()).execute(args);

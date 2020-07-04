@@ -12,8 +12,10 @@ public enum Stack {
   // Testing Stack
   TEST("aws-opentelemetry-collector-test"),
 
-  // Release Stack, it's the production stack
-  RELEASE("aws-opentelemetry-collector");
+  // Release Stack, it's the production stack,
+  // let's use aws-opentelemetry-collector-release to test the release stack first
+  // todo change the bucket name to aws-opentelemetry-collector for formal release
+  RELEASE("aws-opentelemetry-collector-release");
 
   private String s3BucketName;
 

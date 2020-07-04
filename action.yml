@@ -6,6 +6,10 @@ inputs:
     description: 'task'
     required: false
     default: 'EC2Test'
+  stack:
+    description: 'the stack used for testing or release'
+    required: false
+    default: 'TEST'
 outputs:
   time: # id of output
     description: 'The time we greeted you'
@@ -13,4 +17,4 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - "-t=${{ inputs.task }}"
+    - "-t=${{ inputs.task }} -s=${{ inputs.stack }}"

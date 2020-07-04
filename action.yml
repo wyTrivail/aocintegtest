@@ -17,4 +17,5 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - "-t=${{ inputs.task }} -s=${{ inputs.stack }}"
+    - "-t=${{ inputs.task }}"
+    - "-s=${{ inputs.stack }}"

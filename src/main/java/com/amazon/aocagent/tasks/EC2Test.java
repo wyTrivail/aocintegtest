@@ -29,6 +29,11 @@ public class EC2Test implements ITask {
     waitUntilInstanceAvailable(instance);
   }
 
+  @Override
+  public String response() throws Exception {
+    return null;
+  }
+
   private void waitUntilInstanceAvailable(Instance instance) throws Exception {
     log.info("wait until ec2 instance network ready");
 

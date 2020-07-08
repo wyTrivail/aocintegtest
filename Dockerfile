@@ -12,5 +12,6 @@ COPY --from=builder /home/gradle/src/build/distributions/aocintegtest.tar /app/
 WORKDIR /app
 RUN tar -xvf aocintegtest.tar
 
-# run
-ENTRYPOINT ["/app/aocintegtest/bin/aocintegtest"]
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

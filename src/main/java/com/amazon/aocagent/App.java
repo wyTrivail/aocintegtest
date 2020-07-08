@@ -4,21 +4,22 @@
 
 package com.amazon.aocagent;
 
+import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.enums.Stack;
 import com.amazon.aocagent.enums.TestAMI;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.tasks.ITask;
+import com.amazonaws.util.StringUtils;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
-
-
-
 
 @CommandLine.Command(
     name = "aocintegtest",
@@ -30,23 +31,20 @@ public class App implements Callable<Integer> {
   @CommandLine.Option(
       names = {"-t", "--task"},
       description = "EC2Test, ECSTest, EKSTest, ...",
-      defaultValue = "S3Release"
-  )
+      defaultValue = "S3Release")
   private String taskName;
 
   @CommandLine.Option(
       names = {"-s", "--stack"},
       description = "TEST, RELEASE, HKG_RELEASE...",
-      defaultValue = "TEST"
-  )
+      defaultValue = "TEST")
   private String stackName = "TEST";
 
   @CommandLine.Option(
       names = {"-l", "--local-packages-dir"},
       description =
           "read packages, version file from this directory, default value is build/packages",
-      defaultValue = "build/packages"
-  )
+      defaultValue = "build/packages")
   private String localPackagesDir;
 
   @CommandLine.Option(
@@ -54,22 +52,19 @@ public class App implements Callable<Integer> {
       description =
           "region will be used to create the testing resource like EC2 Instance,"
               + " and be used to perform regionlized release, the default value is us-west-2",
-      defaultValue = "us-west-2"
-  )
+      defaultValue = "us-west-2")
   private String region;
 
   @CommandLine.Option(
       names = {"-a", "--ami"},
       description = "the ami used for ec2 integ-test, default value is AMAZON_LINUX2",
-      defaultValue = "AMAZON_LINUX2"
-  )
+      defaultValue = "AMAZON_LINUX2")
   private String testingAMI;
 
   @CommandLine.Option(
       names = {"-c", "--ssh-cert-path"},
       description = "the path of ssh cert, default val is build/packages/sshkey.pem",
-      defaultValue = "build/packages/sshkey.pem"
-  )
+      defaultValue = "build/packages/sshkey.pem")
   private String sshCertPath;
 
   public static void main(String[] args) {
@@ -88,6 +83,8 @@ public class App implements Callable<Integer> {
       log.error(ex.getMessage());
       return 1;
     }
+
+    dumpResponse(task.response());
     return 0;
   }
 
@@ -113,5 +110,17 @@ public class App implements Callable<Integer> {
     context.setSshCertPath(this.sshCertPath);
 
     return context;
+  }
+
+  // write response to a file so that we can read it in dockerfile and set the response as the
+  // output of github action
+  private void dumpResponse(String taskResponse) throws FileNotFoundException {
+    if (StringUtils.isNullOrEmpty(taskResponse)) {
+      return;
+    }
+
+    try (PrintWriter out = new PrintWriter(GenericConstants.TASK_RESPONSE_FILE_LOCATION.getVal())) {
+      out.println(taskResponse);
+    }
   }
 }

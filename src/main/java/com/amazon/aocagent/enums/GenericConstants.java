@@ -24,6 +24,9 @@ public enum GenericConstants {
   SLEEP_IN_MILLISECONDS("10000"), // ms
   MAX_RETRIES("10"),
 
+  // task
+  TASK_RESPONSE_FILE_LOCATION("./task_response")
+
 
   ;
 

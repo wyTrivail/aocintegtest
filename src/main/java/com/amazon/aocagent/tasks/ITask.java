@@ -6,4 +6,6 @@ public interface ITask {
   void init(final Context context) throws Exception;
 
   void execute() throws Exception;
+
+  String response() throws Exception;
 }

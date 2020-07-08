@@ -35,6 +35,11 @@ public class S3Release implements ITask {
     this.releasePackagesToS3();
   }
 
+  @Override
+  public String response() throws Exception {
+    return "success";
+  }
+
   /**
    * releasePackagesToS3 upload all the packages to the S3 bucket.
    *

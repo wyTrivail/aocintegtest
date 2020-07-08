@@ -11,7 +11,7 @@ inputs:
     required: false
     default: 'TEST'
 outputs:
-  time: # id of output
+  task_response: # id of output
     description: 'The time we greeted you'
 runs:
   using: 'docker'

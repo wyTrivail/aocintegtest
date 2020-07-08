@@ -9,10 +9,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.File;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * S3Service is the wrapper of Amazon S3 Client.
- */
+/** S3Service is the wrapper of Amazon S3 Client. */
+@Log4j2
 public class S3Service {
   private AmazonS3 amazonS3;
 
@@ -20,39 +20,33 @@ public class S3Service {
     amazonS3 = AmazonS3ClientBuilder.standard().withRegion(region).build();
   }
 
-  public void uploadS3ObjectWithMetadata(
-      String localFilePath,
-      String bucketName,
-      String key,
-      boolean override,
-      ObjectMetadata objectMetadata)
-      throws BaseException {
-    this.uploadS3Object(localFilePath, bucketName, key, override, objectMetadata);
-  }
-
   public void uploadS3Object(String localFilePath, String bucketName, String key, boolean override)
       throws BaseException {
-    this.uploadS3Object(localFilePath, bucketName, key, override, null);
+    this.uploadS3Object(localFilePath, bucketName, key, override, false, null);
   }
-
-
 
   private void uploadS3Object(
       String localFilePath,
       String bucketName,
       String key,
       boolean override,
+      boolean exceptionOnKeyExisting,
       ObjectMetadata objectMetadata)
       throws BaseException {
-    //create Bucket if not existed
+    // create Bucket if not existed
     if (!amazonS3.doesBucketExistV2(bucketName)) {
       amazonS3.createBucket(bucketName);
     }
 
     // check if the key is existed
     if (!override && amazonS3.doesObjectExist(bucketName, key)) {
-      throw new BaseException(
-          ExceptionCode.S3_KEY_ALREADY_EXIST, "s3 key is already existed: " + key);
+      if (exceptionOnKeyExisting) {
+        throw new BaseException(
+            ExceptionCode.S3_KEY_ALREADY_EXIST, "s3 key is already existed: " + key);
+      } else {
+        log.warn("s3 key is already existed: {}, skip", key);
+        return;
+      }
     }
 
     PutObjectRequest putObjectRequest =

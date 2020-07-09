@@ -7,6 +7,8 @@ import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.S3Service;
 import com.amazonaws.regions.Regions;
+import net.steppschuh.markdowngenerator.table.Table;
+import net.steppschuh.markdowngenerator.text.emphasis.BoldText;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -37,7 +39,20 @@ public class S3Release implements ITask {
 
   @Override
   public String response() throws Exception {
-    return "success";
+    // generate a package download link table with markdown as part of release notes
+    Table.Builder tableBuilder = new Table.Builder()
+        .withAlignment(Table.ALIGN_CENTER)
+        .addRow(new BoldText("Arch"), new BoldText("Platform"), new BoldText("Package"));
+
+    for (S3Package s3Package : S3Package.values()) {
+      tableBuilder.addRow(
+          s3Package.getArchitecture().name(),
+          s3Package.getSupportedOSDistribution().name(),
+          "https://" + this.s3Bucket + ".s3.amazonaws.com/" + s3Package.getS3Key(context.getAgentVersion())
+      );
+    }
+
+    return tableBuilder.build().serialize();
   }
 
   /**

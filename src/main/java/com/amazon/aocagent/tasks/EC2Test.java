@@ -1,7 +1,5 @@
 package com.amazon.aocagent.tasks;
 
-import com.amazon.aocagent.enums.GenericConstants;
-import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;

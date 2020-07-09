@@ -100,7 +100,7 @@ public class App implements Callable<Integer> {
     String version =
         new String(
             Files.readAllBytes(Paths.get(this.localPackagesDir + "/VERSION")),
-            StandardCharsets.UTF_8);
+            StandardCharsets.UTF_8).trim();
     context.setAgentVersion(version);
 
     context.setRegion(this.region);
@@ -118,6 +118,8 @@ public class App implements Callable<Integer> {
     if (StringUtils.isNullOrEmpty(taskResponse)) {
       return;
     }
+
+    log.info(taskResponse);
 
     try (PrintWriter out = new PrintWriter(GenericConstants.TASK_RESPONSE_FILE_LOCATION.getVal())) {
       out.println(taskResponse);

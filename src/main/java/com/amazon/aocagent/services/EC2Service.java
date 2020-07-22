@@ -99,6 +99,9 @@ public class EC2Service {
    * @param instanceIds ec2 instance ids to be terminated
    */
   public void terminateInstance(List<String> instanceIds) {
+    if (instanceIds.size() == 0) {
+      return;
+    }
     TerminateInstancesRequest terminateInstancesRequest =
         new TerminateInstancesRequest().withInstanceIds(instanceIds);
 

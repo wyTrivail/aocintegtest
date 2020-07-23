@@ -14,10 +14,13 @@ public enum GenericConstants {
   // ec2 related
   EC2_INSTANCE_TAG_KEY("aoc-integ-test-tag"),
   EC2_INSTANCE_TAG_VAL("aoc-integ-test"),
+  DEFAULT_SECURITY_GROUP_NAME("default"),
+  SECURITY_GROUP_NAME("aoc-integ-test-sp"),
 
   // ssh related
-  SSH_KEY_NAME("cwagent-test-2017-06-07"),
-  SSH_CERT_DEFAULT_PATH("build/packages/sshkey.pem"),
+  SSH_KEY_S3_BUCKET("aoc-ssh-key"),
+  SSH_KEY_NAME("aoc-ssh-key-2020-07-22"),
+  SSH_CERT_LOCAL_PATH("/tmp/sshkey.pem"),
   SSH_TIMEOUT("30000"), //ms
 
   // retry
@@ -25,7 +28,10 @@ public enum GenericConstants {
   MAX_RETRIES("10"),
 
   // task
-  TASK_RESPONSE_FILE_LOCATION("./task_response")
+  TASK_RESPONSE_FILE_LOCATION("./task_response"),
+
+  // configuration
+  EC2_CONFIG_PATH("/tmp/test.yml")
 
 
   ;

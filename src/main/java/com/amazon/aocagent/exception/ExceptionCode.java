@@ -8,6 +8,11 @@ public enum ExceptionCode {
   FAILED_AFTER_RETRY(20004, "failed after retry"),
   EC2INSTANCE_STATUS_PENDING(20005, "ec2 instance status is pending"),
   EC2INSTANCE_STATUS_BAD(20006, "ec2 instance status is bad"),
+  NO_MATCHED_S3_KEY(20007, "no matched s3 key for this ami"),
+  NO_MATCHED_DOWNLOADING_COMMAND(20008, "no matched downloading command for this ami"),
+  NO_MATCHED_PACKAGE_NAME(20009, "no matched package name for this ami"),
+  NO_MATCHED_INSTALLING_COMMAND(20010, "no matched installing command for this ami"),
+  NO_MATCHED_STARTING_COMMAND(20010, "no matched starting command for this ami"),
   ;
   private int code;
   private String message;

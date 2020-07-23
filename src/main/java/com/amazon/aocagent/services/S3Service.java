@@ -6,6 +6,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.File;
@@ -20,9 +21,24 @@ public class S3Service {
     amazonS3 = AmazonS3ClientBuilder.standard().withRegion(region).build();
   }
 
+  /**
+   * uploadS3Object uploads the localfile to the s3 bucket.
+   * @param localFilePath the path of local file to be
+   * @param bucketName the s3 bucket name
+   * @param key the s3 key name
+   * @param override override the s3 key if it's already existed when override is true
+   * @throws BaseException when the s3 key is already existed and override is false
+   */
   public void uploadS3Object(String localFilePath, String bucketName, String key, boolean override)
       throws BaseException {
-    this.uploadS3Object(localFilePath, bucketName, key, override, false, null);
+    this.uploadS3Object(
+        localFilePath,
+        bucketName,
+        key,
+        override,
+        false,
+        null,
+        CannedAccessControlList.PublicRead);
   }
 
   private void uploadS3Object(
@@ -31,7 +47,8 @@ public class S3Service {
       String key,
       boolean override,
       boolean exceptionOnKeyExisting,
-      ObjectMetadata objectMetadata)
+      ObjectMetadata objectMetadata,
+      CannedAccessControlList accessControlList)
       throws BaseException {
     // create Bucket if not existed
     if (!amazonS3.doesBucketExistV2(bucketName)) {
@@ -51,11 +68,47 @@ public class S3Service {
 
     PutObjectRequest putObjectRequest =
         new PutObjectRequest(bucketName, key, new File(localFilePath))
-            .withCannedAcl(CannedAccessControlList.PublicRead);
+            .withCannedAcl(accessControlList);
     if (objectMetadata != null) {
       putObjectRequest.setMetadata(objectMetadata);
     }
 
     amazonS3.putObject(putObjectRequest);
   }
+
+  /**
+   * uploadS3ObjectWithPrivateAccess uploads the locafile to the s3 bucket with private access.
+   * @param localFilePath the path of local file to be
+   * @param bucketName the s3 bucket name
+   * @param key the s3 key name
+   * @param override override the s3 key if it's already existed when override is true
+   * @throws BaseException when the s3 key is already existed and override is false
+   */
+  public void uploadS3ObjectWithPrivateAccess(String localFilePath,
+                                              String bucketName,
+                                              String key,
+                                              boolean override) throws BaseException {
+    this.uploadS3Object(
+        localFilePath,
+        bucketName,
+        key, override,
+        false,
+        null,
+        CannedAccessControlList.Private);
+  }
+
+
+
+  /**
+   * downloadS3Object downloads the s3 object to local.
+   * @param bucketName the s3 bucket name
+   * @param key the s3 object key name
+   * @param toLocation the local location to download to
+   */
+  public void downloadS3Object(String bucketName, String key, String toLocation) {
+    amazonS3.getObject(
+        new GetObjectRequest(bucketName, key),
+        new File(toLocation));
+  }
+
 }

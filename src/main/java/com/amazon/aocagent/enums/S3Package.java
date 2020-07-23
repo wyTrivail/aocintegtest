@@ -46,6 +46,14 @@ public enum S3Package {
             supportedOSDistribution.name().toLowerCase(),
             architecture.name().toLowerCase(),
             packageVersion,
-            GenericConstants.PACKAGE_NAME_PREFIX.getVal() + packageType.name().toLowerCase()));
+            this.getPackageName()));
+  }
+
+  /**
+   * getPackageName return the ot collector install package name.
+   * @return packageName
+   */
+  public String getPackageName() {
+    return GenericConstants.PACKAGE_NAME_PREFIX.getVal() + packageType.name().toLowerCase();
   }
 }

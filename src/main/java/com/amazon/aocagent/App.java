@@ -61,12 +61,6 @@ public class App implements Callable<Integer> {
       defaultValue = "AMAZON_LINUX2")
   private String testingAMI;
 
-  @CommandLine.Option(
-      names = {"-c", "--ssh-cert-path"},
-      description = "the path of ssh cert, default val is build/packages/sshkey.pem",
-      defaultValue = "build/packages/sshkey.pem")
-  private String sshCertPath;
-
   public static void main(String[] args) {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
@@ -96,7 +90,7 @@ public class App implements Callable<Integer> {
 
     context.setLocalPackagesDir(this.localPackagesDir);
 
-    // get aoc version from the current working directory: "local-packages/VERSION"
+    // get aoc version from the current working directory: "build/packages/VERSION"
     String version =
         new String(
             Files.readAllBytes(Paths.get(this.localPackagesDir + "/VERSION")),
@@ -106,8 +100,6 @@ public class App implements Callable<Integer> {
     context.setRegion(this.region);
 
     context.setTestingAMI(TestAMI.valueOf(this.testingAMI));
-
-    context.setSshCertPath(this.sshCertPath);
 
     return context;
   }

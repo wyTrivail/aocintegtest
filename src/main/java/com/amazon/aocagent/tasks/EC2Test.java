@@ -1,11 +1,15 @@
 package com.amazon.aocagent.tasks;
 
+import com.amazon.aocagent.enums.GenericConstants;
+import com.amazon.aocagent.exception.BaseException;
+import com.amazon.aocagent.helpers.OTInstallHelper;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.EC2Service;
 import com.amazonaws.services.ec2.model.Instance;
 import lombok.extern.log4j.Log4j2;
+import java.io.IOException;
 
 @Log4j2
 public class EC2Test implements ITask {
@@ -20,30 +24,44 @@ public class EC2Test implements ITask {
 
   @Override
   public void execute() throws Exception {
+    prepareSSHKey();
+
+    // launch ec2 instance for testing
     Instance instance = ec2Service.launchInstance(context.getTestingAMI().getVal());
 
-    log.info("got ec2 instance: {}", instance.getInstanceId());
+    // init sshHelper
+    SSHHelper sshHelper = new SSHHelper(
+        this.context.getTestingAMI().getLoginUser(),
+        instance.getPublicIpAddress(),
+        GenericConstants.SSH_CERT_LOCAL_PATH.getVal()
+    );
 
-    waitUntilInstanceAvailable(instance);
+    // wait until the instance is ready to login
+    log.info("wait until the instance is ready to login");
+    RetryHelper.retry(() -> {
+      sshHelper.isSSHReady();
+    });
+
+    // Configure ot collector
+    OTInstallHelper otInstallHelper = new OTInstallHelper(sshHelper, context);
+    otInstallHelper.installAndStart();
+
+    // validate
+
+  }
+
+  private void prepareSSHKey() throws IOException, BaseException {
+    // create the ssh keypair if not existed.
+    ec2Service.createSSHKeyIfNotExisted(GenericConstants.SSH_KEY_NAME.getVal());
+
+    // download the ssh keypair from s3
+    ec2Service.downloadSSHKey(
+        GenericConstants.SSH_KEY_NAME.getVal(),
+        GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
   }
 
   @Override
   public String response() throws Exception {
     return null;
-  }
-
-  private void waitUntilInstanceAvailable(Instance instance) throws Exception {
-    log.info("wait until ec2 instance network ready");
-
-    log.info("wait until ec2 instance is able to login");
-    SSHHelper sshHelper = new SSHHelper(
-        this.context.getTestingAMI().getLoginUser(),
-        instance.getPublicIpAddress(),
-        this.context.getSshCertPath()
-    );
-
-    RetryHelper.retry(() -> {
-      sshHelper.isSSHReady();
-    });
   }
 }

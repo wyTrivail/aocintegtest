@@ -3,6 +3,8 @@ package com.amazon.aocagent.enums;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import lombok.Getter;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 public enum TestAMI {
@@ -93,6 +95,25 @@ public enum TestAMI {
             configPath);
       default:
         throw new BaseException(ExceptionCode.NO_MATCHED_STARTING_COMMAND);
+    }
+  }
+
+  /**
+   * getDockerInstallingCommand returns the commands to install docker base on ami.
+   * @return the commands to install and start dockerd
+   * @throws BaseException when no docker installing command matached for the ami
+   */
+  public List<String> getDockerInstallingCommand() throws BaseException {
+    switch (this) {
+      case AMAZON_LINUX2:
+        return Arrays.asList(
+            "sudo yum update -y",
+            "sudo yum install -y docker",
+            "sudo service docker start",
+            "sudo usermod -a -G docker ec2-user"
+        );
+      default:
+        throw new BaseException(ExceptionCode.NO_MATCHED_DOCKER_INSTALLING_COMMAND);
     }
   }
 

@@ -4,117 +4,27 @@
 
 package com.amazon.aocagent;
 
-import com.amazon.aocagent.enums.GenericConstants;
-import com.amazon.aocagent.enums.Stack;
-import com.amazon.aocagent.enums.TestAMI;
-import com.amazon.aocagent.exception.BaseException;
-import com.amazon.aocagent.models.Context;
-import com.amazon.aocagent.tasks.ITask;
-import com.amazonaws.util.StringUtils;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.concurrent.Callable;
+import com.amazon.aocagent.commands.IntegTest;
+import com.amazon.aocagent.commands.Release;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
 @CommandLine.Command(
-    name = "aocintegtest",
+    name = "aoccicd",
     mixinStandardHelpOptions = true,
-    version = "aocintegtest 1.0",
-    description = "use for integtest and releases of the aocagent")
+    version = "0.1",
+    description = "use for integtests and releases of the aocagent",
+    subcommands = {IntegTest.class, Release.class}
+)
 @Log4j2
-public class App implements Callable<Integer> {
-  @CommandLine.Option(
-      names = {"-t", "--task"},
-      description = "EC2Test, ECSTest, EKSTest, ...",
-      defaultValue = "S3Release")
-  private String taskName;
-
-  @CommandLine.Option(
-      names = {"-s", "--stack"},
-      description = "TEST, RELEASE, HKG_RELEASE...",
-      defaultValue = "TEST")
-  private String stackName = "TEST";
-
-  @CommandLine.Option(
-      names = {"-l", "--local-packages-dir"},
-      description =
-          "read packages, version file from this directory, default value is build/packages",
-      defaultValue = "build/packages")
-  private String localPackagesDir;
-
-  @CommandLine.Option(
-      names = {"-r", "--region"},
-      description =
-          "region will be used to create the testing resource like EC2 Instance,"
-              + " and be used to perform regionlized release, the default value is us-west-2",
-      defaultValue = "us-west-2")
-  private String region;
-
-  @CommandLine.Option(
-      names = {"-a", "--ami"},
-      description = "the ami used for ec2 integ-test, default value is AMAZON_LINUX2",
-      defaultValue = "AMAZON_LINUX2")
-  private String testingAMI;
-
+public class App implements Runnable {
   public static void main(String[] args) {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
   }
 
   @Override
-  public Integer call() throws Exception {
-    ITask task = (ITask) Class.forName("com.amazon.aocagent.tasks." + taskName).newInstance();
-    task.init(this.buildContext());
-
-    try {
-      task.execute();
-    } catch (BaseException ex) {
-      log.error(ex.getMessage());
-      return 1;
-    }
-
-    dumpResponse(task.response());
-    return 0;
-  }
-
-  private Context buildContext() throws IOException {
-    Context context = new Context();
-
-    Stack stack = Stack.valueOf(this.stackName);
-    context.setStack(stack);
-
-    context.setLocalPackagesDir(this.localPackagesDir);
-
-    // get aoc version from the current working directory: "build/packages/VERSION"
-    String version =
-        new String(
-            Files.readAllBytes(Paths.get(this.localPackagesDir + "/VERSION")),
-            StandardCharsets.UTF_8).trim();
-    context.setAgentVersion(version);
-
-    context.setRegion(this.region);
-
-    context.setTestingAMI(TestAMI.valueOf(this.testingAMI));
-
-    return context;
-  }
-
-  // write response to a file so that we can read it in dockerfile and set the response as the
-  // output of github action
-  private void dumpResponse(String taskResponse) throws FileNotFoundException {
-    if (StringUtils.isNullOrEmpty(taskResponse)) {
-      return;
-    }
-
-    log.info(taskResponse);
-
-    try (PrintWriter out = new PrintWriter(GenericConstants.TASK_RESPONSE_FILE_LOCATION.getVal())) {
-      out.println(taskResponse);
-    }
+  public void run() {
+    log.info("Starting");
   }
 }

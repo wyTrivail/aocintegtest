@@ -11,5 +11,7 @@ public class Context {
   private String localPackagesDir;
   private String region;
   private TestAMI testingAMI;
+  private String instanceID;
+  private String instancePublicIpAddress;
 }
 

@@ -13,7 +13,7 @@ public class RetryHelper {
    * @param retryCount the total retry count
    * @param sleepInMilliSeconds sleep time among retries
    * @param retryable the lambda
-   * @throws Exception when the retry count is reach.
+   * @throws Exception when the retry count is reached
    */
   public static void retry(int retryCount, int sleepInMilliSeconds, Retryable retryable)
       throws Exception {
@@ -34,11 +34,24 @@ public class RetryHelper {
   /**
    * retry executes lambda with default retry count(10) and sleep seconds(10).
    * @param retryable the lambda
-   * @throws Exception when the retry count is reach
+   * @throws Exception when the retry count is reached
    */
   public static void retry(Retryable retryable) throws Exception {
     retry(
         Integer.valueOf(GenericConstants.MAX_RETRIES.getVal()),
+        Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+        retryable);
+  }
+
+  /**
+   * retry executes lambda with default sleeping seconds 10s.
+   * @param retryCount the total retry count
+   * @param retryable the lambda function to be executed
+   * @throws Exception when the retry count is reached
+   */
+  public static void retry(int retryCount, Retryable retryable) throws Exception {
+    retry(
+        retryCount,
         Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
         retryable);
   }

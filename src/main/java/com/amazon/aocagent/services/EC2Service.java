@@ -4,7 +4,6 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.AmazonEC2Exception;
@@ -18,6 +17,7 @@ import com.amazonaws.services.ec2.model.DescribeKeyPairsRequest;
 import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
 import com.amazonaws.services.ec2.model.Filter;
+import com.amazonaws.services.ec2.model.IamInstanceProfileSpecification;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.IpPermission;
@@ -60,7 +60,7 @@ public class EC2Service {
   public EC2Service(String region) {
     this.region = region;
     amazonEC2 = AmazonEC2ClientBuilder.standard().withRegion(region).build();
-    s3Service = new S3Service(Regions.fromName(region));
+    s3Service = new S3Service(region);
   }
 
   /**
@@ -89,7 +89,11 @@ public class EC2Service {
             .withTagSpecifications(tagSpecification)
             .withKeyName(GenericConstants.SSH_KEY_NAME.getVal())
             .withSecurityGroupIds(
-                getOrCreateSecurityGroupByName(GenericConstants.SECURITY_GROUP_NAME.getVal()));
+                getOrCreateSecurityGroupByName(GenericConstants.SECURITY_GROUP_NAME.getVal()))
+            .withIamInstanceProfile(
+                new IamInstanceProfileSpecification()
+                    .withName(GenericConstants.IAM_ROLE_NAME.getVal())
+            );
 
     // create ssh key if not existed
     createSSHKeyIfNotExisted(GenericConstants.SSH_KEY_NAME.getVal());
@@ -196,7 +200,7 @@ public class EC2Service {
       String keyPairFileName = keyPairName + ".pem";
       String keyPairLocalPath = "/tmp/" + keyPairFileName;
       FileUtils.writeStringToFile(new File(keyPairLocalPath), keyMaterial);
-      S3Service s3Service = new S3Service(Regions.fromName(region));
+      S3Service s3Service = new S3Service(region);
       s3Service.uploadS3ObjectWithPrivateAccess(
           keyPairLocalPath, GenericConstants.SSH_KEY_S3_BUCKET.getVal(), keyPairFileName, false);
 

@@ -13,6 +13,10 @@ public enum ExceptionCode {
   NO_MATCHED_PACKAGE_NAME(20009, "no matched package name for this ami"),
   NO_MATCHED_INSTALLING_COMMAND(20010, "no matched installing command for this ami"),
   NO_MATCHED_STARTING_COMMAND(20010, "no matched starting command for this ami"),
+  NO_MATCHED_DOCKER_INSTALLING_COMMAND(20010, "no matched docker installing command for this ami"),
+
+  EXPECTED_METRIC_NOT_FOUND(30001, "expected metric not found"),
+
   ;
   private int code;
   private String message;

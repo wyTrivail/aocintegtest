@@ -16,6 +16,7 @@ public enum GenericConstants {
   EC2_INSTANCE_TAG_VAL("aoc-integ-test"),
   DEFAULT_SECURITY_GROUP_NAME("default"),
   SECURITY_GROUP_NAME("aoc-integ-test-sp"),
+  IAM_ROLE_NAME("aoc-integ-test-iam-role"),
 
   // ssh related
   SSH_KEY_S3_BUCKET("aoc-ssh-key"),
@@ -31,7 +32,13 @@ public enum GenericConstants {
   TASK_RESPONSE_FILE_LOCATION("./task_response"),
 
   // configuration
-  EC2_CONFIG_PATH("/tmp/test.yml")
+  EC2_CONFIG_PATH("/tmp/test.yml"),
+
+  // metric emitter
+  METRIC_EMITTER_DOCKER_IMAGE_URL("mxiamxia/aoc-metric-generator"),
+
+  // validator related
+  METRIC_NAMESPACE("default"),
 
 
   ;

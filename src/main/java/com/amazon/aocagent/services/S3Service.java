@@ -2,7 +2,6 @@ package com.amazon.aocagent.services;
 
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -17,7 +16,7 @@ import lombok.extern.log4j.Log4j2;
 public class S3Service {
   private AmazonS3 amazonS3;
 
-  public S3Service(Regions region) {
+  public S3Service(String region) {
     amazonS3 = AmazonS3ClientBuilder.standard().withRegion(region).build();
   }
 

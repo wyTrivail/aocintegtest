@@ -41,9 +41,4 @@ public class EC2Clean implements ITask {
     // terminate instance
     ec2Service.terminateInstance(instanceIdListToBeTerminated);
   }
-
-  @Override
-  public String response() throws Exception {
-    return null;
-  }
 }

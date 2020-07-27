@@ -7,6 +7,7 @@ import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.S3Service;
 import com.amazonaws.regions.Regions;
+import lombok.extern.log4j.Log4j2;
 import net.steppschuh.markdowngenerator.table.Table;
 import net.steppschuh.markdowngenerator.text.emphasis.BoldText;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
  * used for AOC distribution as well as the pre-flight step in Integ-test to simulate the releases
  * in the Testing Stack
  */
+@Log4j2
 public class S3Release implements ITask {
   private Context context;
   private S3Service s3Service;
@@ -27,7 +29,7 @@ public class S3Release implements ITask {
     this.context = context;
 
     // the global bucket is in us-east-1
-    s3Service = new S3Service(Regions.US_EAST_1);
+    s3Service = new S3Service(Regions.US_EAST_1.getName());
     // bucket name is globally unique, so we use different bucket name for different stacks
     s3Bucket = context.getStack().getS3BucketName();
   }
@@ -35,10 +37,10 @@ public class S3Release implements ITask {
   @Override
   public void execute() throws Exception {
     this.releasePackagesToS3();
+    this.printOutDownloadingLinks();
   }
 
-  @Override
-  public String response() throws Exception {
+  private void printOutDownloadingLinks() throws Exception {
     // generate a package download link table with markdown as part of release notes
     Table.Builder tableBuilder = new Table.Builder()
         .withAlignment(Table.ALIGN_CENTER)
@@ -52,7 +54,7 @@ public class S3Release implements ITask {
       );
     }
 
-    return tableBuilder.build().serialize();
+    log.info(tableBuilder.build().serialize());
   }
 
   /**

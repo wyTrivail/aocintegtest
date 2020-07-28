@@ -14,6 +14,7 @@ public enum ExceptionCode {
   NO_MATCHED_INSTALLING_COMMAND(20010, "no matched installing command for this ami"),
   NO_MATCHED_STARTING_COMMAND(20010, "no matched starting command for this ami"),
   NO_MATCHED_DOCKER_INSTALLING_COMMAND(20010, "no matched docker installing command for this ami"),
+  COMMAND_FAILED_TO_EXECUTE(20011, "command failed to execute"),
 
   EXPECTED_METRIC_NOT_FOUND(30001, "expected metric not found"),
 

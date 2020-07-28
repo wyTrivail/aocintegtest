@@ -43,8 +43,8 @@ public enum GenericConstants {
 
   // release candidate related
   CANDIDATE_S3_BUCKET("aoc-candidate-packages"),
-  CANDIDATE_PACK_TO("build/candidate.zip"),
-  CANDIDATE_DOWNLOAD_TO("build/candidate-downloaded.zip"),
+  CANDIDATE_PACK_TO("build/candidate.tar.gz"),
+  CANDIDATE_DOWNLOAD_TO("build/candidate-downloaded.tar.gz"),
   CANDIDATE_UNPACK_TO("build/packages"),
 
 

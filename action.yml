@@ -2,6 +2,10 @@
 name: 'AOCIntegTest'
 description: 'AOCIntegTest performs end-to-end integration test on the AOCAgent'
 inputs:
+  running_type:
+    description: 'running type'
+    required: false
+    default: 'integ-test'
   task:
     description: 'task'
     required: false
@@ -10,12 +14,10 @@ inputs:
     description: 'the stack used for testing or release'
     required: false
     default: 'TEST'
-outputs:
-  task_response: # id of output
-    description: 'The time we greeted you'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
+    - "${{ inputs.running_type }}"
     - "-t=${{ inputs.task }}"
     - "-s=${{ inputs.stack }}"

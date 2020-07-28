@@ -17,6 +17,9 @@ public enum ExceptionCode {
 
   EXPECTED_METRIC_NOT_FOUND(30001, "expected metric not found"),
 
+  VERSION_NOT_MATCHED(40001, "version is not matched in the candidate package"),
+  GITHUB_SHA_NOT_MATCHED(40002, "github sha is not matched in the candidate package"),
+
   ;
   private int code;
   private String message;

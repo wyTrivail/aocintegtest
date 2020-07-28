@@ -6,18 +6,13 @@ inputs:
     description: 'running type'
     required: false
     default: 'integ-test'
-  task:
-    description: 'task'
+  opts:
+    description: 'opts'
     required: false
-    default: 'EC2Test'
-  stack:
-    description: 'the stack used for testing or release'
-    required: false
-    default: 'TEST'
+    default: '-t=EC2Test -s=TEST'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - "${{ inputs.running_type }}"
-    - "-t=${{ inputs.task }}"
-    - "-s=${{ inputs.stack }}"
+    - "${{ inputs.opts }}"

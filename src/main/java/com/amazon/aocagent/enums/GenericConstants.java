@@ -10,6 +10,7 @@ public enum GenericConstants {
   // release related
   PACKAGE_NAME_PREFIX("aws-opentelemetry-collector."),
   LOCAL_PACKAGES_DIR("build/packages"),
+  GITHUB_SHA_FILE_NAME("GITHUB_SHA"),
 
   // ec2 related
   EC2_INSTANCE_TAG_KEY("aoc-integ-test-tag"),
@@ -39,6 +40,12 @@ public enum GenericConstants {
 
   // validator related
   METRIC_NAMESPACE("default"),
+
+  // release candidate related
+  CANDIDATE_S3_BUCKET("aoc-candidate-packages"),
+  CANDIDATE_PACK_TO("build/candidate.zip"),
+  CANDIDATE_DOWNLOAD_TO("build/candidate-downloaded.zip"),
+  CANDIDATE_UNPACK_TO("build/packages"),
 
 
   ;

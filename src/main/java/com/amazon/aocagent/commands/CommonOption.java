@@ -2,6 +2,7 @@ package com.amazon.aocagent.commands;
 
 import com.amazon.aocagent.enums.Stack;
 import com.amazon.aocagent.models.Context;
+import com.amazonaws.util.StringUtils;
 import picocli.CommandLine;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +32,12 @@ public class CommonOption {
       defaultValue = "us-west-2")
   private String region;
 
+  @CommandLine.Option(
+      names = {"-p", "--package-version"},
+      description = "the package version, fetched from local-packages-dir/VERSION by default"
+  )
+  private String version;
+
   /**
    * buildContext build the context object based on the command args.
    * @return Context
@@ -45,12 +52,14 @@ public class CommonOption {
     context.setLocalPackagesDir(this.localPackagesDir);
 
     // get aoc version from the current working directory: "build/packages/VERSION"
-    String version =
-        new String(
-                Files.readAllBytes(Paths.get(this.localPackagesDir + "/VERSION")),
-                StandardCharsets.UTF_8)
-            .trim();
-    context.setAgentVersion(version);
+    if (StringUtils.isNullOrEmpty(this.version)) {
+      this.version =
+          new String(
+                  Files.readAllBytes(Paths.get(this.localPackagesDir + "/VERSION")),
+                  StandardCharsets.UTF_8)
+              .trim();
+    }
+    context.setAgentVersion(this.version);
 
     context.setRegion(this.region);
 

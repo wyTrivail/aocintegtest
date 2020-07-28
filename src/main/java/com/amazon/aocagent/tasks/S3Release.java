@@ -7,6 +7,7 @@ import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.S3Service;
 import com.amazonaws.regions.Regions;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.steppschuh.markdowngenerator.table.Table;
 import net.steppschuh.markdowngenerator.text.emphasis.BoldText;
@@ -19,6 +20,7 @@ import java.nio.file.Paths;
  * in the Testing Stack
  */
 @Log4j2
+@Setter
 public class S3Release implements ITask {
   private Context context;
   private S3Service s3Service;

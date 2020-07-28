@@ -1,6 +1,5 @@
 package com.amazon.aocagent.mustache;
 
-import com.amazon.aocagent.mustache.models.EC2ConfigTemplate;
 import com.amazon.aocagent.mustache.models.MustacheTemplate;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;

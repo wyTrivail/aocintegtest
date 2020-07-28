@@ -10,16 +10,22 @@ import lombok.Getter;
 @Getter
 public enum Stack {
   // Testing Stack
-  TEST("aws-opentelemetry-collector-test"),
+  TEST(
+      "aws-opentelemetry-collector-test",
+      "aoc-release-candidate"
+      ),
 
   // Release Stack, it's the production stack,
   // let's use aws-opentelemetry-collector-release to test the release stack first
   // todo change the bucket name to aws-opentelemetry-collector for formal release
-  RELEASE("aws-opentelemetry-collector-release");
+  RELEASE("aws-opentelemetry-collector-release",
+      "");
 
   private String s3BucketName;
+  private String s3ReleaseCandidateBucketName;
 
-  Stack(String s3BucketName) {
+  Stack(String s3BucketName, String s3ReleaseCandidateBucketName) {
     this.s3BucketName = s3BucketName;
+    this.s3ReleaseCandidateBucketName = s3ReleaseCandidateBucketName;
   }
 }

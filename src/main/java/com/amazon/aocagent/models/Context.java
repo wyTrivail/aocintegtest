@@ -13,5 +13,6 @@ public class Context {
   private TestAMI testingAMI;
   private String instanceID;
   private String instancePublicIpAddress;
+  private String githubSha;
 }
 

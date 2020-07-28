@@ -14,7 +14,7 @@ public class Release implements Runnable {
 
   @CommandLine.Option(
       names = {"-t", "--release-task"},
-      description = "S3Release, ECRRelease",
+      description = "S3Release, ECRRelease, UploadCandidate, DownloadCandidate",
       defaultValue = "S3Release")
   private String releaseTask;
 

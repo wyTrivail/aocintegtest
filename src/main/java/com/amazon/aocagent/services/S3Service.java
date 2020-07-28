@@ -105,6 +105,7 @@ public class S3Service {
    * @param toLocation the local location to download to
    */
   public void downloadS3Object(String bucketName, String key, String toLocation) {
+    log.info("download s3 object {}/{}", bucketName, key);
     amazonS3.getObject(
         new GetObjectRequest(bucketName, key),
         new File(toLocation));

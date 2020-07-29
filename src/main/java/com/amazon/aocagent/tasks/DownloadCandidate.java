@@ -15,7 +15,7 @@ public class DownloadCandidate implements ITask {
   S3Service s3Service;
   Context context;
 
-  static String COMMAND_TO_UNPACK = "tar -zxvf %s -C %s --strip 1";
+  static String COMMAND_TO_UNPACK = "tar -zxvf %s -C %s";
 
   @Override
   public void init(Context context) throws Exception {
@@ -32,7 +32,6 @@ public class DownloadCandidate implements ITask {
         GenericConstants.CANDIDATE_DOWNLOAD_TO.getVal());
 
     // unpack
-    new File(GenericConstants.CANDIDATE_UNPACK_TO.getVal()).mkdirs();
     CommandExecutionHelper.runChildProcess(String.format(
         COMMAND_TO_UNPACK,
         GenericConstants.CANDIDATE_DOWNLOAD_TO.getVal(),
@@ -40,14 +39,13 @@ public class DownloadCandidate implements ITask {
     ));
 
     // validate version
-    if (!context
-        .getAgentVersion()
-        .equals(
-            new String(
-                    Files.readAllBytes(
-                        Paths.get(GenericConstants.CANDIDATE_UNPACK_TO.getVal() + "/VERSION")))
-                .trim())) {
-      throw new BaseException(ExceptionCode.VERSION_NOT_MATCHED);
+    String versionFromFile = new String(
+        Files.readAllBytes(
+            Paths.get(context.getLocalPackagesDir() + "/VERSION")))
+        .trim();
+    if (!context.getAgentVersion().equals(versionFromFile)) {
+      throw new BaseException(ExceptionCode.VERSION_NOT_MATCHED,
+          "version is not matched " + versionFromFile + ":" + context.getAgentVersion());
     }
 
     // validate github sha
@@ -56,7 +54,7 @@ public class DownloadCandidate implements ITask {
         .equals(
             new String(
                     Files.readAllBytes(
-                        Paths.get(GenericConstants.CANDIDATE_UNPACK_TO.getVal() + "/GITHUB_SHA")))
+                        Paths.get(context.getLocalPackagesDir() + "/GITHUB_SHA")))
                 .trim())) {
       throw new BaseException(ExceptionCode.GITHUB_SHA_NOT_MATCHED);
     }

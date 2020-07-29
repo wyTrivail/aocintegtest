@@ -23,7 +23,7 @@ public class UploadCandidate implements ITask {
 
   @Override
   public void execute() throws Exception {
-    // archive the candidate packages
+    // archive the candidate packages, build tarball from local-packages dir
     CommandExecutionHelper.runChildProcess(String.format(
         COMMAND_TO_PACK,
         GenericConstants.CANDIDATE_PACK_TO.getVal(),

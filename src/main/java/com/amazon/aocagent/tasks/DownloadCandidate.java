@@ -31,7 +31,7 @@ public class DownloadCandidate implements ITask {
         context.getGithubSha() + ".tar.gz",
         GenericConstants.CANDIDATE_DOWNLOAD_TO.getVal());
 
-    // unpack
+    // unpack the tarball into cwd since it already keeps the folder structure
     CommandExecutionHelper.runChildProcess(String.format(
         COMMAND_TO_UNPACK,
         GenericConstants.CANDIDATE_DOWNLOAD_TO.getVal(),

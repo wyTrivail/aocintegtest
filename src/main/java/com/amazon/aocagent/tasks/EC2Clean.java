@@ -33,7 +33,8 @@ public class EC2Clean implements ITask {
 
     instanceList.forEach(
         instance -> {
-          if (instance.getLaunchTime().before(twoHoursAgo)) {
+          if (instance.getLaunchTime().before(twoHoursAgo)
+              && instance.getTags().size() == 1) {
             instanceIdListToBeTerminated.add(instance.getInstanceId());
           }
         });

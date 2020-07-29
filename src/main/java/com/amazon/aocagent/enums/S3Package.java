@@ -82,6 +82,7 @@ public enum S3Package {
    * @return packageName
    */
   public String getPackageName() {
-    return GenericConstants.PACKAGE_NAME_PREFIX.getVal() + localPackage.getPackageType().name().toLowerCase();
+    return GenericConstants.PACKAGE_NAME_PREFIX.getVal()
+        + localPackage.getPackageType().name().toLowerCase();
   }
 }

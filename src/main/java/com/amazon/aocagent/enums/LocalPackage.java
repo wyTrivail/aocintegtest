@@ -1,7 +1,6 @@
 package com.amazon.aocagent.enums;
 
 import lombok.Getter;
-
 import java.util.Arrays;
 
 @Getter

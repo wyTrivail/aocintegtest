@@ -1,10 +1,16 @@
 package com.amazon.aocagent.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
+@Getter
 public enum LocalPackage {
   LINUX_AMD64_RPM(OSType.LINUX, Architecture.AMD64, PackageType.RPM),
   LINUX_ARM64_RPM(OSType.LINUX, Architecture.ARM64, PackageType.RPM),
+  DEBIAN_AMD64_DEB(OSType.DEBIAN, Architecture.AMD64, PackageType.DEB),
+  DEBIAN_ARM64_DEB(OSType.DEBIAN, Architecture.ARM64, PackageType.DEB),
+  WINDOWS_AMD64_MSI(OSType.WINDOWS, Architecture.AMD64, PackageType.MSI),
   ;
 
   private PackageType packageType;

@@ -50,7 +50,7 @@ public class S3Release implements ITask {
 
     for (S3Package s3Package : S3Package.values()) {
       tableBuilder.addRow(
-          s3Package.getArchitecture().name(),
+          s3Package.getLocalPackage().getArchitecture().name(),
           s3Package.getSupportedOSDistribution().name(),
           "https://" + this.s3Bucket + ".s3.amazonaws.com/" + s3Package.getS3Key(context.getAgentVersion())
       );

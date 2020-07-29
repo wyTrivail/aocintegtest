@@ -8,29 +8,57 @@ import lombok.Getter;
 public enum S3Package {
   AMAZON_LINUX_AMD64_RPM(
       SupportedOSDistribution.AMAZON_LINUX,
-      Architecture.AMD64,
-      PackageType.RPM,
       LocalPackage.LINUX_AMD64_RPM),
   AMAZON_LINUX_ARM64_RPM(
       SupportedOSDistribution.AMAZON_LINUX,
-      Architecture.ARM64,
-      PackageType.RPM,
       LocalPackage.LINUX_ARM64_RPM),
+  REDHAT_AMD64_RPM(
+      SupportedOSDistribution.REDHAT,
+      LocalPackage.LINUX_AMD64_RPM),
+  REDHAT_ARM64_RPM(
+      SupportedOSDistribution.REDHAT,
+      LocalPackage.LINUX_ARM64_RPM),
+  SUSE_AMD64_RPM(
+      SupportedOSDistribution.SUSE,
+      LocalPackage.LINUX_AMD64_RPM),
+  SUSE_ARM64_RPM(
+      SupportedOSDistribution.SUSE,
+      LocalPackage.LINUX_ARM64_RPM),
+  CENTOS_AMD64_RPM(
+      SupportedOSDistribution.CENTOS,
+      LocalPackage.LINUX_AMD64_RPM),
+  CENTOS_ARM64_RPM(
+      SupportedOSDistribution.CENTOS,
+      LocalPackage.LINUX_ARM64_RPM),
+  UBUNTU_AMD64_DEB(
+      SupportedOSDistribution.UBUNTU,
+      LocalPackage.DEBIAN_AMD64_DEB
+  ),
+  UBUNTU_ARM64_DEB(
+      SupportedOSDistribution.UBUNTU,
+      LocalPackage.DEBIAN_ARM64_DEB
+  ),
+  DEBIAN_AMD64_DEB(
+      SupportedOSDistribution.DEBIAN,
+      LocalPackage.DEBIAN_AMD64_DEB
+  ),
+  DEBIAN_ARM64_DEB(
+      SupportedOSDistribution.DEBIAN,
+      LocalPackage.DEBIAN_ARM64_DEB
+  ),
+  WINDOWS_AMD64_MSI(
+      SupportedOSDistribution.WINDOWS,
+      LocalPackage.WINDOWS_AMD64_MSI
+  ),
   ;
 
-  private PackageType packageType;
-  private Architecture architecture;
   private SupportedOSDistribution supportedOSDistribution;
   private LocalPackage localPackage;
 
   S3Package(
       SupportedOSDistribution supportedOSDistribution,
-      Architecture architecture,
-      PackageType packageType,
       LocalPackage localPackage) {
     this.supportedOSDistribution = supportedOSDistribution;
-    this.architecture = architecture;
-    this.packageType = packageType;
     this.localPackage = localPackage;
   }
 
@@ -44,7 +72,7 @@ public enum S3Package {
         "/",
         Arrays.asList(
             supportedOSDistribution.name().toLowerCase(),
-            architecture.name().toLowerCase(),
+            this.localPackage.getArchitecture().name().toLowerCase(),
             packageVersion,
             this.getPackageName()));
   }
@@ -54,6 +82,6 @@ public enum S3Package {
    * @return packageName
    */
   public String getPackageName() {
-    return GenericConstants.PACKAGE_NAME_PREFIX.getVal() + packageType.name().toLowerCase();
+    return GenericConstants.PACKAGE_NAME_PREFIX.getVal() + localPackage.getPackageType().name().toLowerCase();
   }
 }

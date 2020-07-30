@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class Context {
+  private String stackFilePath;
   private Stack stack;
   private String agentVersion;
   private String localPackagesDir;

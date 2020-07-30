@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum GenericConstants {
 
   // stack related
-  STACK_FILE_PATH(".aoc-stack.yml"),
+  DEFAULT_STACK_FILE_PATH(".aoc-stack.yml"),
   DEFAULT_REGION("us-west-2"),
   DEFAULT_S3_RELEASE_CANDIDATE_BUCKET("aoc-release-candidate"),
   DEFAULT_S3_BUCKET("aws-opentelemetry-collector-test"),

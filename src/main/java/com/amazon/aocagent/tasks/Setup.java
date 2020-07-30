@@ -76,6 +76,6 @@ public class Setup implements ITask {
 
   private void dumpStack() throws IOException {
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    mapper.writeValue(new File(GenericConstants.STACK_FILE_PATH.getVal()), this.context.getStack());
+    mapper.writeValue(new File(this.context.getStackFilePath()), this.context.getStack());
   }
 }

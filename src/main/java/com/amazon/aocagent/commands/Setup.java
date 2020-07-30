@@ -20,26 +20,27 @@ import java.nio.file.Paths;
     description = "use for the stack setup of the aocintegtest")
 @Log4j2
 public class Setup implements Runnable {
-
   @CommandLine.Option(
-      names = {"-r", "--testing-region"},
-      description = "the testing region",
-      defaultValue = "us-west-2")
-  private String testingRegion;
+      names = {"-s", "--stack"},
+      description = "stack file path, .aoc-stack.yml by default",
+      defaultValue = ".aoc-stack.yml"
+  )
+  private String stackFilePath;
 
   @SneakyThrows
   @Override
   public void run() {
     Stack stack = null;
-    if (!Files.exists(Paths.get(GenericConstants.STACK_FILE_PATH.getVal()))) {
-      log.info("no .aoc-stack.yml file, Build stack with timestamp");
+    if (!Files.exists(Paths.get(this.stackFilePath))) {
+      log.info("no stack file at {}, Build stack with timestamp", this.stackFilePath);
       stack = this.buildStackWithTimestamp();
     } else {
-      log.info("found .aoc-stack.yml file, Build stack from file");
+      log.info("found stack file, Build stack from file");
       stack = this.buildStackFromFile();
     }
 
     Context context = new Context();
+    context.setStackFilePath(this.stackFilePath);
     context.setStack(stack);
     TaskExecutionHelper.executeTask("Setup", context);
   }
@@ -56,7 +57,7 @@ public class Setup implements Runnable {
 
     stack.setS3BucketName(String.join("-", GenericConstants.DEFAULT_S3_BUCKET.getVal(), timestamp));
 
-    stack.setTestingRegion(this.testingRegion);
+    stack.setTestingRegion(GenericConstants.DEFAULT_REGION.getVal());
 
     return stack;
   }
@@ -64,7 +65,7 @@ public class Setup implements Runnable {
   private Stack buildStackFromFile() throws IOException {
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     return mapper.readValue(
-        new String(Files.readAllBytes(Paths.get(GenericConstants.STACK_FILE_PATH.getVal()))),
+        new String(Files.readAllBytes(Paths.get(this.stackFilePath))),
         Stack.class);
   }
 }

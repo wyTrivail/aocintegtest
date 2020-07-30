@@ -27,17 +27,16 @@ public class CommonOption {
   private String localPackagesDir;
 
   @CommandLine.Option(
-      names = {"-r", "--region"},
-      description =
-          "region will be used to create the testing resource like EC2 Instance,"
-              + " and be used to perform regionlized release, the default value is us-west-2",
-      defaultValue = "us-west-2")
-  private String region;
-
-  @CommandLine.Option(
       names = {"-p", "--package-version"},
       description = "the package version, fetched from local-packages-dir/VERSION by default")
   private String version;
+
+  @CommandLine.Option(
+      names = {"-s", "--stack"},
+      description = "stack file path, .aoc-stack.yml by default",
+      defaultValue = ".aoc-stack.yml"
+  )
+  private String stackFilePath;
 
   /**
    * buildContext build the context object based on the command args.
@@ -52,6 +51,7 @@ public class CommonOption {
     Context context = new Context();
 
     context.setStack(stack);
+    context.setStackFilePath(stackFilePath);
 
     // local package dir
     context.setLocalPackagesDir(this.localPackagesDir);
@@ -71,13 +71,13 @@ public class CommonOption {
 
   private Stack buildStack() throws IOException, BaseException {
     // read stack from .aoc-stack
-    if (!Files.exists(Paths.get(GenericConstants.STACK_FILE_PATH.getVal()))) {
+    if (!Files.exists(Paths.get(this.stackFilePath))) {
       throw new BaseException(ExceptionCode.STACK_FILE_NOT_FOUND);
     }
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     return mapper.readValue(
-        new String(Files.readAllBytes(Paths.get(GenericConstants.STACK_FILE_PATH.getVal()))),
+        new String(Files.readAllBytes(Paths.get(this.stackFilePath))),
         Stack.class);
   }
 }

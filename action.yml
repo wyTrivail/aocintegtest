@@ -9,7 +9,7 @@ inputs:
   opts:
     description: 'opts'
     required: false
-    default: '-t=EC2Test -s=TEST'
+    default: '-t=EC2Test -s=build/packages/.aoc-stack-test.yml'
 runs:
   using: 'docker'
   image: 'Dockerfile'

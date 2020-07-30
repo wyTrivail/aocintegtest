@@ -81,7 +81,9 @@ the value is "-t=EC2Test -s=build/packages/.aoc-stack-test.yml" by default.
 
 #### Example usage
 
+``yaml
 uses: wyTrivail/aocintegtest@master
 with:
   running_type: integ-test
   opts: "-t=EC2Test -s=build/packages/.aoc-stack-test.yml"
+``

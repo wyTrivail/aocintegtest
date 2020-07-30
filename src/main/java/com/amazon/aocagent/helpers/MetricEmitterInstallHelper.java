@@ -2,6 +2,7 @@ package com.amazon.aocagent.helpers;
 
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.models.Context;
+
 import java.util.Arrays;
 
 public class MetricEmitterInstallHelper {
@@ -15,6 +16,7 @@ public class MetricEmitterInstallHelper {
 
   /**
    * installAndStartEmitter start the emitter to emit metric and trace.
+   *
    * @throws Exception when the emitter failed to start
    */
   public void installAndStartEmitter() throws Exception {

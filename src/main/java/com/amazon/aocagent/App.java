@@ -7,6 +7,7 @@ package com.amazon.aocagent;
 import com.amazon.aocagent.commands.Candidate;
 import com.amazon.aocagent.commands.IntegTest;
 import com.amazon.aocagent.commands.Release;
+import com.amazon.aocagent.commands.Setup;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
@@ -15,8 +16,7 @@ import picocli.CommandLine;
     mixinStandardHelpOptions = true,
     version = "0.1",
     description = "use for integtests and releases of the aocagent",
-    subcommands = {IntegTest.class, Release.class, Candidate.class}
-)
+    subcommands = {IntegTest.class, Release.class, Candidate.class, Setup.class})
 @Log4j2
 public class App implements Runnable {
   public static void main(String[] args) {

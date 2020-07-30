@@ -15,12 +15,16 @@ public enum ExceptionCode {
   NO_MATCHED_STARTING_COMMAND(20010, "no matched starting command for this ami"),
   NO_MATCHED_DOCKER_INSTALLING_COMMAND(20010, "no matched docker installing command for this ami"),
   COMMAND_FAILED_TO_EXECUTE(20011, "command failed to execute"),
+  STACK_FILE_NOT_FOUND(20012, "file .aoc-stack.yml not found, please create it"),
+  S3_BUCKET_IS_EXISTED_IN_CURRENT_ACCOUNT(20013, "s3 bucket is already existed in your account"),
+  S3_BUCKET_IS_EXISTED_GLOBALLY(20014, "s3 bucket is already existed globally"),
+  S3_TESTING_BUCKET_NAME_SHOULD_NOT_BE_USED(
+      20015, "s3TestingBucketName should not be used, please use s3BucketName instead"),
 
   EXPECTED_METRIC_NOT_FOUND(30001, "expected metric not found"),
 
   VERSION_NOT_MATCHED(40001, "version is not matched in the candidate package"),
   GITHUB_SHA_NOT_MATCHED(40002, "github sha is not matched in the candidate package"),
-
   ;
   private int code;
   private String message;

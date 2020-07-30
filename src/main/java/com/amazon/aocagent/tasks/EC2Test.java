@@ -14,6 +14,7 @@ import com.amazon.aocagent.validators.BatchedValidator;
 import com.amazon.aocagent.validators.MetricValidator;
 import com.amazonaws.services.ec2.model.Instance;
 import lombok.extern.log4j.Log4j2;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ public class EC2Test implements ITask {
 
   @Override
   public void init(final Context context) throws Exception {
-    ec2Service = new EC2Service(context.getRegion());
+    ec2Service = new EC2Service(context.getStack().getTestingRegion());
     this.context = context;
   }
 
@@ -72,12 +73,11 @@ public class EC2Test implements ITask {
   }
 
   private void prepareSSHKey() throws IOException, BaseException {
-    // create the ssh keypair if not existed.
-    ec2Service.createSSHKeyIfNotExisted(GenericConstants.SSH_KEY_NAME.getVal());
-
     // download the ssh keypair from s3
     ec2Service.downloadSSHKey(
-        GenericConstants.SSH_KEY_NAME.getVal(), GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+        this.context.getStack().getSshKeyS3BucketName(),
+        GenericConstants.SSH_KEY_NAME.getVal(),
+        GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
   }
 
   private void installDocker(SSHHelper sshHelper) throws Exception {
@@ -92,7 +92,7 @@ public class EC2Test implements ITask {
   }
 
   private void createIAMRole() {
-    IAMService iamService = new IAMService(context.getRegion());
+    IAMService iamService = new IAMService(context.getStack().getTestingRegion());
     iamService.createIAMRoleIfNotExisted(GenericConstants.IAM_ROLE_NAME.getVal());
   }
 }

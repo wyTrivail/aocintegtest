@@ -61,6 +61,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-ec2'
     implementation 'com.amazonaws:aws-java-sdk-iam'
     implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
+
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
     // ssh
@@ -74,10 +75,10 @@ dependencies {
 
     // apache io utils
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    
+
     // yaml reader
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.11.1'
-    
+
     // zip
     implementation 'org.zeroturnaround:zt-zip:1.14'
 

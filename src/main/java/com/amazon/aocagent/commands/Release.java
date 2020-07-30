@@ -22,6 +22,7 @@ public class Release implements Runnable {
   @Override
   public void run() {
     Context context = commonOption.buildContext();
+
     TaskExecutionHelper.executeTask(releaseTask, context);
   }
 }

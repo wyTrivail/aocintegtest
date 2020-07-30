@@ -4,6 +4,7 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.EC2Service;
 import com.amazonaws.services.ec2.model.Instance;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,7 +15,7 @@ public class EC2Clean implements ITask {
 
   @Override
   public void init(Context context) throws Exception {
-    ec2Service = new EC2Service(context.getRegion());
+    ec2Service = new EC2Service(context.getStack().getTestingRegion());
   }
 
   @Override
@@ -33,8 +34,7 @@ public class EC2Clean implements ITask {
 
     instanceList.forEach(
         instance -> {
-          if (instance.getLaunchTime().before(twoHoursAgo)
-              && instance.getTags().size() == 1) {
+          if (instance.getLaunchTime().before(twoHoursAgo) && instance.getTags().size() == 1) {
             instanceIdListToBeTerminated.add(instance.getInstanceId());
           }
         });

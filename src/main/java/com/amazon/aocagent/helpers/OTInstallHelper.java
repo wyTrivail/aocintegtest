@@ -4,6 +4,7 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.mustache.TemplateProvider;
 import com.amazon.aocagent.mustache.models.EC2ConfigTemplate;
+
 import java.util.Arrays;
 
 public class OTInstallHelper {
@@ -14,6 +15,7 @@ public class OTInstallHelper {
 
   /**
    * Construct OTInstallHelper.
+   *
    * @param sshHelper the sshHelper to execute command remotely
    * @param context the running context, mainly to get the ami
    */
@@ -25,6 +27,7 @@ public class OTInstallHelper {
 
   /**
    * Install, Configure and Start OT collector.
+   *
    * @throws Exception when remote commands fail to execute
    */
   public void installAndStart() throws Exception {

@@ -4,6 +4,7 @@ import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +52,7 @@ public class CommandExecutionHelper {
 
   /**
    * runChildProcess executes the command in a child process.
+   *
    * @param command the command to be executed
    * @throws BaseException when the command fails to execute
    */

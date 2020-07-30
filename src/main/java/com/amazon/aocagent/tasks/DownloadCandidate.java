@@ -7,7 +7,7 @@ import com.amazon.aocagent.helpers.CommandExecutionHelper;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.S3Service;
 import com.amazonaws.regions.Regions;
-import java.io.File;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -27,24 +27,24 @@ public class DownloadCandidate implements ITask {
   public void execute() throws Exception {
     // download candidate package from s3
     s3Service.downloadS3Object(
-        GenericConstants.CANDIDATE_S3_BUCKET.getVal(),
+        context.getStack().getS3ReleaseCandidateBucketName(),
         context.getGithubSha() + ".tar.gz",
         GenericConstants.CANDIDATE_DOWNLOAD_TO.getVal());
 
     // unpack the tarball into cwd since it already keeps the folder structure
-    CommandExecutionHelper.runChildProcess(String.format(
-        COMMAND_TO_UNPACK,
-        GenericConstants.CANDIDATE_DOWNLOAD_TO.getVal(),
-        GenericConstants.CANDIDATE_UNPACK_TO.getVal()
-    ));
+    CommandExecutionHelper.runChildProcess(
+        String.format(
+            COMMAND_TO_UNPACK,
+            GenericConstants.CANDIDATE_DOWNLOAD_TO.getVal(),
+            GenericConstants.CANDIDATE_UNPACK_TO.getVal()));
 
     // validate version
-    String versionFromFile = new String(
-        Files.readAllBytes(
-            Paths.get(context.getLocalPackagesDir() + "/VERSION")))
-        .trim();
+    String versionFromFile =
+        new String(Files.readAllBytes(Paths.get(context.getLocalPackagesDir() + "/VERSION")))
+            .trim();
     if (!context.getAgentVersion().equals(versionFromFile)) {
-      throw new BaseException(ExceptionCode.VERSION_NOT_MATCHED,
+      throw new BaseException(
+          ExceptionCode.VERSION_NOT_MATCHED,
           "version is not matched " + versionFromFile + ":" + context.getAgentVersion());
     }
 
@@ -52,9 +52,7 @@ public class DownloadCandidate implements ITask {
     if (!context
         .getGithubSha()
         .equals(
-            new String(
-                    Files.readAllBytes(
-                        Paths.get(context.getLocalPackagesDir() + "/GITHUB_SHA")))
+            new String(Files.readAllBytes(Paths.get(context.getLocalPackagesDir() + "/GITHUB_SHA")))
                 .trim())) {
       throw new BaseException(ExceptionCode.GITHUB_SHA_NOT_MATCHED);
     }

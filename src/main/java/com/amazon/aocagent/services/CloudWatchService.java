@@ -5,6 +5,7 @@ import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
 import com.amazonaws.services.cloudwatch.model.DimensionFilter;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
 import com.amazonaws.services.cloudwatch.model.Metric;
+
 import java.util.List;
 
 /** a wrapper of cloudwatch client. */
@@ -13,6 +14,7 @@ public class CloudWatchService {
 
   /**
    * Construct CloudWatch Service with region.
+   *
    * @param region the region for CloudWatch
    */
   public CloudWatchService(String region) {
@@ -20,8 +22,9 @@ public class CloudWatchService {
   }
 
   /**
-   * listMetrics fetches metrics from CloudWatch.
-   * todo we will add more methods to support multi dimension filters.
+   * listMetrics fetches metrics from CloudWatch. todo we will add more methods to support multi
+   * dimension filters.
+   *
    * @param nameSpace the metric namespace on CloudWatch
    * @param dimensionFilterName the dimension name on CloudWatch
    * @param dimensionFilterValue the dimension value on CloudWatch

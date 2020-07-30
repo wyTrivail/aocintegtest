@@ -24,16 +24,16 @@ public class UploadCandidate implements ITask {
   @Override
   public void execute() throws Exception {
     // archive the candidate packages, build tarball from local-packages dir
-    CommandExecutionHelper.runChildProcess(String.format(
-        COMMAND_TO_PACK,
-        GenericConstants.CANDIDATE_PACK_TO.getVal(),
-        context.getLocalPackagesDir()
-    ));
+    CommandExecutionHelper.runChildProcess(
+        String.format(
+            COMMAND_TO_PACK,
+            GenericConstants.CANDIDATE_PACK_TO.getVal(),
+            context.getLocalPackagesDir()));
 
     // upload the zip file to s3
     s3Service.uploadS3ObjectWithPrivateAccess(
         GenericConstants.CANDIDATE_PACK_TO.getVal(),
-        GenericConstants.CANDIDATE_S3_BUCKET.getVal(),
+        context.getStack().getS3ReleaseCandidateBucketName(),
         context.getGithubSha() + ".tar.gz",
         false);
   }

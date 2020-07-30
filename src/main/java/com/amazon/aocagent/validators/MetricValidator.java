@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.extern.log4j.Log4j2;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
@@ -91,7 +92,8 @@ public class MetricValidator implements IValidator {
   }
 
   private List<Metric> listMetricFromCloudWatch(Context context) throws IOException {
-    CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
+    CloudWatchService cloudWatchService =
+        new CloudWatchService(context.getStack().getTestingRegion());
     return cloudWatchService.listMetrics(
         GenericConstants.METRIC_NAMESPACE.getVal(), "instanceId", context.getInstanceID());
   }

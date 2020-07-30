@@ -7,13 +7,14 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import lombok.extern.log4j.Log4j2;
+
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class SSHHelper {
@@ -24,6 +25,7 @@ public class SSHHelper {
 
   /**
    * SSHHelper Constructor.
+   *
    * @param loginUser the user used to login the host
    * @param host the host ip/hostname
    * @param certificatePath the ssh key path on the local
@@ -40,6 +42,7 @@ public class SSHHelper {
 
   /**
    * executeCommands executes a list of commands on the remote host.
+   *
    * @param commands the list of the commands
    * @throws Exception when commands execution fail
    */

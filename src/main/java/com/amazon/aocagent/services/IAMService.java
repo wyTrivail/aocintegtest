@@ -27,6 +27,7 @@ public class IAMService {
 
   /**
    * Construct IAMService with region.
+   *
    * @param region the region to build IAM
    */
   public IAMService(String region) {
@@ -37,6 +38,7 @@ public class IAMService {
 
   /**
    * createIAMRoleIfNotExisted creates/returns the iam role if it's not existed.
+   *
    * @param iamRoleName the iam role name
    * @return the iam role arn.
    */

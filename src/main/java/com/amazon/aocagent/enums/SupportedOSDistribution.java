@@ -8,6 +8,5 @@ public enum SupportedOSDistribution {
   UBUNTU,
   DEBIAN,
   WINDOWS,
-
   ;
 }

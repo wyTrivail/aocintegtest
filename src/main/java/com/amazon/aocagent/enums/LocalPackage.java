@@ -1,6 +1,7 @@
 package com.amazon.aocagent.enums;
 
 import lombok.Getter;
+
 import java.util.Arrays;
 
 @Getter
@@ -24,6 +25,7 @@ public enum LocalPackage {
 
   /**
    * getFilePath generates the local path for the package.
+   *
    * @param localPackagesDir is used as the "root" directory of the package
    * @return the local path of the package
    */

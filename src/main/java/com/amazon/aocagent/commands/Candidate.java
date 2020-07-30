@@ -6,6 +6,7 @@ import com.amazon.aocagent.models.Context;
 import com.amazonaws.util.StringUtils;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 

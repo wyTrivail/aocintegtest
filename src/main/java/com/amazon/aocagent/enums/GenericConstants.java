@@ -5,7 +5,13 @@ import lombok.Getter;
 @Getter
 public enum GenericConstants {
 
+  // stack related
+  STACK_FILE_PATH(".aoc-stack.yml"),
   DEFAULT_REGION("us-west-2"),
+  DEFAULT_S3_TESTING_BUCKET("aws-opentelemetry-collector-test"),
+  DEFAULT_S3_RELEASE_CANDIDATE_BUCKET("aoc-release-candidate"),
+  DEFAULT_S3_BUCKET("aws-opentelemetry-collector-release"),
+  DEFAULT_SSH_KEY_S3_BUCKET_NAME("aoc-ssh-key"),
 
   // release related
   PACKAGE_NAME_PREFIX("aws-opentelemetry-collector."),
@@ -20,10 +26,9 @@ public enum GenericConstants {
   IAM_ROLE_NAME("aoc-integ-test-iam-role"),
 
   // ssh related
-  SSH_KEY_S3_BUCKET("aoc-ssh-key"),
   SSH_KEY_NAME("aoc-ssh-key-2020-07-22"),
-  SSH_CERT_LOCAL_PATH("/tmp/sshkey.pem"),
-  SSH_TIMEOUT("30000"), //ms
+  SSH_CERT_LOCAL_PATH("sshkey.pem"),
+  SSH_TIMEOUT("30000"), // ms
 
   // retry
   SLEEP_IN_MILLISECONDS("10000"), // ms
@@ -42,12 +47,9 @@ public enum GenericConstants {
   METRIC_NAMESPACE("default"),
 
   // release candidate related
-  CANDIDATE_S3_BUCKET("aoc-candidate-packages"),
   CANDIDATE_PACK_TO("build/candidate.tar.gz"),
   CANDIDATE_DOWNLOAD_TO("build/candidate-downloaded.tar.gz"),
   CANDIDATE_UNPACK_TO("."),
-
-
   ;
 
   private String val;

@@ -2,6 +2,7 @@ package com.amazon.aocagent.validators;
 
 import com.amazon.aocagent.models.Context;
 import lombok.extern.log4j.Log4j2;
+
 import java.util.List;
 
 @Log4j2
@@ -14,6 +15,7 @@ public class BatchedValidator {
 
   /**
    * validate runs all the validators configured.
+   *
    * @param context the context object
    * @throws Exception when the validation fails
    */

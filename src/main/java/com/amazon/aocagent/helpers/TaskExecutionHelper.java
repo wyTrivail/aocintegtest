@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 public class TaskExecutionHelper {
   /**
    * executeTask inits and executes the task base on its name.
+   *
    * @param taskName the task name
    * @param context the context object
    * @throws Exception when a task throw an Exception

@@ -33,6 +33,7 @@ import com.amazonaws.services.ec2.model.TagSpecification;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,10 +52,9 @@ public class EC2Service {
   private static final String ERROR_CODE_SECURITY_GROUP_ALREADY_EXIST = "InvalidGroup.Duplicate";
   private static final String ERROR_CODE_SECURITY_GROUP_NOT_FOUND = "InvalidGroup.NotFound";
 
-
-
   /**
    * Construct ec2 service base on region.
+   *
    * @param region the region to launch ec2 instance
    */
   public EC2Service(String region) {
@@ -92,11 +92,7 @@ public class EC2Service {
                 getOrCreateSecurityGroupByName(GenericConstants.SECURITY_GROUP_NAME.getVal()))
             .withIamInstanceProfile(
                 new IamInstanceProfileSpecification()
-                    .withName(GenericConstants.IAM_ROLE_NAME.getVal())
-            );
-
-    // create ssh key if not existed
-    createSSHKeyIfNotExisted(GenericConstants.SSH_KEY_NAME.getVal());
+                    .withName(GenericConstants.IAM_ROLE_NAME.getVal()));
 
     RunInstancesResult runInstancesResult = amazonEC2.runInstances(runInstancesRequest);
 
@@ -178,13 +174,16 @@ public class EC2Service {
   }
 
   /**
-   * createSSHKeyIfNotExisted creates the ssh keypair for ec2 login and
-   * upload it to s3 private bucket for future usage.
+   * createSSHKeyIfNotExisted creates the ssh keypair for ec2 login and upload it to s3 private
+   * bucket for future usage.
+   *
    * @param keyPairName the keypair name used to login
+   * @param bucketToStore the s3 bucket name to store the sshkey pair
    * @throws IOException on failing to write keypair to disk
    * @throws BaseException on s3 uploading failure
    */
-  public void createSSHKeyIfNotExisted(String keyPairName) throws IOException, BaseException {
+  public void createSSHKeyIfNotExisted(String keyPairName, String bucketToStore)
+      throws IOException, BaseException {
     if (isKeyPairExisted(keyPairName)) {
       return;
     }
@@ -202,7 +201,7 @@ public class EC2Service {
       FileUtils.writeStringToFile(new File(keyPairLocalPath), keyMaterial);
       S3Service s3Service = new S3Service(region);
       s3Service.uploadS3ObjectWithPrivateAccess(
-          keyPairLocalPath, GenericConstants.SSH_KEY_S3_BUCKET.getVal(), keyPairFileName, false);
+          keyPairLocalPath, bucketToStore, keyPairFileName, false);
 
     } catch (AmazonEC2Exception e) {
       if (!ERROR_CODE_KEY_PAIR_ALREADY_EXIST.equals(e.getErrorCode())) {
@@ -231,9 +230,8 @@ public class EC2Service {
     return true;
   }
 
-  public void downloadSSHKey(String keyPairName, String toLocation) {
-    s3Service.downloadS3Object(
-        GenericConstants.SSH_KEY_S3_BUCKET.getVal(), keyPairName + ".pem", toLocation);
+  public void downloadSSHKey(String bucketName, String keyPairName, String toLocation) {
+    s3Service.downloadS3Object(bucketName, keyPairName + ".pem", toLocation);
   }
 
   private String getOrCreateSecurityGroupByName(String groupName) {
@@ -248,43 +246,61 @@ public class EC2Service {
   }
 
   private String getSecurityGroupByName(String groupName) {
-    final List<SecurityGroup> securityGroups = amazonEC2
-        .describeSecurityGroups(new DescribeSecurityGroupsRequest().withGroupNames(groupName))
-        .getSecurityGroups();
+    final List<SecurityGroup> securityGroups =
+        amazonEC2
+            .describeSecurityGroups(new DescribeSecurityGroupsRequest().withGroupNames(groupName))
+            .getSecurityGroups();
     return securityGroups.get(0).getGroupId();
   }
 
-  private String createSecurityGroup(String groupName) {
+  /**
+   * create SecurityGroup in the current aws account.
+   * @param groupName security group name
+   * @return the created security group id
+   */
+  public String createSecurityGroup(String groupName) {
     try {
-      //get the vpcId of default, it is always there and cannot be deleted.
-      List<SecurityGroup> securityGroups = amazonEC2
-          .describeSecurityGroups(new DescribeSecurityGroupsRequest()
-              .withGroupNames(GenericConstants.DEFAULT_SECURITY_GROUP_NAME.getVal()))
-          .getSecurityGroups();
+      // get the vpcId of default, it is always there and cannot be deleted.
+      List<SecurityGroup> securityGroups =
+          amazonEC2
+              .describeSecurityGroups(
+                  new DescribeSecurityGroupsRequest()
+                      .withGroupNames(GenericConstants.DEFAULT_SECURITY_GROUP_NAME.getVal()))
+              .getSecurityGroups();
       if (securityGroups.size() <= 0) {
         throw new RuntimeException("Cannot get the default security group.");
       }
       String vpcId = securityGroups.get(0).getVpcId();
 
-      //create new security group and get the group id
-      String groupId = amazonEC2
-          .createSecurityGroup(new CreateSecurityGroupRequest().withGroupName(groupName)
-          .withDescription(groupName + " used for aoc integration test")
-              .withVpcId(vpcId)).getGroupId();
+      // create new security group and get the group id
+      String groupId =
+          amazonEC2
+              .createSecurityGroup(
+                  new CreateSecurityGroupRequest()
+                      .withGroupName(groupName)
+                      .withDescription(groupName + " used for aoc integration test")
+                      .withVpcId(vpcId))
+              .getGroupId();
 
-      //add the incoming ip request permission
+      // add the incoming ip request permission
       IpPermission sshIpPermission = new IpPermission();
-      sshIpPermission.withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
-          .withIpProtocol("tcp").withFromPort(22).withToPort(22);
+      sshIpPermission
+          .withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
+          .withIpProtocol("tcp")
+          .withFromPort(22)
+          .withToPort(22);
 
       IpPermission rdpIpPermission = new IpPermission();
-      rdpIpPermission.withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
-          .withIpProtocol("tcp").withFromPort(3389).withToPort(3389);
+      rdpIpPermission
+          .withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
+          .withIpProtocol("tcp")
+          .withFromPort(3389)
+          .withToPort(3389);
 
       amazonEC2.authorizeSecurityGroupIngress(
           new AuthorizeSecurityGroupIngressRequest()
-              .withGroupId(groupId).withIpPermissions(sshIpPermission, rdpIpPermission)
-      );
+              .withGroupId(groupId)
+              .withIpPermissions(sshIpPermission, rdpIpPermission));
 
       return groupId;
     } catch (AmazonEC2Exception e) {

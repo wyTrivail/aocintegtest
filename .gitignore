@@ -13,3 +13,9 @@ lombok.config
 
 # Ignore testing dirs
 local-packages
+
+# Ignore stack file
+.aoc-stack.yml
+
+# Ignore downloaded sshkey
+sshkey.pem

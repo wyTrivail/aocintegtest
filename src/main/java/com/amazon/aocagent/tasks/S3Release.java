@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.steppschuh.markdowngenerator.table.Table;
 import net.steppschuh.markdowngenerator.text.emphasis.BoldText;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -38,22 +39,26 @@ public class S3Release implements ITask {
 
   @Override
   public void execute() throws Exception {
+    log.info("context: {}", this.context);
     this.releasePackagesToS3();
     this.printOutDownloadingLinks();
   }
 
   private void printOutDownloadingLinks() throws Exception {
     // generate a package download link table with markdown as part of release notes
-    Table.Builder tableBuilder = new Table.Builder()
-        .withAlignment(Table.ALIGN_CENTER)
-        .addRow(new BoldText("Arch"), new BoldText("Platform"), new BoldText("Package"));
+    Table.Builder tableBuilder =
+        new Table.Builder()
+            .withAlignment(Table.ALIGN_CENTER)
+            .addRow(new BoldText("Arch"), new BoldText("Platform"), new BoldText("Package"));
 
     for (S3Package s3Package : S3Package.values()) {
       tableBuilder.addRow(
           s3Package.getLocalPackage().getArchitecture().name(),
           s3Package.getSupportedOSDistribution().name(),
-          "https://" + this.s3Bucket + ".s3.amazonaws.com/" + s3Package.getS3Key(context.getAgentVersion())
-      );
+          "https://"
+              + this.s3Bucket
+              + ".s3.amazonaws.com/"
+              + s3Package.getS3Key(context.getAgentVersion()));
     }
 
     log.info(tableBuilder.build().serialize());

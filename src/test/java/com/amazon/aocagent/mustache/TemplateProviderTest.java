@@ -2,6 +2,7 @@ package com.amazon.aocagent.mustache;
 
 import com.amazon.aocagent.mustache.models.EC2ConfigTemplate;
 import org.junit.Test;
+
 import java.io.IOException;
 
 public class TemplateProviderTest {

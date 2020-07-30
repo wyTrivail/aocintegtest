@@ -10,6 +10,9 @@
 gradle run --args="setup" 
 ``
 
+this command will generate a file .aoc-stack.yml in the current work dir. 
+you can also provide .aoc-stack.yml in the current work dir before setup so that the setup command will create the resources base on your stack file.
+
 ### Run EC2 Integ-test
 
 ````
@@ -44,30 +47,43 @@ local-packages
 `-- awscollector.tar
 ````
 
+### Command Help
+
+`
+gradle run --args="-h"
+`
+
+`
+gradle run --args="integ-test -h"
+`
+
+`
+gradle run --args="release -h"
+`
+
 ## Run as Github Action
 
+### description
 
+this action wraps the command lines, so it could be used in github workflow to perform integ-test and release for aoc.
 
-1. Run as Github Action
+### Inputs
 
-1.1 description
+#### `running_type`
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+value could be `integ-test`, `release`, `candidate` 
+value is `integ-test` by default
 
-1.2 Inputs
+#### `opts`
 
-### `who-to-greet`
+the remaining options for command
+the value is "-t=EC2Test -s=build/packages/.aoc-stack-test.yml" by default.
 
-**Required** The name of the person to greet. Default `"World"`.
+#### Example usage
 
-1.3 Outputs
-
-### `time`
-
-The time we greeted you.
-
-1.4 Example usage
-
-uses: actions/hello-world-docker-action@v1
+``
+uses: wyTrivail/aocintegtest@master
 with:
-  who-to-greet: 'Mona the Octocat'
+  running_type: integ-test
+  opts: "-t=EC2Test -s=build/packages/.aoc-stack-test.yml"
+``

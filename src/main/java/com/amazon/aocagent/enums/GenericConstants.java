@@ -8,9 +8,8 @@ public enum GenericConstants {
   // stack related
   STACK_FILE_PATH(".aoc-stack.yml"),
   DEFAULT_REGION("us-west-2"),
-  DEFAULT_S3_TESTING_BUCKET("aws-opentelemetry-collector-test"),
   DEFAULT_S3_RELEASE_CANDIDATE_BUCKET("aoc-release-candidate"),
-  DEFAULT_S3_BUCKET("aws-opentelemetry-collector-release"),
+  DEFAULT_S3_BUCKET("aws-opentelemetry-collector-test"),
   DEFAULT_SSH_KEY_S3_BUCKET_NAME("aoc-ssh-key"),
 
   // release related

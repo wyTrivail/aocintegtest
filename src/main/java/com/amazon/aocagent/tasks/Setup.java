@@ -59,7 +59,6 @@ public class Setup implements ITask {
     for (String bucketName :
         Arrays.asList(
             context.getStack().getS3BucketName(),
-            context.getStack().getS3TestingBucketName(),
             context.getStack().getS3ReleaseCandidateBucketName(),
             context.getStack().getSshKeyS3BucketName())) {
       try {

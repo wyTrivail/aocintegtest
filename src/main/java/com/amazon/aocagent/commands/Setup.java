@@ -54,9 +54,6 @@ public class Setup implements Runnable {
     stack.setS3ReleaseCandidateBucketName(
         String.join("-", GenericConstants.DEFAULT_S3_RELEASE_CANDIDATE_BUCKET.getVal(), timestamp));
 
-    stack.setS3TestingBucketName(
-        String.join("-", GenericConstants.DEFAULT_S3_TESTING_BUCKET.getVal(), timestamp));
-
     stack.setS3BucketName(String.join("-", GenericConstants.DEFAULT_S3_BUCKET.getVal(), timestamp));
 
     stack.setTestingRegion(this.testingRegion);

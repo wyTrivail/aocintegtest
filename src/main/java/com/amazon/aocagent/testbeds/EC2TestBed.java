@@ -48,7 +48,7 @@ public class EC2TestBed implements TestBed {
         });
 
     // install docker
-    installDocker(sshHelper);
+    RetryHelper.retry(() -> installDocker(sshHelper));
 
     // setup instance id and publicAddress into context
     context.setInstanceID(instance.getInstanceId());

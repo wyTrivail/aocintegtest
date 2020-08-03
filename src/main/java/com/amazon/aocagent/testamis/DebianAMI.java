@@ -28,7 +28,8 @@ public abstract class DebianAMI extends LinuxAMI {
 
   @Override
   public List<String> getDockerInstallingCommands() {
-    // debian normally has docker by default
-    return Arrays.asList("echo 'skip docker install on debian'");
+    return Arrays.asList(
+        "sudo snap install docker"
+    );
   }
 }

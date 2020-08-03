@@ -1,8 +1,9 @@
 package com.amazon.aocagent.commands;
 
-import com.amazon.aocagent.enums.TestAMI;
-import com.amazon.aocagent.helpers.TaskExecutionHelper;
+import com.amazon.aocagent.enums.TestCase;
 import com.amazon.aocagent.models.Context;
+import com.amazon.aocagent.tasks.IntegTestFactory;
+import com.amazon.aocagent.testamis.TestAMIFactory;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
@@ -16,21 +17,20 @@ public class IntegTest implements Runnable {
   @CommandLine.Option(
       names = {"-a", "--ami"},
       description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
-      defaultValue = "AMAZON_LINUX2")
-  private TestAMI testAMI;
+      defaultValue = "AmazonLinux")
+  private String testAMI;
 
   @CommandLine.Option(
       names = {"-t", "--test-case"},
       description = "EC2Test, ECSTest, EKSTest",
       defaultValue = "EC2Test")
-  private String testCase;
+  private TestCase testCase;
 
   @SneakyThrows
   @Override
   public void run() {
     Context context = commonOption.buildContext();
-    context.setTestingAMI(testAMI);
-
-    TaskExecutionHelper.executeTask(testCase, context);
+    context.setTestingAMI(TestAMIFactory.getTestAMIFromName(testAMI));
+    IntegTestFactory.runTestCase(testCase, context);
   }
 }

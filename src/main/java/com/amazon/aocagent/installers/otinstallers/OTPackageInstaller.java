@@ -1,35 +1,34 @@
-package com.amazon.aocagent.helpers;
+package com.amazon.aocagent.installers.otinstallers;
 
 import com.amazon.aocagent.enums.GenericConstants;
+import com.amazon.aocagent.helpers.RetryHelper;
+import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.mustache.TemplateProvider;
 import com.amazon.aocagent.mustache.models.EC2ConfigTemplate;
 
 import java.util.Arrays;
 
-public class OTInstallHelper {
+public class OTPackageInstaller implements OTInstaller {
+  Context context;
+  SSHHelper sshHelper;
+  TemplateProvider templateProvider;
 
-  private SSHHelper sshHelper;
-  private Context context;
-  private TemplateProvider templateProvider;
-
-  /**
-   * Construct OTInstallHelper.
-   *
-   * @param sshHelper the sshHelper to execute command remotely
-   * @param context the running context, mainly to get the ami
-   */
-  public OTInstallHelper(SSHHelper sshHelper, Context context) {
-    this.sshHelper = sshHelper;
+  @Override
+  public void init(Context context) throws Exception {
     this.context = context;
+
+    // init sshHelper
+    this.sshHelper =
+        new SSHHelper(
+            this.context.getTestingAMI().getLoginUser(),
+            this.context.getInstancePublicIpAddress(),
+            GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+
     this.templateProvider = new TemplateProvider();
   }
 
-  /**
-   * Install, Configure and Start OT collector.
-   *
-   * @throws Exception when remote commands fail to execute
-   */
+  @Override
   public void installAndStart() throws Exception {
     downloadPackage();
     installPackage();

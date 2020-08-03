@@ -1,9 +1,9 @@
 package com.amazon.aocagent.commands;
 
 import com.amazon.aocagent.enums.GenericConstants;
-import com.amazon.aocagent.helpers.TaskExecutionHelper;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.models.Stack;
+import com.amazon.aocagent.tasks.TaskFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.SneakyThrows;
@@ -23,8 +23,7 @@ public class Setup implements Runnable {
   @CommandLine.Option(
       names = {"-s", "--stack"},
       description = "stack file path, .aoc-stack.yml by default",
-      defaultValue = ".aoc-stack.yml"
-  )
+      defaultValue = ".aoc-stack.yml")
   private String stackFilePath;
 
   @SneakyThrows
@@ -42,7 +41,7 @@ public class Setup implements Runnable {
     Context context = new Context();
     context.setStackFilePath(this.stackFilePath);
     context.setStack(stack);
-    TaskExecutionHelper.executeTask("Setup", context);
+    TaskFactory.executeTask("Setup", context);
   }
 
   private Stack buildStackWithTimestamp() {
@@ -65,7 +64,6 @@ public class Setup implements Runnable {
   private Stack buildStackFromFile() throws IOException {
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     return mapper.readValue(
-        new String(Files.readAllBytes(Paths.get(this.stackFilePath))),
-        Stack.class);
+        new String(Files.readAllBytes(Paths.get(this.stackFilePath))), Stack.class);
   }
 }

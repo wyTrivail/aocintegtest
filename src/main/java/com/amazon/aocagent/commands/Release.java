@@ -1,7 +1,7 @@
 package com.amazon.aocagent.commands;
 
-import com.amazon.aocagent.helpers.TaskExecutionHelper;
 import com.amazon.aocagent.models.Context;
+import com.amazon.aocagent.tasks.TaskFactory;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
@@ -23,6 +23,6 @@ public class Release implements Runnable {
   public void run() {
     Context context = commonOption.buildContext();
 
-    TaskExecutionHelper.executeTask(releaseTask, context);
+    TaskFactory.executeTask(releaseTask, context);
   }
 }

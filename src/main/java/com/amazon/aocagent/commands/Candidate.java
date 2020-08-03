@@ -1,8 +1,8 @@
 package com.amazon.aocagent.commands;
 
 import com.amazon.aocagent.enums.GenericConstants;
-import com.amazon.aocagent.helpers.TaskExecutionHelper;
 import com.amazon.aocagent.models.Context;
+import com.amazon.aocagent.tasks.TaskFactory;
 import com.amazonaws.util.StringUtils;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
@@ -45,6 +45,6 @@ public class Candidate implements Runnable {
               .trim();
     }
     context.setGithubSha(this.githubSha);
-    TaskExecutionHelper.executeTask(candidateTask, context);
+    TaskFactory.executeTask(candidateTask, context);
   }
 }

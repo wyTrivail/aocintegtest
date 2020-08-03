@@ -102,9 +102,10 @@ public class S3Service {
 
   /**
    * create s3 bucket base on the bucket name.
+   *
    * @param bucketName s3 bucket name
-   * @throws BaseException when the bucket is already existed globally,
-   *                       or the bucket is already existed in the current aws account.
+   * @throws BaseException when the bucket is already existed globally, or the bucket is already
+   *     existed in the current aws account.
    */
   public void createBucket(String bucketName) throws BaseException {
     // check if the bucket exist globally

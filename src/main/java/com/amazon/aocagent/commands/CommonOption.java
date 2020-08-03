@@ -1,6 +1,5 @@
 package com.amazon.aocagent.commands;
 
-import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.models.Context;
@@ -34,8 +33,7 @@ public class CommonOption {
   @CommandLine.Option(
       names = {"-s", "--stack"},
       description = "stack file path, .aoc-stack.yml by default",
-      defaultValue = ".aoc-stack.yml"
-  )
+      defaultValue = ".aoc-stack.yml")
   private String stackFilePath;
 
   /**
@@ -77,7 +75,6 @@ public class CommonOption {
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     return mapper.readValue(
-        new String(Files.readAllBytes(Paths.get(this.stackFilePath))),
-        Stack.class);
+        new String(Files.readAllBytes(Paths.get(this.stackFilePath))), Stack.class);
   }
 }

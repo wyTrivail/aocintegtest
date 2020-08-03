@@ -87,3 +87,7 @@ with:
   running_type: integ-test
   opts: "-t=EC2Test -s=build/packages/.aoc-stack-test.yml"
 ```
+
+## Contributing
+
+We have collected notes on how to contribute to this project in CONTRIBUTING.md.

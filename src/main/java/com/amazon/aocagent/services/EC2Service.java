@@ -255,6 +255,7 @@ public class EC2Service {
 
   /**
    * create SecurityGroup in the current aws account.
+   *
    * @param groupName security group name
    * @return the created security group id
    */

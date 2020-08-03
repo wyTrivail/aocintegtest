@@ -8,6 +8,7 @@ import java.util.List;
 @Log4j2
 public class BatchedValidator {
   List<IValidator> metricValidatorList;
+  Context context;
 
   public BatchedValidator(List<IValidator> metricValidatorList) {
     this.metricValidatorList = metricValidatorList;
@@ -16,14 +17,17 @@ public class BatchedValidator {
   /**
    * validate runs all the validators configured.
    *
-   * @param context the context object
    * @throws Exception when the validation fails
    */
-  public void validate(Context context) throws Exception {
+  public void validate() throws Exception {
     for (IValidator metricValidator : this.metricValidatorList) {
       metricValidator.validate(context);
     }
 
     log.info("Validation is passed!!!");
+  }
+
+  public void init(Context context) {
+    this.context = context;
   }
 }

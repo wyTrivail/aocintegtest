@@ -56,12 +56,20 @@ public class EC2TestBed implements TestBed {
     return context;
   }
 
-  private void prepareSSHKey(final Context context) {
+  private void prepareSSHKey(final Context context) throws BaseException {
     // download the ssh keypair from s3
     ec2Service.downloadSSHKey(
         context.getStack().getSshKeyS3BucketName(),
         GenericConstants.SSH_KEY_NAME.getVal(),
         GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+
+    // change its permission to 400
+    /*
+    CommandExecutionHelper.runChildProcess(String.format(
+        "chmod 400 %s",
+        GenericConstants.SSH_CERT_LOCAL_PATH.getVal()
+    ));
+    */
   }
 
   private void installDocker(SSHHelper sshHelper) throws Exception {

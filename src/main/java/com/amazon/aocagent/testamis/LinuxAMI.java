@@ -3,7 +3,7 @@ package com.amazon.aocagent.testamis;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class LinuxAMII implements ITestAMI {
+public abstract class LinuxAMI implements ITestAMI {
   @Override
   public abstract String getAMIId();
 

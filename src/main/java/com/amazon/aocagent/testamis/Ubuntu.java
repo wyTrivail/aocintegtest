@@ -14,12 +14,7 @@ public class Ubuntu extends DebianAMI {
   }
 
   @Override
-  public String getS3Key(String version) {
-    return S3Package.UBUNTU_AMD64_DEB.getS3Key(version);
-  }
-
-  @Override
-  public String getPackageName() {
-    return S3Package.UBUNTU_AMD64_DEB.getPackageName();
+  public S3Package getS3Package() {
+    return S3Package.DEBIAN_AMD64_DEB;
   }
 }

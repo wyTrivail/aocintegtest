@@ -1,5 +1,7 @@
 package com.amazon.aocagent.testamis;
 
+import com.amazon.aocagent.enums.S3Package;
+
 import java.util.List;
 
 public interface ITestAMI {
@@ -7,7 +9,7 @@ public interface ITestAMI {
 
   String getLoginUser();
 
-  String getS3Key(String version);
+  S3Package getS3Package();
 
   String getDownloadingCommand(String fromUrl, String toLocation);
 
@@ -16,6 +18,4 @@ public interface ITestAMI {
   String getStartingCommand(String configPath);
 
   List<String> getDockerInstallingCommands();
-
-  String getPackageName();
 }

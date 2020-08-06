@@ -37,7 +37,7 @@ public class OTPackageInstaller implements OTInstaller {
 
   private void downloadPackage() throws Exception {
     // get downloading link
-    String s3Key = context.getTestingAMI().getS3Key(context.getAgentVersion());
+    String s3Key = context.getTestingAMI().getS3Package().getS3Key(context.getAgentVersion());
     String downloadingLink =
         "https://" + context.getStack().getS3BucketName() + ".s3.amazonaws.com/" + s3Key;
 
@@ -45,7 +45,9 @@ public class OTPackageInstaller implements OTInstaller {
     String downloadingCommand =
         context
             .getTestingAMI()
-            .getDownloadingCommand(downloadingLink, context.getTestingAMI().getPackageName());
+            .getDownloadingCommand(
+                downloadingLink,
+                context.getTestingAMI().getS3Package().getPackageName());
 
     // execute downloading command
     RetryHelper.retry(
@@ -57,7 +59,8 @@ public class OTPackageInstaller implements OTInstaller {
   private void installPackage() throws Exception {
     // get installing command
     String installingCommand =
-        context.getTestingAMI().getInstallingCommand(context.getTestingAMI().getPackageName());
+        context.getTestingAMI().getInstallingCommand(
+            context.getTestingAMI().getS3Package().getPackageName());
 
     // execute installing command
     RetryHelper.retry(

@@ -14,12 +14,7 @@ public class AmazonLinux extends LinuxAMI {
   }
 
   @Override
-  public String getS3Key(String version) {
-    return S3Package.AMAZON_LINUX_AMD64_RPM.getS3Key(version);
-  }
-
-  @Override
-  public String getPackageName() {
-    return S3Package.AMAZON_LINUX_AMD64_RPM.getPackageName();
+  public S3Package getS3Package() {
+    return S3Package.AMAZON_LINUX_ARM64_RPM;
   }
 }

@@ -1,5 +1,7 @@
 package com.amazon.aocagent.testamis;
 
+import com.amazon.aocagent.enums.S3Package;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,10 +13,7 @@ public abstract class LinuxAMI implements ITestAMI {
   public abstract String getLoginUser();
 
   @Override
-  public abstract String getS3Key(String version);
-
-  @Override
-  public abstract String getPackageName();
+  public abstract S3Package getS3Package();
 
   @Override
   public String getDownloadingCommand(String fromUrl, String toLocation) {

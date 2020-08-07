@@ -19,11 +19,18 @@ You will need to add new enum into TestAMI
 
 ### I want to add new test case like test aoc in ECS
 
+### Write documentation
+
+Add the usage into README.md.
 
 ## Running for development
 
 please check README.md: Run as Command Line
 
-## Write documentation
+### Intellij idea plugins
 
-Add the usage into README.md.
+if you are using Intellij idea for development, we recommend you to install this plugin so that it helps you to reformat your code. https://github.com/google/google-java-format
+
+
+
+

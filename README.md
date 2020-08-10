@@ -15,11 +15,15 @@ you can also provide .aoc-stack.yml in the current work dir before setup so that
 
 ### Run S3 Uploading
 
+Firstly, you may want to upload the packages to s3 for testing.
+
+run below command for uploading
+
 ````
 gradle run --args="release -t=S3Release --local-packages-dir={the path to the packages you want to upload}"
 ````
 
-an example for the local-package-dir:
+an example for the local-package-dir, the VERSION file contains the package version like "v0.1.10".
 
 ````
 local-packages

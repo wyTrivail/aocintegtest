@@ -13,12 +13,6 @@ gradle run --args="setup"
 this command will generate a file .aoc-stack.yml in the current work dir. 
 you can also provide .aoc-stack.yml in the current work dir before setup so that the setup command will create the resources base on your stack file.
 
-### Run EC2 Integ-test
-
-````
-gradle run --args="integ-test -t=EC2Test --package-version={the version you want to test}"
-````
-
 ### Run S3 Uploading
 
 ````
@@ -46,6 +40,14 @@ local-packages
 |-- VERSION
 `-- awscollector.tar
 ````
+
+### Run EC2 Integ-test
+
+````
+gradle run --args="integ-test -t=EC2Test --package-version={the version you want to test}"
+````
+
+
 
 ### Command Help
 

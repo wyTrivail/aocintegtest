@@ -16,7 +16,7 @@ public class IntegTestFactory {
         new IntegTest(
             testCase.getTestBed(),
             testCase.getOtInstaller(),
-            testCase.getOtEmitterInstaller(),
+            testCase.getOtEmitterInstallerList(),
             testCase.getValidatorList());
 
     integTest.init(context);

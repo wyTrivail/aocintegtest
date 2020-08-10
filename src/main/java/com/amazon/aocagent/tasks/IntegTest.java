@@ -12,24 +12,25 @@ import java.util.List;
 public class IntegTest implements ITask {
   TestBed testBed;
   OTInstaller otInstaller;
-  OTEmitterInstaller otEmitterInstaller;
+  List<OTEmitterInstaller> otEmitterInstallerList;
   BatchedValidator batchedValidator;
 
   /**
    * Construct IntegTest Object.
+   *
    * @param testBed the testbed, for example: EC2
    * @param otInstaller the installer for ot package
-   * @param otEmitterInstaller the installer for the emitter image
+   * @param otEmitterInstallerList the installers for the emitter image
    * @param validatorList the validator list
    */
   public IntegTest(
       TestBed testBed,
       OTInstaller otInstaller,
-      OTEmitterInstaller otEmitterInstaller,
+      List<OTEmitterInstaller> otEmitterInstallerList,
       List<IValidator> validatorList) {
     this.testBed = testBed;
     this.otInstaller = otInstaller;
-    this.otEmitterInstaller = otEmitterInstaller;
+    this.otEmitterInstallerList = otEmitterInstallerList;
     this.batchedValidator = new BatchedValidator(validatorList);
   }
 
@@ -45,8 +46,10 @@ public class IntegTest implements ITask {
     otInstaller.init(context);
     otInstaller.installAndStart();
 
-    otEmitterInstaller.init(context);
-    otEmitterInstaller.installAndStart();
+    for (OTEmitterInstaller emitterInstaller : this.otEmitterInstallerList) {
+      emitterInstaller.init(context);
+      emitterInstaller.installAndStart();
+    }
 
     batchedValidator.init(context);
     batchedValidator.validate();

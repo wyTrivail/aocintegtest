@@ -18,23 +18,23 @@ public enum TestCase {
   EC2Test(
       new EC2TestBed(),
       new OTPackageInstaller(),
-      new OTMetricAndTraceEmitterInstaller(),
+      Arrays.asList(new OTMetricAndTraceEmitterInstaller()),
       Arrays.asList(new MetricValidator())),
   ;
 
   private TestBed testBed;
   private OTInstaller otInstaller;
-  private OTEmitterInstaller otEmitterInstaller;
+  private List<OTEmitterInstaller> otEmitterInstallerList;
   private List<IValidator> validatorList;
 
   TestCase(
       TestBed testBed,
       OTInstaller otInstaller,
-      OTEmitterInstaller otEmitterInstaller,
+      List<OTEmitterInstaller> otEmitterInstallerList,
       List<IValidator> validatorList) {
     this.testBed = testBed;
     this.otInstaller = otInstaller;
-    this.otEmitterInstaller = otEmitterInstaller;
+    this.otEmitterInstallerList = otEmitterInstallerList;
     this.validatorList = validatorList;
   }
 }

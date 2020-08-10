@@ -1,5 +1,7 @@
 package com.amazon.aocagent.commands;
 
+import com.amazon.aocagent.enums.ExpectedMetric;
+import com.amazon.aocagent.enums.OTConfig;
 import com.amazon.aocagent.enums.TestCase;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.tasks.IntegTestFactory;
@@ -21,6 +23,18 @@ public class IntegTest implements Runnable {
   private String testAMI;
 
   @CommandLine.Option(
+      names = {"-c", "--config"},
+      description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
+      defaultValue = "EC2Config")
+  private OTConfig otConfig;
+
+  @CommandLine.Option(
+      names = {"--expected-metric"},
+      description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
+      defaultValue = "EC2ExpectedMetric")
+  private ExpectedMetric expectedMetric;
+
+  @CommandLine.Option(
       names = {"-t", "--test-case"},
       description = "EC2Test, ECSTest, EKSTest",
       defaultValue = "EC2Test")
@@ -31,6 +45,8 @@ public class IntegTest implements Runnable {
   public void run() {
     Context context = commonOption.buildContext();
     context.setTestingAMI(TestAMIFactory.getTestAMIFromName(testAMI));
+    context.setOtConfig(otConfig);
+    context.setExpectedMetric(expectedMetric);
     IntegTestFactory.runTestCase(testCase, context);
   }
 }

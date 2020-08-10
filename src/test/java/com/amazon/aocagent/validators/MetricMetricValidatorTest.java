@@ -1,5 +1,6 @@
 package com.amazon.aocagent.validators;
 
+import com.amazon.aocagent.enums.ExpectedMetric;
 import com.amazon.aocagent.models.Context;
 import com.amazonaws.services.cloudwatch.model.Metric;
 import org.junit.Test;
@@ -14,7 +15,8 @@ public class MetricMetricValidatorTest {
   public void testGetExpectedMetricList()
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Context context = new Context();
-    context.setInstanceID("i-035a644c403f96199");
+    context.setInstanceId("i-035a644c403f96199");
+    context.setExpectedMetric(ExpectedMetric.EC2ExpectedMetric);
 
     Method method = MetricValidator.class.getDeclaredMethod("getExpectedMetricList", Context.class);
     method.setAccessible(true);

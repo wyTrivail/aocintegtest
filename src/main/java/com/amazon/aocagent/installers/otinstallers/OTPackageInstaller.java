@@ -1,18 +1,17 @@
 package com.amazon.aocagent.installers.otinstallers;
 
 import com.amazon.aocagent.enums.GenericConstants;
+import com.amazon.aocagent.helpers.MustacheHelper;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
-import com.amazon.aocagent.mustache.TemplateProvider;
-import com.amazon.aocagent.mustache.models.EC2ConfigTemplate;
 
 import java.util.Arrays;
 
 public class OTPackageInstaller implements OTInstaller {
   Context context;
   SSHHelper sshHelper;
-  TemplateProvider templateProvider;
+  MustacheHelper mustacheHelper;
 
   @Override
   public void init(Context context) throws Exception {
@@ -25,7 +24,7 @@ public class OTPackageInstaller implements OTInstaller {
             this.context.getInstancePublicIpAddress(),
             GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
 
-    this.templateProvider = new TemplateProvider();
+    this.mustacheHelper = new MustacheHelper();
   }
 
   @Override
@@ -71,7 +70,7 @@ public class OTPackageInstaller implements OTInstaller {
 
   private void configureAndStart() throws Exception {
     // generate configuration file
-    String configContent = templateProvider.renderTemplate(new EC2ConfigTemplate());
+    String configContent = mustacheHelper.render(context.getOtConfig().name(), context);
 
     // write config onto the remote instance
     String configuringCommand =

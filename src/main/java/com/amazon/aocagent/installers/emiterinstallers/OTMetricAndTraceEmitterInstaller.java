@@ -28,7 +28,7 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
     String dockerCommand =
         String.format(
             "sudo docker run -d --env otlp_endpoint=172.17.0.1:55680 --env otlp_instance_id=%s %s",
-            context.getInstanceID(), GenericConstants.METRIC_EMITTER_DOCKER_IMAGE_URL.getVal());
+            context.getInstanceId(), GenericConstants.METRIC_EMITTER_DOCKER_IMAGE_URL.getVal());
 
     RetryHelper.retry(
         () -> {

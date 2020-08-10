@@ -3,10 +3,9 @@ package com.amazon.aocagent.validators;
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
+import com.amazon.aocagent.helpers.MustacheHelper;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.models.Context;
-import com.amazon.aocagent.mustache.TemplateProvider;
-import com.amazon.aocagent.mustache.models.ExpectedMetricsTemplate;
 import com.amazon.aocagent.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
@@ -25,6 +24,8 @@ import java.util.TreeSet;
 @Log4j2
 public class MetricValidator implements IValidator {
   private static int MAX_RETRY_COUNT = 60;
+
+  private MustacheHelper mustacheHelper = new MustacheHelper();
 
   @Override
   public void validate(Context context) throws Exception {
@@ -77,9 +78,7 @@ public class MetricValidator implements IValidator {
 
   private List<Metric> getExpectedMetricList(Context context) throws IOException {
     // get expected metrics as yaml from config
-    ExpectedMetricsTemplate expectedMetricsTemplate = new ExpectedMetricsTemplate();
-    expectedMetricsTemplate.setInstanceId(context.getInstanceID());
-    String yamlExpectedMetrics = new TemplateProvider().renderTemplate(expectedMetricsTemplate);
+    String yamlExpectedMetrics = mustacheHelper.render(context.getExpectedMetric().name(), context);
 
     // load metrics from yaml
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -95,6 +94,6 @@ public class MetricValidator implements IValidator {
     CloudWatchService cloudWatchService =
         new CloudWatchService(context.getStack().getTestingRegion());
     return cloudWatchService.listMetrics(
-        GenericConstants.METRIC_NAMESPACE.getVal(), "instanceId", context.getInstanceID());
+        GenericConstants.METRIC_NAMESPACE.getVal(), "instanceId", context.getInstanceId());
   }
 }

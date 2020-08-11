@@ -15,6 +15,6 @@ public class AmazonLinux extends LinuxAMI {
 
   @Override
   public S3Package getS3Package() {
-    return S3Package.AMAZON_LINUX_ARM64_RPM;
+    return S3Package.AMAZON_LINUX_AMD64_RPM;
   }
 }

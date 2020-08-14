@@ -28,8 +28,6 @@ public enum ExceptionCode {
 
   VERSION_NOT_MATCHED(40001, "version is not matched in the candidate package"),
   GITHUB_SHA_NOT_MATCHED(40002, "github sha is not matched in the candidate package"),
-
-
   ;
   private int code;
   private String message;

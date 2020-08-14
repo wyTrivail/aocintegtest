@@ -19,7 +19,7 @@ public enum GenericConstants {
 
   // ec2 related
   EC2_INSTANCE_TAG_KEY("aoc-integ-test-tag"),
-  EC2_INSTANCE_TAG_VAL("aoc-integ-test-ecs"),
+  EC2_INSTANCE_TAG_VAL("aoc-integ-test"),
   DEFAULT_SECURITY_GROUP_NAME("default"),
   SECURITY_GROUP_NAME("aoc-integ-test-sp"),
   IAM_ROLE_NAME("aoc-integ-test-iam-role"),
@@ -59,6 +59,7 @@ public enum GenericConstants {
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
   ECS_EC2_INSTANCE_ID("aoc-sidecar-ec2"),
   ECS_FARGATE_INSTANCE_ID("aoc-sidecar-fargate"),
+  // To be edited under prod test account
   ECS_TASK_ROLE("arn:aws:iam::252610625673:role/CWAgentECSTaskRole"),
   ECS_TASK_EXECUTION_ROLE("arn:aws:iam::252610625673:role/CWAgentECSExecutionRole"),
   DATA_EMITTER_IMAGE("mxiamxia/aoc-metric-generator:latest"),

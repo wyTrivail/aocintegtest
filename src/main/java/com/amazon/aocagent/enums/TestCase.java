@@ -39,7 +39,7 @@ public enum TestCase {
   TestCase(
       TestBed testBed,
       OTInstaller otInstaller,
-              List<OTEmitterInstaller> otEmitterInstallerList,
+      List<OTEmitterInstaller> otEmitterInstallerList,
       List<IValidator> validatorList) {
     this.testBed = testBed;
     this.otInstaller = otInstaller;

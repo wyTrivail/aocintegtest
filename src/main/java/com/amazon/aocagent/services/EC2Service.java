@@ -197,12 +197,10 @@ public class EC2Service {
       String keyPairLocalPath = "/tmp/" + keyPairFileName;
       FileUtils.writeStringToFile(new File(keyPairLocalPath), keyMaterial);
       S3Service s3Service = new S3Service(region);
-      log.info("upload ssh key {} - {} - {}", keyPairLocalPath, bucketToStore, keyPairFileName);
       s3Service.uploadS3ObjectWithPrivateAccess(
           keyPairLocalPath, bucketToStore, keyPairFileName, false);
 
     } catch (AmazonEC2Exception e) {
-      log.info("create ssh key error out \n {}", e);
       if (!ERROR_CODE_KEY_PAIR_ALREADY_EXIST.equals(e.getErrorCode())) {
         throw e;
       }
@@ -217,7 +215,6 @@ public class EC2Service {
           amazonEC2.describeKeyPairs(describeKeyPairsRequest);
       List<KeyPairInfo> keyPairInfoList = describeKeyPairsResult.getKeyPairs();
       if (keyPairInfoList.isEmpty()) {
-        log.info("key pari {}", keyPairInfoList);
         return false;
       }
     } catch (AmazonEC2Exception e) {

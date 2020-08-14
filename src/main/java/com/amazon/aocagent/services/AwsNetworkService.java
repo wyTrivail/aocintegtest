@@ -17,6 +17,12 @@ public class AwsNetworkService {
         ec2Client = AmazonEC2ClientBuilder.standard().withRegion(region).build();
     }
 
+    /**
+     * retrieve the essential networking params for running ECS tasks
+     *
+     * @param context
+     * @throws Exception
+     */
     public void buildNetworkContext(Context context) throws Exception{
         this.describeSecurityGroup(context);
         this.describeSubnets(context);

@@ -5,6 +5,7 @@ import com.amazon.aocagent.installers.emiterinstallers.OTMetricAndTraceEmitterIn
 import com.amazon.aocagent.installers.otinstallers.OTInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTPackageInstaller;
 import com.amazon.aocagent.testbeds.EC2TestBed;
+import com.amazon.aocagent.testbeds.ECSTestBed;
 import com.amazon.aocagent.testbeds.TestBed;
 import com.amazon.aocagent.validators.IValidator;
 import com.amazon.aocagent.validators.MetricValidator;
@@ -20,6 +21,14 @@ public enum TestCase {
       new OTPackageInstaller(),
       Arrays.asList(new OTMetricAndTraceEmitterInstaller()),
       Arrays.asList(new MetricValidator())),
+
+  // run AOC with data emitter in ECS as sidecar
+  // tested both ECS fargate and EC2 modes
+  ECS_SIDECAR(
+          new ECSTestBed(),
+          null,
+          Arrays.asList(),
+          Arrays.asList(new MetricValidator())),
   ;
 
   private TestBed testBed;
@@ -30,7 +39,7 @@ public enum TestCase {
   TestCase(
       TestBed testBed,
       OTInstaller otInstaller,
-      List<OTEmitterInstaller> otEmitterInstallerList,
+              List<OTEmitterInstaller> otEmitterInstallerList,
       List<IValidator> validatorList) {
     this.testBed = testBed;
     this.otInstaller = otInstaller;

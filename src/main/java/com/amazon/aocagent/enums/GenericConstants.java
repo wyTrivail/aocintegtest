@@ -19,7 +19,7 @@ public enum GenericConstants {
 
   // ec2 related
   EC2_INSTANCE_TAG_KEY("aoc-integ-test-tag"),
-  EC2_INSTANCE_TAG_VAL("aoc-integ-test"),
+  EC2_INSTANCE_TAG_VAL("aoc-integ-test-ecs"),
   DEFAULT_SECURITY_GROUP_NAME("default"),
   SECURITY_GROUP_NAME("aoc-integ-test-sp"),
   IAM_ROLE_NAME("aoc-integ-test-iam-role"),
@@ -49,6 +49,20 @@ public enum GenericConstants {
   CANDIDATE_PACK_TO("build/candidate.tar.gz"),
   CANDIDATE_DOWNLOAD_TO("build/candidate-downloaded.tar.gz"),
   CANDIDATE_UNPACK_TO("."),
+
+  //ECS
+  LAUNCH_TYPE("launchType"),
+  DEPLOY_MODE("deployMode"),
+  ECS_IAM_ROLE_NAME("ecsInstanceRole"),
+  ECS_EC2_AMI_ID("ami-004e1655142a7ea0d"), // us-west-2
+  EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
+  ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
+  ECS_EC2_INSTANCE_ID("aoc-sidecar-ec2"),
+  ECS_FARGATE_INSTANCE_ID("aoc-sidecar-fargate"),
+  ECS_TASK_ROLE("arn:aws:iam::252610625673:role/CWAgentECSTaskRole"),
+  ECS_TASK_EXECUTION_ROLE("arn:aws:iam::252610625673:role/CWAgentECSExecutionRole"),
+  DATA_EMITTER_IMAGE("mxiamxia/aoc-metric-generator:latest"),
+  AOC_IMAGE("mxiamxia/awscollector:v0.1.10"),
   ;
 
   private String val;

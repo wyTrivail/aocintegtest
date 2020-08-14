@@ -14,7 +14,7 @@ public class ResourceClean implements Runnable {
 
   @CommandLine.Option(
       names = {"-t", "--clean-task"},
-      description = "EC2Clean",
+      description = "EC2Clean, ECSClean",
       defaultValue = "EC2Clean")
   private String cleanTask;
 

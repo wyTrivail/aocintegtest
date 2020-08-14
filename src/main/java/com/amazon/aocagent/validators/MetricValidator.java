@@ -35,6 +35,7 @@ public class MetricValidator implements IValidator {
         MAX_RETRY_COUNT,
         () -> {
           List<Metric> metricList = this.listMetricFromCloudWatch(context);
+          log.info("Cloudwatch metric result set size: {}", metricList.size());
 
           // load metrics into a hash set
           Set<Metric> metricSet =
@@ -93,6 +94,8 @@ public class MetricValidator implements IValidator {
   private List<Metric> listMetricFromCloudWatch(Context context) throws IOException {
     CloudWatchService cloudWatchService =
         new CloudWatchService(context.getStack().getTestingRegion());
+    log.info("validating CW metrics on ns:{}, insId:{}",
+            GenericConstants.METRIC_NAMESPACE.getVal(), context.getInstanceId());
     return cloudWatchService.listMetrics(
         GenericConstants.METRIC_NAMESPACE.getVal(), "instanceId", context.getInstanceId());
   }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 @CommandLine.Command(footer = "Common footer")
 @Log4j2
@@ -35,6 +36,12 @@ public class CommonOption {
       description = "stack file path, .aoc-stack.yml by default",
       defaultValue = ".aoc-stack.yml")
   private String stackFilePath;
+
+  @CommandLine.Option(
+          names = {"-e", "--extra-context"},
+          description = "eg, -e launchType=ec2 -e deployMode=sidecar",
+          defaultValue = "launchType=ec2")
+  private Map<String, String> extraContexts;
 
   /**
    * buildContext build the context object based on the command args.
@@ -63,6 +70,18 @@ public class CommonOption {
               .trim();
     }
     context.setAgentVersion(this.version);
+
+    if (!extraContexts.isEmpty()) {
+      extraContexts.entrySet().forEach(
+              e -> {
+                if (e.getKey().equals("launchType")) {
+                  context.setLaunchType(e.getValue());
+                } else if (e.getKey().equals("deployMode")) {
+                  context.setDeploymentMode(e.getValue());
+                }
+              }
+      );
+    }
 
     return context;
   }

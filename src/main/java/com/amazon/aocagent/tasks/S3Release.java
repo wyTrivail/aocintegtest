@@ -32,7 +32,7 @@ public class S3Release implements ITask {
     this.context = context;
 
     // the global bucket is in us-east-1
-    s3Service = new S3Service(Regions.US_EAST_1.getName());
+    s3Service = new S3Service(Regions.US_WEST_2.getName());
     // bucket name is globally unique, so we use different bucket name for different stacks
     s3Bucket = context.getStack().getS3BucketName();
   }

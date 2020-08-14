@@ -9,6 +9,8 @@ import com.amazon.aocagent.testamis.TestAMIFactory;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
+import java.util.Map;
+
 @CommandLine.Command(
     name = "integ-test",
     mixinStandardHelpOptions = true,
@@ -36,9 +38,10 @@ public class IntegTest implements Runnable {
 
   @CommandLine.Option(
       names = {"-t", "--test-case"},
-      description = "EC2Test, ECSTest, EKSTest",
-      defaultValue = "EC2Test")
+      description = "EC2Test,ECS_SIDECAR",
+      defaultValue = "ECS_SIDECAR")
   private TestCase testCase;
+
 
   @SneakyThrows
   @Override

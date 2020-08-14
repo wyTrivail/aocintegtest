@@ -38,9 +38,9 @@ public class CommonOption {
   private String stackFilePath;
 
   @CommandLine.Option(
-          names = {"-e", "--extra-context"},
-          description = "eg, -e launchType=ec2 -e deployMode=sidecar",
-          defaultValue = "launchType=ec2")
+      names = {"-e", "--extra-context"},
+      description = "eg, -e launchType=ec2 -e deployMode=sidecar",
+      defaultValue = "launchType=ec2")
   private Map<String, String> extraContexts;
 
   /**
@@ -72,15 +72,16 @@ public class CommonOption {
     context.setAgentVersion(this.version);
 
     if (!extraContexts.isEmpty()) {
-      extraContexts.entrySet().forEach(
+      extraContexts
+          .entrySet()
+          .forEach(
               e -> {
                 if (e.getKey().equals("launchType")) {
                   context.setLaunchType(e.getValue());
                 } else if (e.getKey().equals("deployMode")) {
                   context.setDeploymentMode(e.getValue());
                 }
-              }
-      );
+              });
     }
 
     return context;

@@ -7,11 +7,10 @@ import lombok.Data;
 @Data
 @Builder
 public class EC2InstanceParams {
-    String amiId;
-    String sshKeyName;
-    String securityGrpName;
-    String iamRoleName;
-    String userData;
-    TagSpecification tagSpecification;
-
+  String amiId;
+  String sshKeyName;
+  String securityGrpName;
+  String iamRoleName;
+  String userData;
+  TagSpecification tagSpecification;
 }

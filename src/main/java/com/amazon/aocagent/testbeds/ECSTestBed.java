@@ -17,87 +17,87 @@ import java.util.Base64;
 @Log4j2
 public class ECSTestBed implements TestBed {
 
-    private ECSService ecsService;
-    private EC2Service ec2Service;
-    private AwsNetworkService networkService;
-    private Context context;
+  private static String CONTAINER_INSTANCE_USER_DATA =
+      "#!/bin/bash\n" + "echo ECS_CLUSTER=%s >> /etc/ecs/ecs.config";
+  private ECSService ecsService;
+  private EC2Service ec2Service;
+  private AwsNetworkService networkService;
+  private Context context;
 
-    private static String CONTAINER_INSTANCE_USER_DATA = "#!/bin/bash\n" +
-                                                         "echo ECS_CLUSTER=%s >> /etc/ecs/ecs.config";
+  @Override
+  public void init(Context context) {
+    this.context = context;
+    this.ecsService = new ECSService(context.getStack().getTestingRegion());
+    this.ec2Service = new EC2Service(context.getStack().getTestingRegion());
+    this.networkService = new AwsNetworkService(context.getStack().getTestingRegion());
+  }
 
-    @Override
-    public void init(Context context) {
-        this.context = context;
-        this.ecsService = new ECSService(context.getStack().getTestingRegion());
-        this.ec2Service = new EC2Service(context.getStack().getTestingRegion());
-        this.networkService = new AwsNetworkService(context.getStack().getTestingRegion());
+  /**
+   * run AOC and data emitter on ECS fargate and EC2 instances.
+   * @return context params after setup ECS test bed
+   * @throws Exception failed to launch testbed
+   */
+  @Override
+  public Context launchTestBed() throws Exception {
+    try {
+      // create ECS cluster
+      if (!ecsService.describeCluster(GenericConstants.ECS_SIDECAR_CLUSTER.getVal()).isPresent()) {
+        ecsService.createCluster();
+      }
+      // get the default security group, vpc and subnets
+      // from the provided aws account
+      networkService.buildNetworkContext(context);
+
+      // launch new EC2 container instance for EC2 mode
+      if (context.getLaunchType().equalsIgnoreCase("EC2")
+          && !ecsService.isContainerInstanceAvail(GenericConstants.ECS_SIDECAR_CLUSTER.getVal())) {
+        log.info("launching up a container instance");
+        EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
+        Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams);
+        context.setEcsContainerInstance(containerInstance.getInstanceId());
+        log.info(
+            "created new ECS container instance: {} - {} ",
+            containerInstance.getInstanceId(),
+            containerInstance.getState().getName());
+        ecsService.waitForContainerInstanceRegistered(context);
+      }
+
+      // create and run task definitions
+      ecsService.createAndRunTaskDefinition(this.context);
+    } catch (Exception e) {
+      log.error("ECS launchTestBed failed: {}", e);
+      throw e;
     }
+    return this.context;
+  }
 
-    /**
-     * run AOC and data emitter on ECS fargate and EC2 instances
-     *
-     * @return context params after setup ECS test bed
-     * @throws Exception
-     */
-    @Override
-    public Context launchTestBed() throws Exception {
-        try {
-            // create ECS cluster
-            if (!ecsService.describeCluster(
-                    GenericConstants.ECS_SIDECAR_CLUSTER.getVal()).isPresent()) {
-                ecsService.createCluster();
-            }
-            // get the default security group, vpc and subnets
-            // from the provided aws account
-            networkService.buildNetworkContext(context);
-
-            // launch new EC2 container instance for EC2 mode
-            if (context.getLaunchType().equalsIgnoreCase("EC2")
-                    && !ecsService.isContainerInstanceAvail(GenericConstants.ECS_SIDECAR_CLUSTER.getVal())) {
-                log.info("launching up a container instance");
-                EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
-                Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams);
-                context.setEcsContainerInstance(containerInstance.getInstanceId());
-                log.info("created new ECS container instance: {} - {} ",
-                        containerInstance.getInstanceId(), containerInstance.getState().getName());
-                ecsService.waitForContainerInstanceRegistered(context);
-            }
-
-            // create and run task definitions
-            ecsService.createAndRunTaskDefinition(this.context);
-        } catch (Exception e) {
-            log.error("ECS launchTestBed failed: {}", e);
-            throw e;
-        }
-        return this.context;
-    }
-
-    /**
-     * build launching config for EC2 container instance
-     *
-     * @param context
-     * @return
-     */
-    private EC2InstanceParams buildEc2ConfigForEcs(Context context) {
-        // tag instance for management
-        TagSpecification tagSpecification =
-                new TagSpecification()
-                        .withResourceType(ResourceType.Instance)
-                        .withTags(
-                                new Tag(
-                                        GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
-                                        GenericConstants.EC2_INSTANCE_ECS_TAG_VAL.getVal()));
-        String userData = Base64.getEncoder()
-                .encodeToString(
-                        String.format(CONTAINER_INSTANCE_USER_DATA, GenericConstants.ECS_SIDECAR_CLUSTER.getVal())
-                                .getBytes());
-        return EC2InstanceParams.builder()
-                .amiId(GenericConstants.ECS_EC2_AMI_ID.getVal())
-                .iamRoleName(GenericConstants.ECS_IAM_ROLE_NAME.getVal())
-                .securityGrpName("default")
-                .tagSpecification(tagSpecification)
-                .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
-                .userData(userData)
-                .build();
-    }
+  /**
+   * build launching config for EC2 container instance.
+   * @param context test context
+   * @return {@link EC2InstanceParams} ecs launch params
+   */
+  private EC2InstanceParams buildEc2ConfigForEcs(Context context) {
+    // tag instance for management
+    TagSpecification tagSpecification =
+        new TagSpecification()
+            .withResourceType(ResourceType.Instance)
+            .withTags(
+                new Tag(
+                    GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
+                    GenericConstants.EC2_INSTANCE_ECS_TAG_VAL.getVal()));
+    String userData =
+        Base64.getEncoder()
+            .encodeToString(
+                String.format(
+                        CONTAINER_INSTANCE_USER_DATA, GenericConstants.ECS_SIDECAR_CLUSTER.getVal())
+                    .getBytes());
+    return EC2InstanceParams.builder()
+        .amiId(GenericConstants.ECS_EC2_AMI_ID.getVal())
+        .iamRoleName(GenericConstants.ECS_IAM_ROLE_NAME.getVal())
+        .securityGrpName("default")
+        .tagSpecification(tagSpecification)
+        .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
+        .userData(userData)
+        .build();
+  }
 }

@@ -2,6 +2,7 @@ package com.amazon.aocagent.enums;
 
 import com.amazon.aocagent.installers.emiterinstallers.OTEmitterInstaller;
 import com.amazon.aocagent.installers.emiterinstallers.OTMetricAndTraceEmitterInstaller;
+import com.amazon.aocagent.installers.otinstallers.EcsSidecarInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTPackageInstaller;
 import com.amazon.aocagent.testbeds.EC2TestBed;
@@ -26,8 +27,8 @@ public enum TestCase {
   // tested both ECS fargate and EC2 modes
   ECS_SIDECAR(
           new ECSTestBed(),
-          null,
-          Arrays.asList(),
+          new EcsSidecarInstaller(),
+          Arrays.asList(), // data emitter is included in sidecar installer
           Arrays.asList(new MetricValidator())),
   ;
 

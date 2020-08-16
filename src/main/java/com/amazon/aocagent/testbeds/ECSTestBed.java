@@ -62,8 +62,6 @@ public class ECSTestBed implements TestBed {
         ecsService.waitForContainerInstanceRegistered(context);
       }
 
-      // create and run task definitions
-      ecsService.createAndRunTaskDefinition(this.context);
     } catch (Exception e) {
       log.error("ECS launchTestBed failed: {}", e);
       throw e;

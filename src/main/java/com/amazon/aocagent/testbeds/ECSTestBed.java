@@ -49,7 +49,7 @@ public class ECSTestBed implements TestBed {
       networkService.buildNetworkContext(context);
 
       // launch new EC2 container instance for EC2 mode
-      if (context.getLaunchType().equalsIgnoreCase("EC2")
+      if (context.getLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
           && !ecsService.isContainerInstanceAvail(GenericConstants.ECS_SIDECAR_CLUSTER.getVal())) {
         log.info("launching up a container instance");
         EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
@@ -92,7 +92,7 @@ public class ECSTestBed implements TestBed {
     return EC2InstanceParams.builder()
         .amiId(GenericConstants.ECS_EC2_AMI_ID.getVal())
         .iamRoleName(GenericConstants.ECS_IAM_ROLE_NAME.getVal())
-        .securityGrpName("default")
+        .securityGrpName(GenericConstants.DEFAULT.getVal())
         .tagSpecification(tagSpecification)
         .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
         .userData(userData)

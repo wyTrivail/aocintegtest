@@ -16,7 +16,7 @@ public class MetricMetricValidatorTest {
       throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
     Context context = new Context();
     context.setInstanceId("i-035a644c403f96199");
-    context.setExpectedMetric(ExpectedMetric.EC2ExpectedMetric);
+    context.setExpectedMetric(ExpectedMetric.EC2_EXPECTED_METRIC);
 
     Method method = MetricValidator.class.getDeclaredMethod("getExpectedMetricList", Context.class);
     method.setAccessible(true);

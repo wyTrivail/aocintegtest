@@ -17,7 +17,7 @@ import java.util.List;
 
 @Getter
 public enum TestCase {
-  EC2Test(
+  EC2_TEST(
       new EC2TestBed(),
       new OTPackageInstaller(),
       Arrays.asList(new OTMetricAndTraceEmitterInstaller()),

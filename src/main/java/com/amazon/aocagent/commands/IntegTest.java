@@ -27,19 +27,19 @@ public class IntegTest implements Runnable {
   @CommandLine.Option(
       names = {"-c", "--config"},
       description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
-      defaultValue = "EC2Config")
+      defaultValue = "EC2_CONFIG")
   private OTConfig otConfig;
 
   @CommandLine.Option(
       names = {"--expected-metric"},
       description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
-      defaultValue = "EC2ExpectedMetric")
+      defaultValue = "EC2_EXPECTED_METRIC")
   private ExpectedMetric expectedMetric;
 
   @CommandLine.Option(
       names = {"-t", "--test-case"},
-      description = "EC2Test,ECS_SIDECAR",
-      defaultValue = "EC2Test")
+      description = "EC2_TEST,ECS_SIDECAR",
+      defaultValue = "EC2_TEST")
   private TestCase testCase;
 
 

@@ -1,5 +1,6 @@
 package com.amazon.aocagent.commands;
 
+import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.models.Context;
@@ -7,6 +8,7 @@ import com.amazon.aocagent.models.Stack;
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import lombok.Generated;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
@@ -39,8 +41,8 @@ public class CommonOption {
 
   @CommandLine.Option(
       names = {"-e", "--extra-context"},
-      description = "eg, -e launchType=ec2 -e deployMode=sidecar",
-      defaultValue = "launchType=ec2")
+      description = "eg, -e launchType=EC2 -e deployMode=SIDECAR",
+      defaultValue = "launchType=EC2")
   private Map<String, String> extraContexts;
 
   /**
@@ -76,9 +78,9 @@ public class CommonOption {
           .entrySet()
           .forEach(
               e -> {
-                if (e.getKey().equals("launchType")) {
+                if (e.getKey().equals(GenericConstants.LAUNCH_TYPE.getVal())) {
                   context.setLaunchType(e.getValue());
-                } else if (e.getKey().equals("deployMode")) {
+                } else if (e.getKey().equals(GenericConstants.DEPLOY_MODE.getVal())) {
                   context.setDeploymentMode(e.getValue());
                 }
               });

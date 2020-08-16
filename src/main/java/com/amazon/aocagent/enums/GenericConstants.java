@@ -62,8 +62,13 @@ public enum GenericConstants {
   // To be edited under prod test account
   ECS_TASK_ROLE("arn:aws:iam::252610625673:role/CWAgentECSTaskRole"),
   ECS_TASK_EXECUTION_ROLE("arn:aws:iam::252610625673:role/CWAgentECSExecutionRole"),
-  DATA_EMITTER_IMAGE("mxiamxia/aoc-metric-generator:latest"),
-  AOC_IMAGE("mxiamxia/awscollector:v0.1.10"),
+  AOC_IMAGE("mxiamxia/awscollector:"),
+
+  // common constants
+  EC2("EC2"),
+  FARGATE("FARGATE"),
+  DEFAULT("default"),
+  AOC_PREFIX("aoc-"),
   ;
 
   private String val;

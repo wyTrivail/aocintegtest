@@ -34,7 +34,7 @@ public class ECSClean implements ITask {
   }
 
   private void cleanTaskDefinitions() {
-    ecsService.cleanTaskDefinitions("aoc-");
+    ecsService.cleanTaskDefinitions(GenericConstants.AOC_PREFIX.getVal());
   }
 
   private void cleanCluster() {

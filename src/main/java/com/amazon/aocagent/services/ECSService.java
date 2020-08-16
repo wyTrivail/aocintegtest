@@ -53,11 +53,13 @@ public class ECSService {
   private static final String AWS_LOGS_REGION_KEY = "awslogs-region";
   private static final String AWS_LOGS_GROUP_KEY = "awslogs-group";
   private static final String AWS_LOGS_STREAM_PREFIX_KEY = "awslogs-stream-prefix";
+  private static final String AWS_LOGS_GROUP_PREFIX_KEY = "ecs-cwagent-sidecar-";
   private static final String ECS_PREFIX = "ecs";
   private static final String AOC_EMITTER = "aoc-emitter";
-  private static final String EC2 = "EC2";
   private static final String INSTANCE_ID = "otlp_instance_id";
   private static final String OTLP_ENDPOINT = "otlp_endpoint";
+  private static final String EC2_AOC_ENDPOINT = "172.17.0.1:55680";
+  private static final String FARGATE_AOC_ENDPOINT = "localhost:55680";
   private AmazonECS ecsClient;
   private AWSLogs awsLogsClient;
 
@@ -87,10 +89,10 @@ public class ECSService {
 
     String launchType = context.getLaunchType();
     List<ContainerDefinition> containerDefinitionList = this.buildContainerDefinition(context);
-    if (launchType.equalsIgnoreCase(EC2)) {
+    if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
       request =
           new RegisterTaskDefinitionRequest()
-              .withFamily("aoc-" + launchType)
+              .withFamily(GenericConstants.AOC_PREFIX.getVal() + launchType)
               .withTaskRoleArn(GenericConstants.ECS_TASK_ROLE.getVal())
               .withExecutionRoleArn(GenericConstants.ECS_TASK_EXECUTION_ROLE.getVal())
               .withRequiresCompatibilities(Compatibility.EC2)
@@ -102,7 +104,7 @@ public class ECSService {
     } else {
       request =
           new RegisterTaskDefinitionRequest()
-              .withFamily("aoc-" + launchType)
+              .withFamily(GenericConstants.AOC_PREFIX.getVal() + launchType)
               .withTaskRoleArn(GenericConstants.ECS_TASK_ROLE.getVal())
               .withExecutionRoleArn(GenericConstants.ECS_TASK_EXECUTION_ROLE.getVal())
               .withRequiresCompatibilities(Compatibility.FARGATE)
@@ -126,15 +128,15 @@ public class ECSService {
     ContainerDefinition emitterDef =
         new ContainerDefinition()
             .withName(AOC_EMITTER)
-            .withImage(GenericConstants.DATA_EMITTER_IMAGE.getVal())
+            .withImage(GenericConstants.METRIC_EMITTER_DOCKER_IMAGE_URL.getVal())
             .withEssential(true)
             .withLogConfiguration(getLogConfiguration(context, "emitter"));
-    if (context.getLaunchType().equals(EC2)) {
+    if (context.getLaunchType().equals(GenericConstants.EC2.getVal())) {
       String instanceId =
           GenericConstants.ECS_EC2_INSTANCE_ID.getVal() + "-" + System.currentTimeMillis();
       context.setInstanceId(instanceId);
       emitterDef.withEnvironment(
-          new KeyValuePair().withName(OTLP_ENDPOINT).withValue("172.17.0.1:55680"),
+          new KeyValuePair().withName(OTLP_ENDPOINT).withValue(EC2_AOC_ENDPOINT),
           new KeyValuePair().withName(INSTANCE_ID).withValue(instanceId));
 
     } else {
@@ -142,14 +144,14 @@ public class ECSService {
           GenericConstants.ECS_FARGATE_INSTANCE_ID.getVal() + "-" + System.currentTimeMillis();
       context.setInstanceId(instanceId);
       emitterDef.withEnvironment(
-          new KeyValuePair().withName(OTLP_ENDPOINT).withValue("localhost:55680"),
+          new KeyValuePair().withName(OTLP_ENDPOINT).withValue(FARGATE_AOC_ENDPOINT),
           new KeyValuePair().withName(INSTANCE_ID).withValue(instanceId));
     }
 
     ContainerDefinition aocDef =
         new ContainerDefinition()
             .withName("aoc-collector")
-            .withImage(GenericConstants.AOC_IMAGE.getVal())
+            .withImage(GenericConstants.AOC_IMAGE.getVal() + context.getAgentVersion())
             .withEssential(true)
             .withPortMappings(portMapping)
             .withLogConfiguration(getLogConfiguration(context, "collector"));
@@ -167,7 +169,7 @@ public class ECSService {
    */
   private LogConfiguration getLogConfiguration(Context context, String image) {
     final Map<String, String> logConfigurationOptions = new HashMap<>();
-    String logGroupName = String.format("/%s/%s", ECS_PREFIX, "ecs-cwagent-sidecar-" + image);
+    String logGroupName = String.format("/%s/%s", ECS_PREFIX, AWS_LOGS_GROUP_PREFIX_KEY + image);
     logConfigurationOptions.put(AWS_LOGS_REGION_KEY, context.getStack().getTestingRegion());
     logConfigurationOptions.put(AWS_LOGS_GROUP_KEY, logGroupName);
     logConfigurationOptions.put(AWS_LOGS_STREAM_PREFIX_KEY, ECS_PREFIX);
@@ -202,18 +204,18 @@ public class ECSService {
 
     RunTaskRequest runTaskRequest;
     String launchType = context.getLaunchType();
-    if (launchType.equalsIgnoreCase(EC2)) {
+    if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
       runTaskRequest =
           new RunTaskRequest()
               .withLaunchType(LaunchType.EC2)
-              .withTaskDefinition("aoc-" + launchType)
+              .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
               .withCluster(GenericConstants.ECS_SIDECAR_CLUSTER.getVal())
               .withCount(1);
     } else {
       runTaskRequest =
           new RunTaskRequest()
               .withLaunchType(LaunchType.FARGATE)
-              .withTaskDefinition("aoc-" + launchType)
+              .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
               .withCluster(GenericConstants.ECS_SIDECAR_CLUSTER.getVal())
               .withCount(1)
               .withNetworkConfiguration(
@@ -221,8 +223,7 @@ public class ECSService {
                       .withAwsvpcConfiguration(
                           new AwsVpcConfiguration()
                               .withAssignPublicIp(AssignPublicIp.ENABLED)
-                              .withSecurityGroups(context.getDefaultSecurityGrpId()) // sg-8c455fd7
-                              // sg-09e935a236100e514
+                              .withSecurityGroups(context.getDefaultSecurityGrpId())
                               .withSubnets(context.getDefaultSubnets().get(0).getSubnetId())));
     }
 

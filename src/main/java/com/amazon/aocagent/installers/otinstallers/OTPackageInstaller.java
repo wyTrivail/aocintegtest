@@ -70,7 +70,7 @@ public class OTPackageInstaller implements OTInstaller {
 
   private void configureAndStart() throws Exception {
     // generate configuration file
-    String configContent = mustacheHelper.render(context.getOtConfig().name(), context);
+    String configContent = mustacheHelper.render(context.getOtConfig().getVal(), context);
 
     // write config onto the remote instance
     String configuringCommand =

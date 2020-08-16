@@ -79,7 +79,8 @@ public class MetricValidator implements IValidator {
 
   private List<Metric> getExpectedMetricList(Context context) throws IOException {
     // get expected metrics as yaml from config
-    String yamlExpectedMetrics = mustacheHelper.render(context.getExpectedMetric().name(), context);
+    String yamlExpectedMetrics = mustacheHelper.render(
+            context.getExpectedMetric().getVal(), context);
 
     // load metrics from yaml
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

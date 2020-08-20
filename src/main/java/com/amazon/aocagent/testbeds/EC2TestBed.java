@@ -31,7 +31,7 @@ public class EC2TestBed implements TestBed {
     ec2Service = new EC2Service(context.getStack().getTestingRegion());
 
     // launch ec2 instance for testing
-    Instance instance = ec2Service.launchInstance(context.getTestingAMI().getAMIId());
+    Instance instance = ec2Service.launchInstance(context.getTestingAMI());
 
     // init sshHelper
     SSHHelper sshHelper =

@@ -28,7 +28,15 @@ public abstract class DebianAMI extends LinuxAMI {
   @Override
   public List<String> getDockerInstallingCommands() {
     return Arrays.asList(
-        "sudo snap install docker"
-    );
+        "sudo apt-get update",
+        "sudo apt install -y apt-transport-https ca-certificates "
+            + "curl software-properties-common gnupg2",
+        "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
+        String.format(
+            "sudo add-apt-repository \"deb [arch=%s] https://download.docker.com/linux/ubuntu artful  "
+                + "stable\"",
+            this.getS3Package().getLocalPackage().getArchitecture().toString().toLowerCase()),
+        "sudo apt-get update",
+        "sudo apt-get install -y docker-ce");
   }
 }

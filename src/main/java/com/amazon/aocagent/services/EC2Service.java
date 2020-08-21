@@ -5,7 +5,6 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
-import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.testamis.ITestAMI;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
@@ -23,6 +22,7 @@ import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.IamInstanceProfileSpecification;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
+import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.IpRange;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
@@ -36,7 +36,6 @@ import com.amazonaws.services.ec2.model.TagSpecification;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
-import com.amazonaws.services.ec2.model.InstanceType;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,13 +47,13 @@ import java.util.concurrent.atomic.AtomicReference;
 /** EC2Service is a wrapper of Amazon EC2 Client. */
 @Log4j2
 public class EC2Service {
-  private AmazonEC2 amazonEC2;
-  private String region;
-  private S3Service s3Service;
   private static final String ERROR_CODE_KEY_PAIR_NOT_FOUND = "InvalidKeyPair.NotFound";
   private static final String ERROR_CODE_KEY_PAIR_ALREADY_EXIST = "InvalidKeyPair.Duplicate";
   private static final String ERROR_CODE_SECURITY_GROUP_ALREADY_EXIST = "InvalidGroup.Duplicate";
   private static final String ERROR_CODE_SECURITY_GROUP_NOT_FOUND = "InvalidGroup.NotFound";
+  private AmazonEC2 amazonEC2;
+  private String region;
+  private S3Service s3Service;
 
   /**
    * Construct ec2 service base on region.
@@ -98,9 +97,10 @@ public class EC2Service {
                 new IamInstanceProfileSpecification()
                     .withName(GenericConstants.IAM_ROLE_NAME.getVal()));
 
-
     if (testAMI.getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
       runInstancesRequest.setInstanceType(InstanceType.A1Medium);
+    } else {
+      runInstancesRequest.setInstanceType(InstanceType.T2Micro);
     }
 
     RunInstancesResult runInstancesResult = amazonEC2.runInstances(runInstancesRequest);

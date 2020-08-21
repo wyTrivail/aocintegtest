@@ -46,7 +46,7 @@ public class SSHHelper {
    * @param commands the list of the commands
    * @throws Exception when commands execution fail
    */
-  public void executeCommands(List<String> commands) throws Exception {
+  public String executeCommands(List<String> commands) throws Exception {
     Channel channel = null;
     Session session = null;
 
@@ -111,6 +111,8 @@ public class SSHHelper {
         throw new BaseException(
             ExceptionCode.SSH_COMMAND_FAILED, "execute remote command failed " + compositeCommand);
       }
+
+      return outputBuffer.toString();
 
     } finally {
       if (channel != null) {

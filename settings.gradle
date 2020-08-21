@@ -8,6 +8,3 @@
  */
 
 rootProject.name = 'aocintegtest'
-include 'TraceEmitter'
-include 'TraceEmitterSpark'
-

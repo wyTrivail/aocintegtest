@@ -39,8 +39,10 @@ public enum GenericConstants {
   // configuration
   EC2_CONFIG_PATH("/tmp/test.yml"),
 
-  // metric emitter
+  // emitter
   METRIC_EMITTER_DOCKER_IMAGE_URL("mxiamxia/aoc-metric-generator"),
+  TRACE_EMITTER_DOCKER_IMAGE_URL("josephwy/trace-emitter"),
+  TRACE_EMITTER_ENDPOINT("http://localhost:4567/span0"),
 
   // validator related
   METRIC_NAMESPACE("default"),

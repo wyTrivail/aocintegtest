@@ -18,11 +18,11 @@ import picocli.CommandLine;
     version = "0.1",
     description = "use for integtests and releases of the aocagent",
     subcommands = {
-        IntegTest.class,
-        Release.class,
-        Candidate.class,
-        Setup.class,
-        ResourceClean.class
+      IntegTest.class,
+      Release.class,
+      Candidate.class,
+      Setup.class,
+      ResourceClean.class
     })
 @Log4j2
 public class App implements Runnable {

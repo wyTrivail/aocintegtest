@@ -1,0 +1,16 @@
+-
+  metricName: spanCounter
+  namespace: default
+  dimensions:
+    -
+      name: instanceId
+      value: {{instanceId}}
+    -
+      name: OTLib
+      value: cloudwatch-otel
+    -
+      name: spanName
+      value: testSpan
+    -
+      name: isItAnError
+      value: false

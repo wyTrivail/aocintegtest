@@ -1,0 +1,96 @@
+{
+  "requestClientOptions": {
+    "readLimit": 131073,
+    "skipAppendUriPath": false
+  },
+  "family": "aoc-FARGATE",
+  "taskRoleArn": "arn:aws:iam::252610625673:role/CWAgentECSTaskRole",
+  "executionRoleArn": "arn:aws:iam::252610625673:role/CWAgentECSExecutionRole",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "aoc-emitter",
+      "image": "mxiamxia/aoc-metric-generator",
+      "links": [],
+      "portMappings": [],
+      "essential": true,
+      "entryPoint": [],
+      "command": [],
+      "environment": [
+        {
+          "name": "otlp_endpoint",
+          "value": "localhost:55680"
+        },
+        {
+          "name": "otlp_instance_id",
+          "value": "aoc-sidecar-fargate-1598387155299"
+        }
+      ],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [],
+      "dependsOn": [],
+      "dnsServers": [],
+      "dnsSearchDomains": [],
+      "extraHosts": [],
+      "dockerSecurityOptions": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecs-cwagent-sidecar-emitter",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "systemControls": [],
+      "resourceRequirements": []
+    },
+    {
+      "name": "aoc-collector",
+      "image": "mxiamxia/awscollector:v0.1.10",
+      "links": [],
+      "portMappings": [
+        {
+          "containerPort": 55680,
+          "hostPort": 55680,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "entryPoint": [],
+      "command": [],
+      "environment": [],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [],
+      "dependsOn": [],
+      "dnsServers": [],
+      "dnsSearchDomains": [],
+      "extraHosts": [],
+      "dockerSecurityOptions": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecs-cwagent-sidecar-collector",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "systemControls": [],
+      "resourceRequirements": []
+    }
+  ],
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512"
+}

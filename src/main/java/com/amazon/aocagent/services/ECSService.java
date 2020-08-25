@@ -3,6 +3,7 @@ package com.amazon.aocagent.services;
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
+import com.amazon.aocagent.helpers.MustacheHelper;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.models.Context;
 import com.amazonaws.services.ecs.AmazonECS;
@@ -10,7 +11,6 @@ import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.ecs.model.AssignPublicIp;
 import com.amazonaws.services.ecs.model.AwsVpcConfiguration;
 import com.amazonaws.services.ecs.model.Cluster;
-import com.amazonaws.services.ecs.model.Compatibility;
 import com.amazonaws.services.ecs.model.ContainerDefinition;
 import com.amazonaws.services.ecs.model.CreateClusterRequest;
 import com.amazonaws.services.ecs.model.CreateClusterResult;
@@ -26,7 +26,6 @@ import com.amazonaws.services.ecs.model.ListTasksRequest;
 import com.amazonaws.services.ecs.model.LogConfiguration;
 import com.amazonaws.services.ecs.model.LogDriver;
 import com.amazonaws.services.ecs.model.NetworkConfiguration;
-import com.amazonaws.services.ecs.model.NetworkMode;
 import com.amazonaws.services.ecs.model.PortMapping;
 import com.amazonaws.services.ecs.model.RegisterTaskDefinitionRequest;
 import com.amazonaws.services.ecs.model.RegisterTaskDefinitionResult;
@@ -39,8 +38,11 @@ import com.amazonaws.services.logs.AWSLogsAsyncClientBuilder;
 import com.amazonaws.services.logs.model.CreateLogGroupRequest;
 import com.amazonaws.services.logs.model.DescribeLogGroupsRequest;
 import com.amazonaws.services.logs.model.DescribeLogGroupsResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +65,9 @@ public class ECSService {
   private AmazonECS ecsClient;
   private AWSLogs awsLogsClient;
 
+  ObjectMapper objectMapper = new ObjectMapper();
+  MustacheHelper mustacheHelper = new MustacheHelper();
+
   public ECSService(final String region) {
     this.ecsClient = AmazonECSClientBuilder.standard().withRegion(region).build();
     this.awsLogsClient = AWSLogsAsyncClientBuilder.standard().withRegion(region).build();
@@ -84,34 +89,45 @@ public class ECSService {
    * @param context test context
    * @return {@link RegisterTaskDefinitionResult} for registering ecs container defs
    */
-  public RegisterTaskDefinitionResult registerTaskDefinition(Context context) {
+  public RegisterTaskDefinitionResult registerTaskDefinition(Context context) throws BaseException {
     com.amazonaws.services.ecs.model.RegisterTaskDefinitionRequest request;
 
-    String launchType = context.getLaunchType();
-    List<ContainerDefinition> containerDefinitionList = this.buildContainerDefinition(context);
-    if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
-      request =
-          new RegisterTaskDefinitionRequest()
-              .withFamily(GenericConstants.AOC_PREFIX.getVal() + launchType)
-              .withTaskRoleArn(GenericConstants.ECS_TASK_ROLE.getVal())
-              .withExecutionRoleArn(GenericConstants.ECS_TASK_EXECUTION_ROLE.getVal())
-              .withRequiresCompatibilities(Compatibility.EC2)
-              .withNetworkMode(NetworkMode.Bridge)
-              .withCpu("256")
-              .withMemory("512")
-              .withContainerDefinitions(containerDefinitionList);
-
-    } else {
-      request =
-          new RegisterTaskDefinitionRequest()
-              .withFamily(GenericConstants.AOC_PREFIX.getVal() + launchType)
-              .withTaskRoleArn(GenericConstants.ECS_TASK_ROLE.getVal())
-              .withExecutionRoleArn(GenericConstants.ECS_TASK_EXECUTION_ROLE.getVal())
-              .withRequiresCompatibilities(Compatibility.FARGATE)
-              .withNetworkMode(NetworkMode.Awsvpc)
-              .withCpu("256")
-              .withMemory("512")
-              .withContainerDefinitions(containerDefinitionList);
+//    String launchType = context.getLaunchType();
+//    List<ContainerDefinition> containerDefinitionList = this.buildContainerDefinition(context);
+//    if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
+//      request =
+//          new RegisterTaskDefinitionRequest()
+//              .withFamily(GenericConstants.AOC_PREFIX.getVal() + launchType)
+//              .withTaskRoleArn(GenericConstants.ECS_TASK_ROLE.getVal())
+//              .withExecutionRoleArn(GenericConstants.ECS_TASK_EXECUTION_ROLE.getVal())
+//              .withRequiresCompatibilities(Compatibility.EC2)
+//              .withNetworkMode(NetworkMode.Bridge)
+//              .withCpu("256")
+//              .withMemory("512")
+//              .withContainerDefinitions(containerDefinitionList);
+//
+//    } else {
+//      request =
+//          new RegisterTaskDefinitionRequest()
+//              .withFamily(GenericConstants.AOC_PREFIX.getVal() + launchType)
+//              .withTaskRoleArn(GenericConstants.ECS_TASK_ROLE.getVal())
+//              .withExecutionRoleArn(GenericConstants.ECS_TASK_EXECUTION_ROLE.getVal())
+//              .withRequiresCompatibilities(Compatibility.FARGATE)
+//              .withNetworkMode(NetworkMode.Awsvpc)
+//              .withCpu("256")
+//              .withMemory("512")
+//              .withContainerDefinitions(containerDefinitionList);
+//    }
+    try {
+      String taskDefStr = mustacheHelper.render("aoc-sidecar-fargate", context);
+      request = objectMapper.readValue(taskDefStr, RegisterTaskDefinitionRequest.class);
+//      objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//      String taskDefStr = objectMapper.writeValueAsString(request);
+      System.out.println(taskDefStr);
+    } catch (JsonProcessingException e) {
+      throw new BaseException(ExceptionCode.COMMAND_FAILED_TO_EXECUTE, e.getMessage());
+    } catch (IOException e) {
+      throw new BaseException(ExceptionCode.COMMAND_FAILED_TO_EXECUTE, e.getMessage());
     }
     return ecsClient.registerTaskDefinition(request);
   }
@@ -155,7 +171,6 @@ public class ECSService {
             .withEssential(true)
             .withPortMappings(portMapping)
             .withLogConfiguration(getLogConfiguration(context, "collector"));
-
     definitions.add(emitterDef);
     definitions.add(aocDef);
     return definitions;

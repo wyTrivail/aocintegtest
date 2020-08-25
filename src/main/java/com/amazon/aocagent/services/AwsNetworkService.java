@@ -32,7 +32,7 @@ public class AwsNetworkService {
    * @throws Exception fail to describe network
    */
   public void buildNetworkContext(Context context) throws Exception {
-    this.describeSecurityGroup(context);
+    this.describeDefaultSecurityGroup(context);
     this.describeSubnets(context);
   }
 
@@ -41,7 +41,7 @@ public class AwsNetworkService {
    * @param context test context
    * @throws Exception fail to describe sec group
    */
-  public void describeSecurityGroup(Context context) throws Exception {
+  public DescribeSecurityGroupsResult describeDefaultSecurityGroup(Context context) throws Exception {
     DescribeSecurityGroupsRequest request =
         new DescribeSecurityGroupsRequest().withGroupNames("default");
     DescribeSecurityGroupsResult result = ec2Client.describeSecurityGroups(request);
@@ -59,7 +59,7 @@ public class AwsNetworkService {
    * @param context test context
    * @throws Exception fail to describe subnets
    */
-  public void describeSubnets(Context context) throws Exception {
+  public DescribeSubnetsResult describeSubnets(Context context) throws Exception {
     DescribeSubnetsRequest request =
         new DescribeSubnetsRequest()
             .withFilters(new Filter().withName("vpc-id").withValues(context.getDefaultVpcId()));

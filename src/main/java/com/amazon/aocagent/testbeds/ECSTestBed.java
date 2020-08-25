@@ -39,18 +39,18 @@ public class ECSTestBed implements TestBed {
    */
   @Override
   public Context launchTestBed() throws Exception {
-    try {
       // create ECS cluster
+      final String clusterName = this.generateEcsClusterName(context);
       if (!ecsService.describeCluster(GenericConstants.ECS_SIDECAR_CLUSTER.getVal()).isPresent()) {
-        ecsService.createCluster();
+        ecsService.createCluster(clusterName);
       }
       // get the default security group, vpc and subnets
       // from the provided aws account
-      networkService.buildNetworkContext(context);
+      this.buildNetworkContext(context);
 
       // launch new EC2 container instance for EC2 mode
       if (context.getLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
-          && !ecsService.isContainerInstanceAvail(GenericConstants.ECS_SIDECAR_CLUSTER.getVal())) {
+          && !ecsService.isContainerInstanceAvail(clusterName)) {
         log.info("launching up a container instance");
         EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
         Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams);
@@ -59,14 +59,13 @@ public class ECSTestBed implements TestBed {
             "created new ECS container instance: {} - {} ",
             containerInstance.getInstanceId(),
             containerInstance.getState().getName());
-        ecsService.waitForContainerInstanceRegistered(context);
+        ecsService.waitForContainerInstanceRegistered(clusterName);
       }
 
-    } catch (Exception e) {
-      log.error("ECS launchTestBed failed: {}", e);
-      throw e;
-    }
     return this.context;
+  }
+
+  private String generateEcsClusterName(Context context) {
   }
 
   /**

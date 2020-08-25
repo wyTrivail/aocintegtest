@@ -84,6 +84,8 @@ dependencies {
     // zip
     implementation 'org.zeroturnaround:zt-zip:1.14'
 
+    // json reader
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.1'
 
 
 }

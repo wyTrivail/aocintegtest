@@ -7,7 +7,7 @@ import com.amazon.aocagent.models.Context;
 
 import java.util.Arrays;
 
-public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
+public class OTMetricEmitterInstaller implements OTEmitterInstaller {
   Context context;
   SSHHelper sshHelper;
 

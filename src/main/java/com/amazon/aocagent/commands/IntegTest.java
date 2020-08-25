@@ -1,7 +1,8 @@
 package com.amazon.aocagent.commands;
 
-import com.amazon.aocagent.enums.ExpectedMetric;
-import com.amazon.aocagent.enums.OTConfig;
+import com.amazon.aocagent.fileconfigs.ExpectedMetric;
+import com.amazon.aocagent.fileconfigs.ExpectedTrace;
+import com.amazon.aocagent.fileconfigs.OTConfig;
 import com.amazon.aocagent.enums.TestCase;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.tasks.IntegTestFactory;
@@ -25,14 +26,20 @@ public class IntegTest implements Runnable {
   @CommandLine.Option(
       names = {"-c", "--config"},
       description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
-      defaultValue = "EC2Config")
+      defaultValue = "DEFAULT_OT_CONFIG")
   private OTConfig otConfig;
 
   @CommandLine.Option(
       names = {"--expected-metric"},
       description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
-      defaultValue = "EC2ExpectedMetric")
+      defaultValue = "DEFAULT_EXPECTED_METRIC")
   private ExpectedMetric expectedMetric;
+
+  @CommandLine.Option(
+      names = {"--expected-trace"},
+      description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
+      defaultValue = "DEFAULT_EXPECTED_TRACE")
+  private ExpectedTrace expectedTrace;
 
   @CommandLine.Option(
       names = {"-t", "--test-case"},
@@ -47,6 +54,7 @@ public class IntegTest implements Runnable {
     context.setTestingAMI(TestAMIFactory.getTestAMIFromName(testAMI));
     context.setOtConfig(otConfig);
     context.setExpectedMetric(expectedMetric);
+    context.setExpectedTrace(expectedTrace);
     IntegTestFactory.runTestCase(testCase, context);
   }
 }

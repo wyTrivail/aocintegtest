@@ -1,5 +1,6 @@
 package com.amazon.aocagent.helpers;
 
+import com.amazon.aocagent.fileconfigs.FileConfig;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
@@ -16,18 +17,17 @@ public class MustacheHelper {
 
   /**
    * Render the template file with injecting the data.
-   * @param templateName templateName, Ex. EC2Config
+   *
+   * @param fileConfig any object implementing the FileConfig interface
    * @param dataToInject the object to inject to the template
    * @return generated content
    * @throws IOException when the template file is not existed
    */
-  public String render(String templateName, Object dataToInject) throws IOException {
-    String templateFileName = "/mustache/" + templateName + ".mustache";
-    log.info("fetch config: {}", templateFileName);
-    String templateContent =
-        IOUtils.toString(getClass().getResource(templateFileName));
-    Mustache mustache =
-        mustacheFactory.compile(new StringReader(templateContent), templateFileName);
+  public String render(FileConfig fileConfig, Object dataToInject) throws IOException {
+    log.info("fetch config: {}", fileConfig.getPath());
+    String templateContent = IOUtils.toString(getClass().getResource(fileConfig.getPath()));
+    Mustache mustache = mustacheFactory
+        .compile(new StringReader(templateContent), fileConfig.getPath());
     StringWriter stringWriter = new StringWriter();
     mustache.execute(stringWriter, dataToInject).flush();
     return stringWriter.getBuffer().toString();

@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class OTTraceEmitterInstaller implements OTEmitterInstaller {
+public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
   Context context;
   SSHHelper sshHelper;
 
@@ -34,7 +34,10 @@ public class OTTraceEmitterInstaller implements OTEmitterInstaller {
     // use host mode to interact with imds
     String dockerCommand =
         String.format(
-            "sudo docker run --network host -d %s",
+            "sudo docker run --network host -d -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=%s,service.name=%s -e INSTANCE_ID=%s %s",
+            GenericConstants.SERVICE_NAMESPACE.getVal(),
+            GenericConstants.SERVICE_NAME.getVal(),
+            context.getInstanceId(),
             GenericConstants.TRACE_EMITTER_DOCKER_IMAGE_URL.getVal());
 
     RetryHelper.retry(

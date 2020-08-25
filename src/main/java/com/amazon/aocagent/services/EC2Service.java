@@ -1,9 +1,12 @@
 package com.amazon.aocagent.services;
 
+import com.amazon.aocagent.enums.Architecture;
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
+import com.amazon.aocagent.models.Context;
+import com.amazon.aocagent.testamis.ITestAMI;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.AmazonEC2Exception;
@@ -33,6 +36,7 @@ import com.amazonaws.services.ec2.model.TagSpecification;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import com.amazonaws.services.ec2.model.InstanceType;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,10 +70,10 @@ public class EC2Service {
   /**
    * launchInstance launches one ec2 instance.
    *
-   * @param amiID the instance amiid
+   * @param testAMI instance of ITestAMI
    * @return InstanceID
    */
-  public Instance launchInstance(String amiID) throws Exception {
+  public Instance launchInstance(ITestAMI testAMI) throws Exception {
     // tag instance for management
     TagSpecification tagSpecification =
         new TagSpecification()
@@ -82,7 +86,7 @@ public class EC2Service {
     // create request
     RunInstancesRequest runInstancesRequest =
         new RunInstancesRequest()
-            .withImageId(amiID)
+            .withImageId(testAMI.getAMIId())
             .withMonitoring(false)
             .withMaxCount(1)
             .withMinCount(1)
@@ -93,6 +97,11 @@ public class EC2Service {
             .withIamInstanceProfile(
                 new IamInstanceProfileSpecification()
                     .withName(GenericConstants.IAM_ROLE_NAME.getVal()));
+
+
+    if (testAMI.getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
+      runInstancesRequest.setInstanceType(InstanceType.A1Medium);
+    }
 
     RunInstancesResult runInstancesResult = amazonEC2.runInstances(runInstancesRequest);
 

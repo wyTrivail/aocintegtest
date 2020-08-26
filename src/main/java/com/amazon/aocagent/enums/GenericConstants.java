@@ -48,7 +48,7 @@ public enum GenericConstants {
   TRACE_EMITTER_ENDPOINT("http://localhost:4567/span0"),
   SERVICE_NAMESPACE("AWSObservability"),
   SERVICE_NAME("CloudWatchOTService"),
-  TRACE_EMITTER_DOCKER_IMAGE_URL("josephwy/trace-emitter"),
+  TRACE_EMITTER_DOCKER_IMAGE_URL("josephwy/integ-test-emitter"),
 
   // validator related
   METRIC_NAMESPACE("default"),

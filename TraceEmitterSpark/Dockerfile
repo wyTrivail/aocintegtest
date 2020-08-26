@@ -22,3 +22,5 @@ EXPOSE 4567
 
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
+
+

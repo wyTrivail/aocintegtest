@@ -1,46 +1,16 @@
 -
-  metricName: latency_{{instanceId}}
-  namespace: AWSObservability/CloudWatchOTService
+  metricName: spanCounter
+  namespace: default
   dimensions:
     -
-      name: apiName
-      value: /span0
+      name: instanceId
+      value: {{instanceId}}
     -
-      name: statusCode
-      value: 200
--
-  metricName: latency_{{instanceId}}
-  namespace: AWSObservability/CloudWatchOTService
-  dimensions:
-    - name: apiName
-      value: /span500
-    - name: statusCode
-      value: 500
--
-  metricName: latency_{{instanceId}}
-  namespace: AWSObservability/CloudWatchOTService
-  dimensions:
-    - name: apiName
-      value: /span400
-    - name: statusCode
-      value: 400
--
-  metricName: latency_{{instanceId}}
-  namespace: AWSObservability/CloudWatchOTService
-  dimensions:
+      name: OTLib
+      value: cloudwatch-otel
     -
-      name: apiName
-      value: /span1
+      name: spanName
+      value: testSpan
     -
-      name: statusCode
-      value: 200
--
-  metricName: latency_{{instanceId}}
-  namespace: AWSObservability/CloudWatchOTService
-  dimensions:
-    -
-      name: apiName
-      value: /span2
-    -
-      name: statusCode
-      value: 200
+      name: isItAnError
+      value: false

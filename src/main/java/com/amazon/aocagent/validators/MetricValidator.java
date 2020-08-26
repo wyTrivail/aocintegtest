@@ -19,10 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -44,7 +42,8 @@ public class MetricValidator implements IValidator {
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
-          List<Metric> metricList = this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
+          List<Metric> metricList =
+              this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, metricList);
 
@@ -57,6 +56,7 @@ public class MetricValidator implements IValidator {
 
   /**
    * Check if every metric in toBeChckedMetricList is in baseMetricList.
+   *
    * @param toBeCheckedMetricList toBeCheckedMetricList
    * @param baseMetricList baseMetricList
    */
@@ -113,18 +113,22 @@ public class MetricValidator implements IValidator {
     return rollupMetric(expectedMetricList);
   }
 
-  private List<Metric> listMetricFromCloudWatch(CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
+  private List<Metric> listMetricFromCloudWatch(
+      CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
     Set<String> metricNameSet = new HashSet();
-    for(Metric metric: expectedMetricList){
+    for (Metric metric : expectedMetricList) {
       metricNameSet.add(metric.getMetricName());
     }
 
     // search by metric name
     List<Metric> result = new ArrayList<>();
-    for(String metricName: metricNameSet){
-      result.addAll(cloudWatchService.listMetrics(
-          GenericConstants.SERVICE_NAMESPACE.getVal() + "/" + GenericConstants.SERVICE_NAME.getVal(),
-          metricName));
+    for (String metricName : metricNameSet) {
+      result.addAll(
+          cloudWatchService.listMetrics(
+              GenericConstants.SERVICE_NAMESPACE.getVal()
+                  + "/"
+                  + GenericConstants.SERVICE_NAME.getVal(),
+              metricName));
     }
 
     return result;

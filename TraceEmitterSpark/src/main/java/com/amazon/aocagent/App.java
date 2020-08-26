@@ -13,6 +13,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.List;
 import java.util.Random;
 
@@ -36,6 +37,17 @@ public class App {
   public static void main(String[] args) {
     MetricEmitter metricEmitter = buildMetricEmitter();
 
+=======
+import java.util.Arrays;
+import java.util.List;
+
+import static spark.Spark.exception;
+import static spark.Spark.get;
+
+public class App {
+
+  public static void main(String[] args) {
+>>>>>>> 41f16578cb61672e2447f0eded973d8f1937a57e
     get("/span0", (req, res) -> {
       Span currentSpan = TracingContextUtils.getCurrentSpan();
       List<String> spanList = new ArrayList<>();
@@ -54,6 +66,7 @@ public class App {
       return response;
     }, new JsonTransformer());
 
+<<<<<<< HEAD
     get("/span400", (req, res) -> {
       res.status(400);
       return "params error";
@@ -64,6 +77,8 @@ public class App {
       return "internal error";
     });
 
+=======
+>>>>>>> 41f16578cb61672e2447f0eded973d8f1937a57e
     get("/span1", (req, res) -> {
       String nextSpanId = makeHttpCall("http://localhost:4567/span2");
       return TracingContextUtils.getCurrentSpan().getContext().getSpanId().toLowerBase16() + "," + nextSpanId;
@@ -73,6 +88,7 @@ public class App {
       return TracingContextUtils.getCurrentSpan().getContext().getSpanId().toLowerBase16();
     });
 
+<<<<<<< HEAD
     /**
      * record a start time for each request
      */
@@ -91,6 +107,8 @@ public class App {
       );
     });
 
+=======
+>>>>>>> 41f16578cb61672e2447f0eded973d8f1937a57e
     exception(Exception.class, (exception, request, response) -> {
       // Handle the exception here
       exception.printStackTrace();

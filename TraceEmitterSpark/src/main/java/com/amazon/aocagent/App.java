@@ -13,15 +13,29 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static spark.Spark.exception;
-import static spark.Spark.get;
+import static spark.Spark.*;
 
 public class App {
+  static final String DEFAULT_OTLP_ENDPOINT = "localhost:55680";
+  static final String REQUEST_START_TIME = "requestStartTime";
 
+  private static MetricEmitter buildMetricEmitter(){
+    String otlpEndpoint = DEFAULT_OTLP_ENDPOINT;
+    // get otlp endpoint
+    String otlpEndpointFromEnvVar = System.getenv("OTEL_OTLP_ENDPOINT");
+    if(otlpEndpointFromEnvVar != null && !otlpEndpointFromEnvVar.trim().equals("")){
+      otlpEndpoint = otlpEndpointFromEnvVar;
+    }
+
+    return new MetricEmitter(otlpEndpoint);
+
+  }
   public static void main(String[] args) {
+    MetricEmitter metricEmitter = buildMetricEmitter();
+
+
     get("/span0", (req, res) -> {
       Span currentSpan = TracingContextUtils.getCurrentSpan();
       List<String> spanList = new ArrayList<>();
@@ -40,6 +54,16 @@ public class App {
       return response;
     }, new JsonTransformer());
 
+    get("/span400", (req, res) -> {
+      res.status(400);
+      return "params error";
+    });
+
+    get("/span500", (req, res) -> {
+      res.status(500);
+      return "internal error";
+    });
+
     get("/span1", (req, res) -> {
       String nextSpanId = makeHttpCall("http://localhost:4567/span2");
       return TracingContextUtils.getCurrentSpan().getContext().getSpanId().toLowerBase16() + "," + nextSpanId;
@@ -47,6 +71,24 @@ public class App {
 
     get("/span2", (req, res) -> {
       return TracingContextUtils.getCurrentSpan().getContext().getSpanId().toLowerBase16();
+    });
+
+    /**
+     * record a start time for each request
+     */
+    before((req, res) -> {
+      req.attribute(REQUEST_START_TIME, System.currentTimeMillis());
+    });
+
+    after((req, res) -> {
+      String statusCode = String.valueOf(res.status());
+      // calculate return time
+      Long requestStartTime = req.attribute(REQUEST_START_TIME);
+      metricEmitter.emitReturnTimeMetric(
+          System.currentTimeMillis()- requestStartTime,
+          req.pathInfo(),
+          statusCode
+      );
     });
 
     exception(Exception.class, (exception, request, response) -> {

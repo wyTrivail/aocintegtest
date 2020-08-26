@@ -16,7 +16,10 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -24,62 +27,81 @@ import java.util.TreeSet;
 @Log4j2
 public class MetricValidator implements IValidator {
   private static int MAX_RETRY_COUNT = 60;
+  private static final String DEFAULT_DIMENSION_NAME = "OTLib";
+  private static final String DEFAULT_DIMENSION_VALUE = "cloudwatch-otel";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
 
   @Override
   public void validate(Context context) throws Exception {
-    List<Metric> expectedMetricList = this.getExpectedMetricList(context);
+    log.info("Start metric validating");
+    final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
+    CloudWatchService cloudWatchService =
+        new CloudWatchService(context.getStack().getTestingRegion());
 
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
-          List<Metric> metricList = this.listMetricFromCloudWatch(context);
+          List<Metric> metricList =
+              this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
+          log.info("check if all the expected metrics are found");
+          compareMetricLists(expectedMetricList, metricList);
 
-          // load metrics into a hash set
-          Set<Metric> metricSet =
-              new TreeSet<>(
-                  (Metric o1, Metric o2) -> {
-                    // check namespace
-                    if (!o1.getNamespace().equals(o2.getNamespace())) {
-                      return o1.getNamespace().compareTo(o2.getNamespace());
-                    }
-
-                    // check metric name
-                    if (!o1.getMetricName().equals(o2.getMetricName())) {
-                      return o1.getMetricName().compareTo(o2.getMetricName());
-                    }
-
-                    // sort and check dimensions
-                    List<Dimension> dimensionList1 = o1.getDimensions();
-                    List<Dimension> dimensionList2 = o2.getDimensions();
-                    dimensionList1.sort(Comparator.comparing(Dimension::getName));
-                    dimensionList2.sort(Comparator.comparing(Dimension::getName));
-                    return dimensionList1.toString().compareTo(dimensionList2.toString());
-                  });
-          for (Metric metric : metricList) {
-            metricSet.add(metric);
-          }
-          // check if all the expected metrics are in the metric list
-          for (Metric metric : expectedMetricList) {
-            if (!metricSet.contains(metric)) {
-              throw new BaseException(
-                  ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-                  String.format(
-                      "expected metric %s not found in metric from cloudwatch: %s",
-                      metric, metricSet));
-            }
-          }
-
-          // todo reverse check: check if all the metric in the metric list are in the expected
-          // metrics
+          log.info("check if there're unexpected additional metric getting fetched");
+          compareMetricLists(metricList, expectedMetricList);
         });
+
+    log.info("finish metric validation");
+  }
+
+  /**
+   * Check if every metric in toBeChckedMetricList is in baseMetricList.
+   *
+   * @param toBeCheckedMetricList toBeCheckedMetricList
+   * @param baseMetricList baseMetricList
+   */
+  private void compareMetricLists(List<Metric> toBeCheckedMetricList, List<Metric> baseMetricList)
+      throws BaseException {
+    log.info("compare two metric list {} {}", toBeCheckedMetricList, baseMetricList);
+    // load metrics into a hash set
+    Set<Metric> metricSet =
+        new TreeSet<>(
+            (Metric o1, Metric o2) -> {
+              // check namespace
+              if (!o1.getNamespace().equals(o2.getNamespace())) {
+                return o1.getNamespace().compareTo(o2.getNamespace());
+              }
+
+              // check metric name
+              if (!o1.getMetricName().equals(o2.getMetricName())) {
+                return o1.getMetricName().compareTo(o2.getMetricName());
+              }
+
+              // sort and check dimensions
+              List<Dimension> dimensionList1 = o1.getDimensions();
+              List<Dimension> dimensionList2 = o2.getDimensions();
+              dimensionList1.sort(Comparator.comparing(Dimension::getName));
+              dimensionList2.sort(Comparator.comparing(Dimension::getName));
+              return dimensionList1.toString().compareTo(dimensionList2.toString());
+            });
+    for (Metric metric : baseMetricList) {
+      metricSet.add(metric);
+    }
+
+    for (Metric metric : toBeCheckedMetricList) {
+      if (!metricSet.contains(metric)) {
+        throw new BaseException(
+            ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
+            String.format(
+                "metric in toBeCheckedMetricList %s not found in baseMetricList: %s",
+                metric, metricSet));
+      }
+    }
   }
 
   private List<Metric> getExpectedMetricList(Context context) throws IOException {
     // get expected metrics as yaml from config
-    String yamlExpectedMetrics =
-        mustacheHelper.render(context.getExpectedMetric(), context);
+    String yamlExpectedMetrics = mustacheHelper.render(context.getExpectedMetric(), context);
 
     // load metrics from yaml
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -88,13 +110,76 @@ public class MetricValidator implements IValidator {
             yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
             new TypeReference<List<Metric>>() {});
 
-    return expectedMetricList;
+    return rollupMetric(expectedMetricList);
   }
 
-  private List<Metric> listMetricFromCloudWatch(Context context) throws IOException {
-    CloudWatchService cloudWatchService =
-        new CloudWatchService(context.getStack().getTestingRegion());
-    return cloudWatchService.listMetrics(
-        GenericConstants.METRIC_NAMESPACE.getVal(), "instanceId", context.getInstanceId());
+  private List<Metric> listMetricFromCloudWatch(
+      CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
+    Set<String> metricNameSet = new HashSet();
+    for (Metric metric : expectedMetricList) {
+      metricNameSet.add(metric.getMetricName());
+    }
+
+    // search by metric name
+    List<Metric> result = new ArrayList<>();
+    for (String metricName : metricNameSet) {
+      result.addAll(
+          cloudWatchService.listMetrics(
+              GenericConstants.SERVICE_NAMESPACE.getVal()
+                  + "/"
+                  + GenericConstants.SERVICE_NAME.getVal(),
+              metricName));
+    }
+
+    return result;
+  }
+
+  private List<Metric> rollupMetric(List<Metric> metricList) {
+    List<Metric> rollupMetricList = new ArrayList<>();
+    for (Metric metric : metricList) {
+      // all dimension rollup
+      Metric allDimensionsMetric = new Metric();
+      allDimensionsMetric.setMetricName(metric.getMetricName());
+      allDimensionsMetric.setNamespace(metric.getNamespace());
+      allDimensionsMetric.setDimensions(metric.getDimensions());
+      allDimensionsMetric
+          .getDimensions()
+          .add(new Dimension().withName(DEFAULT_DIMENSION_NAME).withValue(DEFAULT_DIMENSION_VALUE));
+      rollupMetricList.add(allDimensionsMetric);
+
+      // zero dimension rollup
+      Metric zeroDimensionMetric = new Metric();
+      zeroDimensionMetric.setNamespace(metric.getNamespace());
+      zeroDimensionMetric.setMetricName(metric.getMetricName());
+      zeroDimensionMetric.setDimensions(
+          Arrays.asList(
+              new Dimension().withName(DEFAULT_DIMENSION_NAME).withValue(DEFAULT_DIMENSION_VALUE)));
+      rollupMetricList.add(zeroDimensionMetric);
+
+      // single dimension rollup
+      for (Dimension dimension : metric.getDimensions()) {
+        Metric singleDimensionMetric = new Metric();
+        singleDimensionMetric.setNamespace(metric.getNamespace());
+        singleDimensionMetric.setMetricName(metric.getMetricName());
+        singleDimensionMetric.setDimensions(
+            Arrays.asList(
+                new Dimension()
+                    .withName(DEFAULT_DIMENSION_NAME)
+                    .withValue(DEFAULT_DIMENSION_VALUE)));
+        singleDimensionMetric.getDimensions().add(dimension);
+        rollupMetricList.add(singleDimensionMetric);
+      }
+    }
+
+    return rollupMetricList;
+  }
+
+  private String metricToString(Metric metric) {
+    StringBuffer strMetric = new StringBuffer(metric.getMetricName() + "/");
+    for (Dimension dimension : metric.getDimensions()) {
+      strMetric.append(dimension.getName() + ":" + dimension.getValue());
+      strMetric.append(",");
+    }
+    return strMetric.toString();
   }
 }

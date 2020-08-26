@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class OTTraceEmitterInstaller implements OTEmitterInstaller {
+public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
   Context context;
   SSHHelper sshHelper;
 

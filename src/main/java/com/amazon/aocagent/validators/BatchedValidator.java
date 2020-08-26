@@ -7,11 +7,11 @@ import java.util.List;
 
 @Log4j2
 public class BatchedValidator {
-  List<IValidator> metricValidatorList;
+  List<IValidator> validatorList;
   Context context;
 
-  public BatchedValidator(List<IValidator> metricValidatorList) {
-    this.metricValidatorList = metricValidatorList;
+  public BatchedValidator(List<IValidator> validatorList) {
+    this.validatorList = validatorList;
   }
 
   /**
@@ -20,8 +20,8 @@ public class BatchedValidator {
    * @throws Exception when the validation fails
    */
   public void validate() throws Exception {
-    for (IValidator metricValidator : this.metricValidatorList) {
-      metricValidator.validate(context);
+    for (IValidator validator : this.validatorList) {
+      validator.validate(context);
     }
 
     log.info("Validation is passed!!!");

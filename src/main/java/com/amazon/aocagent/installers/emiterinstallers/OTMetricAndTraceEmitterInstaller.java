@@ -34,7 +34,9 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
     // use host mode to interact with imds
     String dockerCommand =
         String.format(
-            "sudo docker run --network host -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=%s,service.name=%s -e INSTANCE_ID=%s -d %s",
+            "sudo docker run --network host "
+                + "-e OTEL_RESOURCE_ATTRIBUTES="
+                + "service.namespace=%s,service.name=%s -e INSTANCE_ID=%s -d %s",
             GenericConstants.SERVICE_NAMESPACE.getVal(),
             GenericConstants.SERVICE_NAME.getVal(),
             context.getInstanceId(),

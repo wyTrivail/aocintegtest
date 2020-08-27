@@ -4,6 +4,7 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
+import com.amazonaws.services.cloudwatch.model.Metric;
 import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.ecs.model.Cluster;
@@ -14,6 +15,7 @@ import com.amazonaws.services.ecs.model.DeregisterTaskDefinitionRequest;
 import com.amazonaws.services.ecs.model.DescribeClustersRequest;
 import com.amazonaws.services.ecs.model.DescribeClustersResult;
 import com.amazonaws.services.ecs.model.DesiredStatus;
+import com.amazonaws.services.ecs.model.ListClustersResult;
 import com.amazonaws.services.ecs.model.ListTaskDefinitionsResult;
 import com.amazonaws.services.ecs.model.ListTasksRequest;
 import com.amazonaws.services.ecs.model.RegisterTaskDefinitionRequest;
@@ -22,6 +24,7 @@ import com.amazonaws.services.ecs.model.RunTaskRequest;
 import com.amazonaws.services.ecs.model.RunTaskResult;
 import com.amazonaws.services.ecs.model.StopTaskRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
@@ -84,48 +87,60 @@ public class ECSService {
 
   /**
    * clean ECS tasks resources.
-   * @param clusterName cluster name
    * @throws InterruptedException fail to clean exception
    */
-  public void cleanTasks(String clusterName) throws InterruptedException {
-    // clean up tasks
-    for (String taskArn :
-        ecsClient
-            .listTasks(
-                new ListTasksRequest()
-                    .withCluster(clusterName)
-                    .withDesiredStatus(DesiredStatus.RUNNING))
-            .getTaskArns()) {
-      ecsClient.stopTask(new StopTaskRequest().withTask(taskArn).withCluster(clusterName));
-    }
-
-    // wait for task clean
-    int retryCount = Integer.parseInt(GenericConstants.MAX_RETRIES.getVal());
-    while (retryCount-- > 0) {
-      if (ecsClient
-          .listTasks(
-              new ListTasksRequest()
-                  .withCluster(clusterName)
-                  .withDesiredStatus(DesiredStatus.RUNNING))
-          .getTaskArns()
-          .isEmpty()) {
-        return;
+  public void cleanTasks() throws Exception {
+    List<String> clusters = this.listClusters();
+    for (String clusterName : clusters) {
+      // clean up tasks
+      for (String taskArn :
+          ecsClient
+              .listTasks(
+                  new ListTasksRequest()
+                      .withCluster(clusterName)
+                      .withDesiredStatus(DesiredStatus.RUNNING))
+              .getTaskArns()) {
+        ecsClient.stopTask(new StopTaskRequest().withTask(taskArn).withCluster(clusterName));
       }
-      TimeUnit.SECONDS.sleep(Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()));
 
-      log.info("wait for task cleaning, {}/{}", retryCount, GenericConstants.MAX_RETRIES.getVal());
+      // make sure there is no RUNNING status task remaining
+      RetryHelper.retry(
+          () -> {
+            if (ecsClient
+                .listTasks(
+                    new ListTasksRequest()
+                        .withCluster(clusterName)
+                        .withDesiredStatus(DesiredStatus.RUNNING))
+                .getTaskArns()
+                .isEmpty()) {
+              return;
+            }
+            TimeUnit.SECONDS.sleep(Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()));
+          });
+
+      log.info("finish metric validation");
     }
-
-    throw new RuntimeException("failed to wait task cleaning");
   }
 
   /**
    * clean ECS cluster.
-   * @param clusterName cluster name
    */
-  public void cleanCluster(String clusterName) {
-    DeleteClusterRequest request = new DeleteClusterRequest().withCluster(clusterName);
-    ecsClient.deleteCluster(request);
+  public void cleanCluster() {
+    for (String name : listClusters()) {
+      DeleteClusterRequest request = new DeleteClusterRequest().withCluster(name);
+      try {
+        ecsClient.deleteCluster(request);
+      } catch (Exception e) {
+        log.error("{} can't be deleted", name, e);
+      }
+    }
+  }
+
+  private List<String> listClusters() {
+    ListClustersResult clusters = ecsClient.listClusters();
+    return clusters.getClusterArns().stream()
+        .map(arn -> arn.substring(arn.lastIndexOf("/") + 1))
+        .collect(Collectors.toList());
   }
 
   /**

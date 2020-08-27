@@ -50,6 +50,11 @@ public class IAMService {
     }
   }
 
+  /**
+   * get IAM role arn per role name.
+   * @param iamRoleName role name
+   * @return role arn
+   */
   public String getRoleArn(String iamRoleName) {
     GetRoleResult getRoleResult =
         amazonIdentityManagement.getRole(new GetRoleRequest().withRoleName(iamRoleName));

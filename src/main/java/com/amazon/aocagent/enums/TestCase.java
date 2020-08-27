@@ -26,11 +26,11 @@ public enum TestCase {
 
   // run AOC with data emitter in ECS as sidecar
   // tested both ECS fargate and EC2 modes
-  ECS_SIDECAR(
+  ECS_TEST(
       new ECSTestBed(),
       new EcsInstaller(),
       Arrays.asList(), // data emitter is included in sidecar installer
-      Arrays.asList(new MetricValidator(), new TraceValidator())),
+      Arrays.asList(new MetricValidator())),
   ;
 
   private TestBed testBed;

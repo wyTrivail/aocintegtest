@@ -20,13 +20,14 @@ import java.util.Base64;
 @Log4j2
 public class ECSTestBed implements TestBed {
 
-  private static String CONTAINER_INSTANCE_USER_DATA =
-      "#!/bin/bash\n" + "echo ECS_CLUSTER=%s >> /etc/ecs/ecs.config";
   private ECSService ecsService;
   private EC2Service ec2Service;
   private AwsNetworkService networkService;
-
   private Context context;
+
+  /** assign the container instance to the specified ECS cluster. */
+  private static String CONTAINER_INSTANCE_USER_DATA =
+      "#!/bin/bash\n" + "echo ECS_CLUSTER=%s >> /etc/ecs/ecs.config";
 
   @Override
   public void init(Context context) {
@@ -45,7 +46,7 @@ public class ECSTestBed implements TestBed {
   public Context launchTestBed() throws Exception {
     // create ECS cluster
     final String clusterName = this.generateEcsClusterName();
-    this.context.getEcsContext().setClusterName(clusterName);
+    this.context.setClusterName(clusterName);
     if (!ecsService.describeCluster(clusterName).isPresent()) {
       ecsService.createCluster(clusterName);
     }
@@ -54,7 +55,7 @@ public class ECSTestBed implements TestBed {
     this.buildNetworkContext(context);
 
     // launch new EC2 container instance for EC2 mode
-    if (context.getEcsContext().getLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
+    if (context.getLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
         && !ecsService.isContainerInstanceAvail(clusterName)) {
       log.info("launching up a container instance");
       EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
@@ -103,7 +104,7 @@ public class ECSTestBed implements TestBed {
         Base64.getEncoder()
             .encodeToString(
                 String.format(
-                    CONTAINER_INSTANCE_USER_DATA, context.getEcsContext().getClusterName())
+                    CONTAINER_INSTANCE_USER_DATA, context.getClusterName())
                     .getBytes());
     return EC2InstanceParams.builder()
         .amiId(context.getTestingAMI().getAMIId())

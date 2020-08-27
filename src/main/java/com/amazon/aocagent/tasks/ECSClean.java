@@ -25,11 +25,9 @@ public class ECSClean implements ITask {
 
   @Override
   public void execute() throws Exception {
-
     cleanTasks();
     cleanContainerInstances();
-    // static cluster name, might don't need to be cleaned for now
-    //        cleanCluster();
+    cleanCluster();
     cleanTaskDefinitions();
   }
 
@@ -38,7 +36,7 @@ public class ECSClean implements ITask {
   }
 
   private void cleanCluster() {
-    ecsService.cleanCluster(GenericConstants.ECS_SIDECAR_CLUSTER.getVal());
+    ecsService.cleanCluster();
   }
 
   private void cleanContainerInstances() throws Exception {
@@ -65,6 +63,6 @@ public class ECSClean implements ITask {
   }
 
   private void cleanTasks() throws Exception {
-    ecsService.cleanTasks(GenericConstants.ECS_SIDECAR_CLUSTER.getVal());
+    ecsService.cleanTasks();
   }
 }

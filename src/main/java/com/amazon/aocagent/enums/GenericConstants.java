@@ -66,9 +66,6 @@ public enum GenericConstants {
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
   ECS_EC2_INSTANCE_ID("aoc-sidecar-ec2"),
   ECS_FARGATE_INSTANCE_ID("aoc-sidecar-fargate"),
-  // To be edited under prod test account
-  ECS_TASK_ROLE("arn:aws:iam::252610625673:role/CWAgentECSTaskRole"),
-  ECS_TASK_EXECUTION_ROLE("arn:aws:iam::252610625673:role/CWAgentECSExecutionRole"),
   AOC_IMAGE("mxiamxia/awscollector:"),
 
   // common constants

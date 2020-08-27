@@ -4,7 +4,6 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.models.Context;
-import com.amazon.aocagent.models.EcsContext;
 import com.amazon.aocagent.models.Stack;
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,8 +59,6 @@ public class CommonOption {
     context.setStack(stack);
     context.setStackFilePath(stackFilePath);
 
-    context.setEcsContext(new EcsContext());
-
     // local package dir
     context.setLocalPackagesDir(this.localPackagesDir);
 
@@ -81,9 +78,9 @@ public class CommonOption {
           .forEach(
               e -> {
                 if (e.getKey().equals(GenericConstants.LAUNCH_TYPE.getVal())) {
-                  context.getEcsContext().setLaunchType(e.getValue());
+                  context.setLaunchType(e.getValue());
                 } else if (e.getKey().equals(GenericConstants.DEPLOY_MODE.getVal())) {
-                  context.getEcsContext().setDeploymentMode(e.getValue());
+                  context.setDeploymentMode(e.getValue());
                 }
               });
     }

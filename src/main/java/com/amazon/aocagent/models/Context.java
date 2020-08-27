@@ -25,9 +25,6 @@ public class Context {
   private String expectedTraceId;
   private List<String> expectedSpanIdList;
 
-  private EcsContext ecsContext;
-
-
   /** AWS account default Security Group Id. */
   private String defaultSecurityGrpId;
 
@@ -36,5 +33,23 @@ public class Context {
 
   /** AWS account default subnets. */
   private List<Subnet> defaultSubnets;
+
+  /** ECS Service launch type. Eg, EC2 or Fargate. */
+  private String launchType;
+
+  /** ECS deployment mode. Eg, SIDECAR or DaemonSet. */
+  private String deploymentMode;
+
+  private String clusterName;
+
+  private String taskRoleArn;
+
+  private String executionRoleArn;
+
+  private String dataEmitterImage;
+
+  private String region;
+
+  private String aocImage;
 
 }

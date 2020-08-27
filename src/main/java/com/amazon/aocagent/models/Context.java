@@ -41,13 +41,13 @@ public class Context {
   private String ecsDeploymentMode;
 
   /** ECS cluster name. */
-  private String clusterName;
+  private String ecsClusterName;
 
   /** ECS task role arn. */
-  private String taskRoleArn;
+  private String ecsTaskRoleArn;
 
   /** ECS task execution role arn. */
-  private String executionRoleArn;
+  private String ecsExecutionRoleArn;
 
   /** ECS data emitter image. */
   private String dataEmitterImage;

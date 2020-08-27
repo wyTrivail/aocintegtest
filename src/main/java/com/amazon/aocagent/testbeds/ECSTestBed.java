@@ -46,7 +46,7 @@ public class ECSTestBed implements TestBed {
   public Context launchTestBed() throws Exception {
     // create ECS cluster
     final String clusterName = this.generateEcsClusterName();
-    this.context.setClusterName(clusterName);
+    this.context.setEcsClusterName(clusterName);
     if (!ecsService.describeCluster(clusterName).isPresent()) {
       ecsService.createCluster(clusterName);
     }
@@ -104,7 +104,7 @@ public class ECSTestBed implements TestBed {
         Base64.getEncoder()
             .encodeToString(
                 String.format(
-                    CONTAINER_INSTANCE_USER_DATA, context.getClusterName())
+                    CONTAINER_INSTANCE_USER_DATA, context.getEcsClusterName())
                     .getBytes());
     return EC2InstanceParams.builder()
         .amiId(context.getTestingAMI().getAMIId())

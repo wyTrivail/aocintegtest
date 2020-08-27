@@ -55,8 +55,8 @@ public class ECSInstaller implements OTInstaller {
     context.setInstanceId(String.valueOf(System.currentTimeMillis()));
     context.setRegion(context.getStack().getTestingRegion());
     String iamRoleArn = this.iamService.getRoleArn(GenericConstants.IAM_ROLE_NAME.getVal());
-    context.setTaskRoleArn(iamRoleArn);
-    context.setExecutionRoleArn(iamRoleArn);
+    context.setEcsTaskRoleArn(iamRoleArn);
+    context.setEcsExecutionRoleArn(iamRoleArn);
   }
 
   private RunTaskRequest getTaskRequest(Context context) {
@@ -65,13 +65,13 @@ public class ECSInstaller implements OTInstaller {
       return new RunTaskRequest()
               .withLaunchType(LaunchType.EC2)
               .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
-              .withCluster(context.getClusterName())
+              .withCluster(context.getEcsClusterName())
               .withCount(1);
     } else {
       return new RunTaskRequest()
               .withLaunchType(LaunchType.FARGATE)
               .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
-              .withCluster(context.getClusterName())
+              .withCluster(context.getEcsClusterName())
               .withCount(1)
               .withNetworkConfiguration(
                   new NetworkConfiguration()

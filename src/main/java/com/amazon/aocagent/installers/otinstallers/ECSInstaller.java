@@ -15,7 +15,7 @@ import com.amazonaws.services.ecs.model.LaunchType;
 import com.amazonaws.services.ecs.model.NetworkConfiguration;
 import com.amazonaws.services.ecs.model.RunTaskRequest;
 
-public class EcsInstaller implements OTInstaller {
+public class ECSInstaller implements OTInstaller {
   private Context context;
   private ECSService ecsService;
   private IAMService iamService;
@@ -35,7 +35,7 @@ public class EcsInstaller implements OTInstaller {
     // setup ecs context for filling task definition template
     this.setupEcsContext(context);
 
-    // create and run ECS sidecar the target task definitions from template
+    // create and run ECS target task definitions from template
     final String taskDefinitionStr = this.getTaskDefinition(this.context);
 
     // register the task definition in ECS

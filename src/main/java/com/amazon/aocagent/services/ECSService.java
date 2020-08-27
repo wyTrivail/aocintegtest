@@ -4,7 +4,6 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
-import com.amazonaws.services.cloudwatch.model.Metric;
 import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.ecs.model.Cluster;
@@ -24,12 +23,12 @@ import com.amazonaws.services.ecs.model.RunTaskRequest;
 import com.amazonaws.services.ecs.model.RunTaskResult;
 import com.amazonaws.services.ecs.model.StopTaskRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class ECSService {
@@ -63,7 +62,7 @@ public class ECSService {
     try {
       request = jsonMapper.readValue(taskDef, RegisterTaskDefinitionRequest.class);
     } catch (Exception e) {
-      throw new BaseException(ExceptionCode.ECS_TASK_EXECUTION_FAIL, e.getMessage());
+      throw new BaseException(ExceptionCode.ECS_TASK_DEFINITION_PARSE_FAIL, e.getMessage());
     }
     return ecsClient.registerTaskDefinition(request);
   }
@@ -115,7 +114,6 @@ public class ECSService {
                 .isEmpty()) {
               return;
             }
-            TimeUnit.SECONDS.sleep(Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()));
           });
 
       log.info("finish metric validation");
@@ -127,6 +125,10 @@ public class ECSService {
    */
   public void cleanCluster() {
     for (String name : listClusters()) {
+      if (!name.startsWith(GenericConstants.ECS_SIDECAR_CLUSTER.getVal())
+          || !isClusterTwoHrsOlder(name)) {
+        continue;
+      }
       DeleteClusterRequest request = new DeleteClusterRequest().withCluster(name);
       try {
         ecsClient.deleteCluster(request);
@@ -134,6 +136,16 @@ public class ECSService {
         log.error("{} can't be deleted", name, e);
       }
     }
+  }
+
+  private boolean isClusterTwoHrsOlder(String name) {
+    String createdTimestamp = name.substring(name.lastIndexOf("-") + 1);
+    log.info(TimeUnit.HOURS.toMillis(2));
+    if ((System.currentTimeMillis() - Long.valueOf(createdTimestamp))
+        > TimeUnit.HOURS.toMillis(2)) {
+      return true;
+    }
+    return false;
   }
 
   private List<String> listClusters() {

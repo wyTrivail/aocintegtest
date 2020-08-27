@@ -38,18 +38,24 @@ public class Context {
   private String ecsLaunchType;
 
   /** ECS deployment mode. Eg, SIDECAR or DaemonSet. */
-  private String deploymentMode;
+  private String ecsDeploymentMode;
 
+  /** ECS cluster name. */
   private String clusterName;
 
+  /** ECS task role arn. */
   private String taskRoleArn;
 
+  /** ECS task execution role arn. */
   private String executionRoleArn;
 
+  /** ECS data emitter image. */
   private String dataEmitterImage;
 
-  private String region;
-
+  /** AOC image for testing. */
   private String aocImage;
+
+  /** Test resources region. */
+  private String region;
 
 }

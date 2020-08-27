@@ -23,6 +23,7 @@ public enum ExceptionCode {
   ECS_INSTANCE_NOT_READY(20030, "ecs container instance is not ready"),
   ECS_CLUSTER_NOT_EXIST(20031, "ecs cluster is not existed"),
   ECS_TASK_EXECUTION_FAIL(20032, "ecs cluster task failed to start"),
+  ECS_TASK_DEFINITION_PARSE_FAIL(20033, "fail to parse ecs task definition template"),
 
   EXPECTED_METRIC_NOT_FOUND(30001, "expected metric not found"),
 

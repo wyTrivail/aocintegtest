@@ -40,7 +40,7 @@ public class CommonOption {
 
   @CommandLine.Option(
       names = {"-e", "--extra-context"},
-      description = "eg, -e ecsLaunchType=EC2 -e deployMode=SIDECAR",
+      description = "eg, -e ecsLaunchType=EC2 -e ecsDeployMode=SIDECAR",
       defaultValue = "ecsLaunchType=EC2")
   private Map<String, String> extraContexts;
 
@@ -77,10 +77,10 @@ public class CommonOption {
           .entrySet()
           .forEach(
               e -> {
-                if (e.getKey().equals(GenericConstants.LAUNCH_TYPE.getVal())) {
+                if (e.getKey().equals(GenericConstants.ECS_LAUNCH_TYPE.getVal())) {
                   context.setEcsLaunchType(e.getValue());
-                } else if (e.getKey().equals(GenericConstants.DEPLOY_MODE.getVal())) {
-                  context.setDeploymentMode(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.ECS_DEPLOY_MODE.getVal())) {
+                  context.setEcsDeploymentMode(e.getValue());
                 }
               });
     }

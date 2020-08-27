@@ -59,8 +59,8 @@ public enum GenericConstants {
   CANDIDATE_UNPACK_TO("."),
 
   //ECS
-  LAUNCH_TYPE("ecsLaunchType"),
-  DEPLOY_MODE("deployMode"),
+  ECS_LAUNCH_TYPE("ecsLaunchType"),
+  ECS_DEPLOY_MODE("ecsDeployMode"),
   ECS_IAM_ROLE_NAME("ecsInstanceRole"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),

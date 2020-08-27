@@ -59,13 +59,11 @@ public enum GenericConstants {
   CANDIDATE_UNPACK_TO("."),
 
   //ECS
-  LAUNCH_TYPE("launchType"),
+  LAUNCH_TYPE("ecsLaunchType"),
   DEPLOY_MODE("deployMode"),
   ECS_IAM_ROLE_NAME("ecsInstanceRole"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
-  ECS_EC2_INSTANCE_ID("aoc-sidecar-ec2"),
-  ECS_FARGATE_INSTANCE_ID("aoc-sidecar-fargate"),
   AOC_IMAGE("mxiamxia/awscollector:"),
 
   // common constants

@@ -35,7 +35,7 @@ public class Context {
   private List<Subnet> defaultSubnets;
 
   /** ECS Service launch type. Eg, EC2 or Fargate. */
-  private String launchType;
+  private String ecsLaunchType;
 
   /** ECS deployment mode. Eg, SIDECAR or DaemonSet. */
   private String deploymentMode;

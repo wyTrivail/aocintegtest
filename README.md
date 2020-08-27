@@ -53,12 +53,12 @@ gradle run --args="integ-test -t=EC2_TEST --package-version={the version you wan
 
 ### Run ECS Integ-test with EC2 on Sidecar mode (EMF Metrics)
 ```
-gradle run --args="integ-test -t=ECS_SIDECAR --package-version={the version you want to test} -e launchType=EC2"
+gradle run --args="integ-test -t=ECS_TEST -a=EcsOptimizedAMI --package-version={the version you want to test} -e ecsLaunchType=EC2"
 ```
 
 ### Run ECS Integ-test with Fargate on Sidecar mode (EMF Metrics)
 ```
-gradle run --args="integ-test -t=ECS_SIDECAR --package-version={the version you want to test} -e launchType=FARGATE"
+gradle run --args="integ-test -t=ECS_TEST --package-version={the version you want to test} -e ecsLaunchType=FARGATE"
 ```
 
 ### Clean ECS testing resources

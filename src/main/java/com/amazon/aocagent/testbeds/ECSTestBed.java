@@ -55,7 +55,7 @@ public class ECSTestBed implements TestBed {
     this.buildNetworkContext(context);
 
     // launch new EC2 container instance for EC2 mode
-    if (context.getLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
+    if (context.getEcsLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
         && !ecsService.isContainerInstanceAvail(clusterName)) {
       log.info("launching up a container instance");
       EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);

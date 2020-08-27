@@ -60,7 +60,7 @@ public class EcsInstaller implements OTInstaller {
   }
 
   private RunTaskRequest getTaskRequest(Context context) {
-    String launchType = context.getLaunchType();
+    String launchType = context.getEcsLaunchType();
     if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
       return new RunTaskRequest()
               .withLaunchType(LaunchType.EC2)
@@ -84,7 +84,7 @@ public class EcsInstaller implements OTInstaller {
   }
 
   private String getTaskDefinition(Context context) throws BaseException {
-    String launchType = context.getLaunchType();
+    String launchType = context.getEcsLaunchType();
     try {
       if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
         return mustacheHelper.render(EcsEc2Template.ECS_EC2_TEMPLATE, context);

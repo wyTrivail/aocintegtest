@@ -22,23 +22,18 @@ public class CloudWatchService {
   }
 
   /**
-   * listMetrics fetches metrics from CloudWatch. todo we will add more methods to support multi
-   * dimension filters.
-   *
+   * listMetrics fetches metrics from CloudWatch.
    * @param nameSpace the metric namespace on CloudWatch
-   * @param dimensionFilterName the dimension name on CloudWatch
-   * @param dimensionFilterValue the dimension value on CloudWatch
+   * @param metricName the metric name on CloudWatch
    * @return List of Metrics
    */
   public List<Metric> listMetrics(
-      final String nameSpace, final String dimensionFilterName, final String dimensionFilterValue) {
+      final String nameSpace,
+      final String metricName) {
     final ListMetricsRequest listMetricsRequest =
         new ListMetricsRequest()
             .withNamespace(nameSpace)
-            .withDimensions(
-                new DimensionFilter()
-                    .withName(dimensionFilterName)
-                    .withValue(dimensionFilterValue));
+            .withMetricName(metricName);
     return amazonCloudWatch.listMetrics(listMetricsRequest).getMetrics();
   }
 }

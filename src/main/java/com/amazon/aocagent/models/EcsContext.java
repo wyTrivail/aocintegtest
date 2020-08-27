@@ -13,4 +13,16 @@ public class EcsContext {
 
   private String clusterName;
 
+  private String instanceId;
+
+  private String taskRoleArn;
+
+  private String executionRoleArn;
+
+  private String dataEmitterImage;
+
+  private String region;
+
+  private String aocImage;
+
 }

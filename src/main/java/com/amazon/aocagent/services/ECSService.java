@@ -175,7 +175,7 @@ public class ECSService {
     DescribeClustersResult response = ecsClient.describeClusters(request);
     List<Cluster> clusters = response.getClusters();
     if (clusters.isEmpty()) {
-      return Optional.of(null);
+      return Optional.ofNullable(null);
     }
     return Optional.of(clusters.get(0));
   }

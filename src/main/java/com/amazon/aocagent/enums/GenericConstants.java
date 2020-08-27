@@ -45,8 +45,10 @@ public enum GenericConstants {
    * https://github.com/mxiamxia/aws-cloudwatch-opentelemetry-sample/tree/master/generator
    * */
   METRIC_EMITTER_DOCKER_IMAGE_URL("darwhs/aoc-metric-generator"),
-  TRACE_EMITTER_DOCKER_IMAGE_URL("josephwy/trace-emitter"),
   TRACE_EMITTER_ENDPOINT("http://localhost:4567/span0"),
+  SERVICE_NAMESPACE("AWSObservability"),
+  SERVICE_NAME("CloudWatchOTService"),
+  TRACE_EMITTER_DOCKER_IMAGE_URL("josephwy/integ-test-emitter"),
 
   // validator related
   METRIC_NAMESPACE("default"),

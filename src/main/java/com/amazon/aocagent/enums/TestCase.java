@@ -1,8 +1,7 @@
 package com.amazon.aocagent.enums;
 
 import com.amazon.aocagent.installers.emiterinstallers.OTEmitterInstaller;
-import com.amazon.aocagent.installers.emiterinstallers.OTMetricEmitterInstaller;
-import com.amazon.aocagent.installers.emiterinstallers.OTTraceEmitterInstaller;
+import com.amazon.aocagent.installers.emiterinstallers.OTMetricAndTraceEmitterInstaller;
 import com.amazon.aocagent.installers.otinstallers.EcsInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTPackageInstaller;
@@ -22,7 +21,7 @@ public enum TestCase {
   EC2_TEST(
       new EC2TestBed(),
       new OTPackageInstaller(),
-      Arrays.asList(new OTMetricEmitterInstaller(), new OTTraceEmitterInstaller()),
+      Arrays.asList(new OTMetricAndTraceEmitterInstaller()),
       Arrays.asList(new MetricValidator(), new TraceValidator())),
 
   // run AOC with data emitter in ECS as sidecar

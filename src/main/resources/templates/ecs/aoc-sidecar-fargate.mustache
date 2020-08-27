@@ -1,23 +1,27 @@
 {
   "family": "aoc-FARGATE",
-  "taskRoleArn": "{{task-role-arn}}",
-  "executionRoleArn": "{{execution-role-arn}}",
+  "taskRoleArn": "{{taskRoleArn}}",
+  "executionRoleArn": "{{executionRoleArn}}",
   "networkMode": "awsvpc",
   "containerDefinitions": [
     {
       "name": "aoc-emitter",
-      "image": "{{data-emitter-image}}",
+      "image": "{{dataEmitterImage}}",
       "essential": true,
       "entryPoint": [],
       "command": [],
       "environment": [
         {
-          "name": "otlp_endpoint",
+          "name": "OTEL_OTLP_ENDPOINT",
           "value": "localhost:55680"
         },
         {
-          "name": "otlp_instance_id",
-          "value": "aoc-sidecar-fargate-1598387155299"
+          "name": "INSTANCE_ID",
+          "value": "{{instanceId}}"
+        },
+        {
+        "name": "OTEL_RESOURCE_ATTRIBUTES",
+        "value": "service.namespace=AWSObservability,service.name=CloudWatchOTService"
         }
       ],
       "dependsOn": [],
@@ -27,12 +31,12 @@
           "awslogs-group": "/ecs/ecs-cwagent-sidecar-emitter",
           "awslogs-region": "{{region}}",
           "awslogs-stream-prefix": "ecs"
-        },
-      },
+        }
+      }
     },
     {
       "name": "aoc-collector",
-      "image": "{{aoc-image}}",
+      "image": "{{aocImage}}",
       "portMappings": [
         {
           "containerPort": 55680,
@@ -49,10 +53,10 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/ecs-cwagent-sidecar-collector",
-          "awslogs-region": "us-west-2",
+          "awslogs-region": "{{region}}",
           "awslogs-stream-prefix": "ecs"
-        },
-      },
+        }
+      }
     }
   ],
   "requiresCompatibilities": [

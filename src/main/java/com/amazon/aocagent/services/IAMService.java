@@ -21,7 +21,7 @@ public class IAMService {
       "{\"Version\":\"2012-10-17\","
           + "\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":[\"ec2"
           + DNS_SUFFIX
-          + "\"]},\"Action\":[\"sts:AssumeRole\"]}]}";
+          + "\", \"ecs-tasks" + DNS_SUFFIX + "\"]},\"Action\":[\"sts:AssumeRole\"]}]}";
   private AmazonIdentityManagement amazonIdentityManagement;
   private Region region;
 
@@ -50,7 +50,7 @@ public class IAMService {
     }
   }
 
-  private String getRoleArn(String iamRoleName) {
+  public String getRoleArn(String iamRoleName) {
     GetRoleResult getRoleResult =
         amazonIdentityManagement.getRole(new GetRoleRequest().withRoleName(iamRoleName));
 
@@ -72,7 +72,7 @@ public class IAMService {
     attachRolePolicyRequest.setRoleName(iamRoleName);
 
     attachRolePolicyRequest.setPolicyArn(
-        String.format("arn:%s:iam::aws:policy/CloudWatchAgentServerPolicy", region.getPartition()));
+        String.format("arn:%s:iam::aws:policy/AdministratorAccess", region.getPartition()));
     amazonIdentityManagement.attachRolePolicy(attachRolePolicyRequest);
 
     CreateInstanceProfileRequest createInstanceProfileRequest = new CreateInstanceProfileRequest();

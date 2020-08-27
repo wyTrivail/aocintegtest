@@ -11,6 +11,7 @@ public enum GenericConstants {
   DEFAULT_S3_RELEASE_CANDIDATE_BUCKET("aoc-release-candidate"),
   DEFAULT_S3_BUCKET("aws-opentelemetry-collector-test"),
   DEFAULT_SSH_KEY_S3_BUCKET_NAME("aoc-ssh-key"),
+  DEFAULT_TRACE_S3_BUCKET_NAME("trace-expected-data"),
 
   // release related
   PACKAGE_NAME_PREFIX("aws-opentelemetry-collector."),

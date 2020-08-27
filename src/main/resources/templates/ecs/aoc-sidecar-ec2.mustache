@@ -1,7 +1,7 @@
 {
   "family": "aoc-EC2",
-  "taskRoleArn": "{{taskRoleArn}}",
-  "executionRoleArn": "{{executionRoleArn}}",
+  "taskRoleArn": "{{ecsTaskRoleArn}}",
+  "executionRoleArn": "{{ecsExecutionRoleArn}}",
   "networkMode": "bridge",
   "containerDefinitions": [
     {
@@ -13,7 +13,7 @@
       "environment": [
         {
           "name": "OTEL_OTLP_ENDPOINT",
-          "value": "localhost:55680"
+          "value": "172.17.0.1:55680"
         },
         {
           "name": "INSTANCE_ID",

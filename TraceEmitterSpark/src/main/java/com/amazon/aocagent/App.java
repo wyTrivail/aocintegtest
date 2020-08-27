@@ -20,6 +20,7 @@ import static spark.Spark.*;
 public class App {
   static final String DEFAULT_OTLP_ENDPOINT = "localhost:55680";
   static final String REQUEST_START_TIME = "requestStartTime";
+  static final String ENV_S3_REGION = "S3_REGION";
 
   private static MetricEmitter buildMetricEmitter(){
     String otlpEndpoint = DEFAULT_OTLP_ENDPOINT;
@@ -32,9 +33,18 @@ public class App {
     return new MetricEmitter(otlpEndpoint);
 
   }
+
+  private static S3Service buildS3Service(){
+    String s3Region = System.getenv(ENV_S3_REGION);
+    if(s3Region == null || s3Region.trim().equals("")){
+      throw new RuntimeException("s3region is empty");
+    }
+
+    return new S3Service(s3Region);
+  }
   public static void main(String[] args) {
     MetricEmitter metricEmitter = buildMetricEmitter();
-
+    S3Service s3Service = buildS3Service();
 
     get("/span0", (req, res) -> {
       Span currentSpan = TracingContextUtils.getCurrentSpan();
@@ -51,6 +61,10 @@ public class App {
           + "-" + traceId.substring(8);
 
       Response response = new Response(xrayTraceId, spanList);
+
+      // write the response to s3 for validation
+      s3Service.uploadTraceData(response);
+
       return response;
     }, new JsonTransformer());
 

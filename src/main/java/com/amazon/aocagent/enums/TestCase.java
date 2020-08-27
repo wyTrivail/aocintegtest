@@ -30,7 +30,7 @@ public enum TestCase {
       new ECSTestBed(),
       new ECSInstaller(),
       Arrays.asList(), // data emitter is included in sidecar installer
-      Arrays.asList(new MetricValidator())),
+      Arrays.asList(new MetricValidator(), new TraceValidator())),
   ;
 
   private TestBed testBed;

@@ -140,7 +140,6 @@ public class ECSService {
 
   private boolean isClusterTwoHrsOlder(String name) {
     String createdTimestamp = name.substring(name.lastIndexOf("-") + 1);
-    log.info(TimeUnit.HOURS.toMillis(2));
     if ((System.currentTimeMillis() - Long.valueOf(createdTimestamp))
         > TimeUnit.HOURS.toMillis(2)) {
       return true;

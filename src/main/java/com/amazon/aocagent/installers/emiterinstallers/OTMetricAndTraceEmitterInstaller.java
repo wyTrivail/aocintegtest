@@ -4,14 +4,8 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
-import com.amazon.aocagent.models.TraceFromSDK;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
   Context context;
@@ -35,8 +29,13 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
     String dockerCommand =
         String.format(
             "sudo docker run --network host "
-                + "-e OTEL_RESOURCE_ATTRIBUTES="
-                + "service.namespace=%s,service.name=%s -e INSTANCE_ID=%s -d %s",
+                + "-e S3_REGION=%s "
+                + "-e TRACE_DATA_BUCKET=%s -e TRACE_DATA_S3_KEY=%s "
+                + "-e OTEL_RESOURCE_ATTRIBUTES=service.namespace=%s,service.name=%s "
+                + "-e INSTANCE_ID=%s -d %s",
+            context.getStack().getTestingRegion(),
+            context.getStack().getTraceDataS3BucketName(),
+            context.getInstanceId(), // use instanceid as the s3 key of trace data
             GenericConstants.SERVICE_NAMESPACE.getVal(),
             GenericConstants.SERVICE_NAME.getVal(),
             context.getInstanceId(),
@@ -51,22 +50,7 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
     String curlCommand = String.format("curl %s", GenericConstants.TRACE_EMITTER_ENDPOINT.getVal());
     RetryHelper.retry(
         () -> {
-          String xrayTraceId = sshHelper.executeCommands(Arrays.asList(curlCommand));
-          context.setExpectedTraceId(xrayTraceId);
+          sshHelper.executeCommands(Arrays.asList(curlCommand));
         });
-
-    // try twice at this moment, todo, remove this try after auto-instrument fix the first request
-    // problem.
-    TimeUnit.SECONDS.sleep(5);
-    String traceData = sshHelper.executeCommands(Arrays.asList(curlCommand));
-
-    // load metrics from yaml
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    TraceFromSDK traceFromSDK =
-        mapper.readValue(traceData.getBytes(StandardCharsets.UTF_8),
-            new TypeReference<TraceFromSDK>() {});
-
-    context.setExpectedTraceId(traceFromSDK.getTraceId());
-    context.setExpectedSpanIdList(traceFromSDK.getSpanIdList());
   }
 }

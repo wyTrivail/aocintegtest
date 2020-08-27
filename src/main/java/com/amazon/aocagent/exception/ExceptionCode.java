@@ -28,6 +28,12 @@ public enum ExceptionCode {
 
   VERSION_NOT_MATCHED(40001, "version is not matched in the candidate package"),
   GITHUB_SHA_NOT_MATCHED(40002, "github sha is not matched in the candidate package"),
+
+  // validating errors
+  TRACE_ID_NOT_MATCHED(50001, "trace id not matched"),
+  TRACE_SPAN_LIST_NOT_MATCHED(50002, "trace span list has different length"),
+  TRACE_SPAN_NOT_MATCHED(50003, "trace span not matched"),
+  TRACE_LIST_NOT_MATCHED(50004, "trace list has different length"),
   ;
   private int code;
   private String message;

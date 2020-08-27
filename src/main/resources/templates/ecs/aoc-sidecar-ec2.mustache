@@ -1,12 +1,8 @@
 {
-  "requestClientOptions": {
-    "readLimit": 131073,
-    "skipAppendUriPath": false
-  },
-  "family": "aoc-FARGATE",
+  "family": "aoc-EC2",
   "taskRoleArn": "arn:aws:iam::252610625673:role/CWAgentECSTaskRole",
   "executionRoleArn": "arn:aws:iam::252610625673:role/CWAgentECSExecutionRole",
-  "networkMode": "awsvpc",
+  "networkMode": "bridge",
   "containerDefinitions": [
     {
       "name": "aoc-emitter",
@@ -19,11 +15,11 @@
       "environment": [
         {
           "name": "otlp_endpoint",
-          "value": "localhost:55680"
+          "value": "172.17.0.1:55680"
         },
         {
           "name": "otlp_instance_id",
-          "value": "aoc-sidecar-fargate-1598387155299"
+          "value": "aoc-sidecar-ec2-1598387216835"
         }
       ],
       "environmentFiles": [],
@@ -89,7 +85,7 @@
   "volumes": [],
   "placementConstraints": [],
   "requiresCompatibilities": [
-    "FARGATE"
+    "EC2"
   ],
   "cpu": "256",
   "memory": "512"

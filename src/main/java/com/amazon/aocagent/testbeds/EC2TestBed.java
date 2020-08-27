@@ -34,7 +34,7 @@ public class EC2TestBed implements TestBed {
 
     ec2Service = new EC2Service(context.getStack().getTestingRegion());
 
-    EC2InstanceParams instanceParams = this.buildEc2InstanceConfig();
+    EC2InstanceParams instanceParams = this.buildEc2InstanceConfig(context);
 
     // launch ec2 instance for testing
     Instance instance = ec2Service.launchInstance(instanceParams);
@@ -49,9 +49,7 @@ public class EC2TestBed implements TestBed {
     // wait until the instance is ready to login
     log.info("wait until the instance is ready to login");
     RetryHelper.retry(
-        () -> {
-          sshHelper.isSSHReady();
-        });
+        () -> sshHelper.isSSHReady());
 
     // install docker
     RetryHelper.retry(() -> installDocker(sshHelper));
@@ -62,7 +60,7 @@ public class EC2TestBed implements TestBed {
     return context;
   }
 
-  private EC2InstanceParams buildEc2InstanceConfig() {
+  private EC2InstanceParams buildEc2InstanceConfig(Context context) {
     // tag instance for management
     TagSpecification tagSpecification =
             new TagSpecification()
@@ -76,10 +74,11 @@ public class EC2TestBed implements TestBed {
             .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
             .securityGrpName(GenericConstants.SECURITY_GROUP_NAME.getVal())
             .tagSpecification(tagSpecification)
+            .arch(context.getTestingAMI().getS3Package().getLocalPackage().getArchitecture())
             .build();
   }
 
-  private void prepareSSHKey(final Context context) throws BaseException {
+  private void prepareSSHKey(final Context context) {
     // download the ssh keypair from s3
     ec2Service.downloadSSHKey(
         context.getStack().getSshKeyS3BucketName(),

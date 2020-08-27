@@ -6,8 +6,11 @@ import com.amazon.aocagent.models.EC2InstanceParams;
 import com.amazon.aocagent.services.AwsNetworkService;
 import com.amazon.aocagent.services.EC2Service;
 import com.amazon.aocagent.services.ECSService;
+import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
+import com.amazonaws.services.ec2.model.DescribeSubnetsResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.ResourceType;
+import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.TagSpecification;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +25,7 @@ public class ECSTestBed implements TestBed {
   private ECSService ecsService;
   private EC2Service ec2Service;
   private AwsNetworkService networkService;
+
   private Context context;
 
   @Override
@@ -39,33 +43,46 @@ public class ECSTestBed implements TestBed {
    */
   @Override
   public Context launchTestBed() throws Exception {
-      // create ECS cluster
-      final String clusterName = this.generateEcsClusterName(context);
-      if (!ecsService.describeCluster(GenericConstants.ECS_SIDECAR_CLUSTER.getVal()).isPresent()) {
-        ecsService.createCluster(clusterName);
-      }
-      // get the default security group, vpc and subnets
-      // from the provided aws account
-      this.buildNetworkContext(context);
+    // create ECS cluster
+    final String clusterName = this.generateEcsClusterName();
+    this.context.getEcsContext().setClusterName(clusterName);
+    if (!ecsService.describeCluster(clusterName).isPresent()) {
+      ecsService.createCluster(clusterName);
+    }
+    // get the default security group, vpc and subnets
+    // from the provided aws account
+    this.buildNetworkContext(context);
 
-      // launch new EC2 container instance for EC2 mode
-      if (context.getLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
-          && !ecsService.isContainerInstanceAvail(clusterName)) {
-        log.info("launching up a container instance");
-        EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
-        Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams);
-        context.setEcsContainerInstance(containerInstance.getInstanceId());
-        log.info(
-            "created new ECS container instance: {} - {} ",
-            containerInstance.getInstanceId(),
-            containerInstance.getState().getName());
-        ecsService.waitForContainerInstanceRegistered(clusterName);
-      }
+    // launch new EC2 container instance for EC2 mode
+    if (context.getEcsContext().getLaunchType().equalsIgnoreCase(GenericConstants.EC2.getVal())
+        && !ecsService.isContainerInstanceAvail(clusterName)) {
+      log.info("launching up a container instance");
+      EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
+      Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams);
+      log.info(
+          "created new ECS container instance: {} - {} ",
+          containerInstance.getInstanceId(),
+          containerInstance.getState().getName());
+      ecsService.waitForContainerInstanceRegistered(clusterName);
+    }
 
     return this.context;
   }
 
-  private String generateEcsClusterName(Context context) {
+  private void buildNetworkContext(Context context) throws Exception {
+    DescribeSecurityGroupsResult securityGroupsResult =
+        networkService.describeDefaultSecurityGroup();
+    SecurityGroup defaultGroup = securityGroupsResult.getSecurityGroups().get(0);
+    context.setDefaultSecurityGrpId(defaultGroup.getGroupId());
+    context.setDefaultVpcId(defaultGroup.getVpcId());
+
+    DescribeSubnetsResult subnetsResult =
+        networkService.describeVpcSubnets(context.getDefaultVpcId());
+    context.setDefaultSubnets(subnetsResult.getSubnets());
+  }
+
+  private String generateEcsClusterName() {
+    return GenericConstants.ECS_SIDECAR_CLUSTER.getVal() + "-" + System.currentTimeMillis();
   }
 
   /**
@@ -86,10 +103,10 @@ public class ECSTestBed implements TestBed {
         Base64.getEncoder()
             .encodeToString(
                 String.format(
-                        CONTAINER_INSTANCE_USER_DATA, GenericConstants.ECS_SIDECAR_CLUSTER.getVal())
+                    CONTAINER_INSTANCE_USER_DATA, context.getEcsContext().getClusterName())
                     .getBytes());
     return EC2InstanceParams.builder()
-        .amiId(GenericConstants.ECS_EC2_AMI_ID.getVal())
+        .amiId(context.getTestingAMI().getAMIId())
         .iamRoleName(GenericConstants.ECS_IAM_ROLE_NAME.getVal())
         .securityGrpName(GenericConstants.DEFAULT.getVal())
         .tagSpecification(tagSpecification)

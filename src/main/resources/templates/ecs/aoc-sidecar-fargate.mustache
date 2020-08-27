@@ -1,18 +1,12 @@
 {
-  "requestClientOptions": {
-    "readLimit": 131073,
-    "skipAppendUriPath": false
-  },
   "family": "aoc-FARGATE",
-  "taskRoleArn": "arn:aws:iam::252610625673:role/CWAgentECSTaskRole",
-  "executionRoleArn": "arn:aws:iam::252610625673:role/CWAgentECSExecutionRole",
+  "taskRoleArn": "{{task-role-arn}}",
+  "executionRoleArn": "{{execution-role-arn}}",
   "networkMode": "awsvpc",
   "containerDefinitions": [
     {
       "name": "aoc-emitter",
-      "image": "mxiamxia/aoc-metric-generator",
-      "links": [],
-      "portMappings": [],
+      "image": "{{data-emitter-image}}",
       "essential": true,
       "entryPoint": [],
       "command": [],
@@ -26,32 +20,19 @@
           "value": "aoc-sidecar-fargate-1598387155299"
         }
       ],
-      "environmentFiles": [],
-      "mountPoints": [],
-      "volumesFrom": [],
-      "secrets": [],
       "dependsOn": [],
-      "dnsServers": [],
-      "dnsSearchDomains": [],
-      "extraHosts": [],
-      "dockerSecurityOptions": [],
-      "ulimits": [],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/ecs-cwagent-sidecar-emitter",
-          "awslogs-region": "us-west-2",
+          "awslogs-region": "{{region}}",
           "awslogs-stream-prefix": "ecs"
         },
-        "secretOptions": []
       },
-      "systemControls": [],
-      "resourceRequirements": []
     },
     {
       "name": "aoc-collector",
-      "image": "mxiamxia/awscollector:v0.1.10",
-      "links": [],
+      "image": "{{aoc-image}}",
       "portMappings": [
         {
           "containerPort": 55680,
@@ -63,16 +44,7 @@
       "entryPoint": [],
       "command": [],
       "environment": [],
-      "environmentFiles": [],
-      "mountPoints": [],
-      "volumesFrom": [],
-      "secrets": [],
       "dependsOn": [],
-      "dnsServers": [],
-      "dnsSearchDomains": [],
-      "extraHosts": [],
-      "dockerSecurityOptions": [],
-      "ulimits": [],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -80,23 +52,12 @@
           "awslogs-region": "us-west-2",
           "awslogs-stream-prefix": "ecs"
         },
-        "secretOptions": []
       },
-      "systemControls": [],
-      "resourceRequirements": []
     }
   ],
-  "volumes": [],
-  "placementConstraints": [],
   "requiresCompatibilities": [
     "FARGATE"
   ],
   "cpu": "256",
-  "memory": "512",
-  "tags": [],
-  "inferenceAccelerators": [],
-  "generalProgressListener": {
-    "syncCallSafe": true
-  },
-  "readLimit": 131073
+  "memory": "512"
 }

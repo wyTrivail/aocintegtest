@@ -25,7 +25,7 @@ public class RetryHelper {
         retryable.execute();
         return;
       } catch (Exception ex) {
-        log.error(ex.getMessage());
+        log.error("exception during retry, you may ignore it", ex);
         TimeUnit.MILLISECONDS.sleep(sleepInMilliSeconds);
       }
     }

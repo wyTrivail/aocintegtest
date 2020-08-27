@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+}
+
+applicationName = "TraceEmitter"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local' }
+}
+
+dependencies {
+    implementation "com.sparkjava:spark-core:2.9.2"
+    implementation "org.apache.httpcomponents:httpclient:4.5.12"
+    implementation "io.opentelemetry:opentelemetry-api:0.8.0-SNAPSHOT"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'com.google.code.gson:gson:2.8.6'
+}
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'com.amazon.aocagent.App'
+}
+

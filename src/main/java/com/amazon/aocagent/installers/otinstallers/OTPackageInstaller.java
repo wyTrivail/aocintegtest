@@ -45,8 +45,7 @@ public class OTPackageInstaller implements OTInstaller {
         context
             .getTestingAMI()
             .getDownloadingCommand(
-                downloadingLink,
-                context.getTestingAMI().getS3Package().getPackageName());
+                downloadingLink, context.getTestingAMI().getS3Package().getPackageName());
 
     // execute downloading command
     RetryHelper.retry(
@@ -58,8 +57,9 @@ public class OTPackageInstaller implements OTInstaller {
   private void installPackage() throws Exception {
     // get installing command
     String installingCommand =
-        context.getTestingAMI().getInstallingCommand(
-            context.getTestingAMI().getS3Package().getPackageName());
+        context
+            .getTestingAMI()
+            .getInstallingCommand(context.getTestingAMI().getS3Package().getPackageName());
 
     // execute installing command
     RetryHelper.retry(
@@ -70,7 +70,7 @@ public class OTPackageInstaller implements OTInstaller {
 
   private void configureAndStart() throws Exception {
     // generate configuration file
-    String configContent = mustacheHelper.render(context.getOtConfig().getVal(), context);
+    String configContent = mustacheHelper.render(context.getOtConfig(), context);
 
     // write config onto the remote instance
     String configuringCommand =

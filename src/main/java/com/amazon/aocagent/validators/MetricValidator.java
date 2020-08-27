@@ -31,9 +31,10 @@ public class MetricValidator implements IValidator {
   private static final String DEFAULT_DIMENSION_VALUE = "cloudwatch-otel";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
+  private Context context;
 
   @Override
-  public void validate(Context context) throws Exception {
+  public void validate() throws Exception {
     log.info("Start metric validating");
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
     CloudWatchService cloudWatchService =
@@ -181,5 +182,10 @@ public class MetricValidator implements IValidator {
       strMetric.append(",");
     }
     return strMetric.toString();
+  }
+
+  @Override
+  public void init(Context context) throws Exception {
+    this.context = context;
   }
 }

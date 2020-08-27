@@ -14,7 +14,6 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local' }
 }
 
 dependencies {
@@ -23,11 +22,14 @@ dependencies {
     implementation "io.grpc:grpc-api:1.29.0"
     implementation "io.grpc:grpc-netty-shaded:1.29.0"
     implementation "org.apache.httpcomponents:httpclient:4.5.12"
-    implementation "io.opentelemetry:opentelemetry-api:0.8.0-SNAPSHOT"
-    implementation "io.opentelemetry:opentelemetry-sdk-extension-auto-config:0.8.0-SNAPSHOT"
-    implementation "io.opentelemetry:opentelemetry-exporters-otlp:0.8.0-SNAPSHOT"
+    implementation files("opentelemetry-api-0.8.0-20200817.150511-28.jar")
+    implementation files("opentelemetry-context-prop-0.8.0-20200817.170927-29.jar")
     testCompile group: 'junit', name: 'junit', version: '4.12'
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    // aws sdk
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.811')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
 }
 
 compileJava {

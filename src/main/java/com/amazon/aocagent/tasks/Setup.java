@@ -60,7 +60,8 @@ public class Setup implements ITask {
         Arrays.asList(
             context.getStack().getS3BucketName(),
             context.getStack().getS3ReleaseCandidateBucketName(),
-            context.getStack().getSshKeyS3BucketName())) {
+            context.getStack().getSshKeyS3BucketName(),
+            context.getStack().getTraceDataS3BucketName())) {
       try {
         s3Service.createBucket(bucketName);
       } catch (BaseException ex) {

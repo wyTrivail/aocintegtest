@@ -21,7 +21,8 @@ public class BatchedValidator {
    */
   public void validate() throws Exception {
     for (IValidator validator : this.validatorList) {
-      validator.validate(context);
+      validator.init(context);
+      validator.validate();
     }
 
     log.info("Validation is passed!!!");

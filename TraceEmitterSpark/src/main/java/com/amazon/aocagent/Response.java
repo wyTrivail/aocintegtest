@@ -15,6 +15,12 @@ public class Response {
     this.spanIdList = spanIdList;
   }
 
+  public String toJson() throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+    return mapper.writeValueAsString(this);
+
+  }
+
   public String getTraceId(){
     return traceId;
   }
@@ -23,9 +29,5 @@ public class Response {
     return spanIdList;
   }
 
-  public String toJson() throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-    return mapper.writeValueAsString(this);
 
-  }
 }

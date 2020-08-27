@@ -1,5 +1,6 @@
 package com.amazon.aocagent.commands;
 
+import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.models.Context;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 @CommandLine.Command(footer = "Common footer")
 @Log4j2
@@ -35,6 +37,12 @@ public class CommonOption {
       description = "stack file path, .aoc-stack.yml by default",
       defaultValue = ".aoc-stack.yml")
   private String stackFilePath;
+
+  @CommandLine.Option(
+      names = {"-e", "--extra-context"},
+      description = "eg, -e ecsLaunchType=EC2 -e ecsDeployMode=SIDECAR",
+      defaultValue = "ecsLaunchType=EC2")
+  private Map<String, String> extraContexts;
 
   /**
    * buildContext build the context object based on the command args.
@@ -63,6 +71,19 @@ public class CommonOption {
               .trim();
     }
     context.setAgentVersion(this.version);
+
+    if (!extraContexts.isEmpty()) {
+      extraContexts
+          .entrySet()
+          .forEach(
+              e -> {
+                if (e.getKey().equals(GenericConstants.ECS_LAUNCH_TYPE.getVal())) {
+                  context.setEcsLaunchType(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.ECS_DEPLOY_MODE.getVal())) {
+                  context.setEcsDeploymentMode(e.getValue());
+                }
+              });
+    }
 
     return context;
   }

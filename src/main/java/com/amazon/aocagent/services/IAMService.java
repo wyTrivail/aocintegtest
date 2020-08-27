@@ -14,8 +14,6 @@ import com.amazonaws.services.identitymanagement.model.GetRoleResult;
 import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.Arrays;
-
 @Log4j2
 public class IAMService {
   private static final String DNS_SUFFIX = ".amazonaws.com";
@@ -23,7 +21,7 @@ public class IAMService {
       "{\"Version\":\"2012-10-17\","
           + "\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":[\"ec2"
           + DNS_SUFFIX
-          + "\"]},\"Action\":[\"sts:AssumeRole\"]}]}";
+          + "\", \"ecs-tasks" + DNS_SUFFIX + "\"]},\"Action\":[\"sts:AssumeRole\"]}]}";
   private AmazonIdentityManagement amazonIdentityManagement;
   private Region region;
 
@@ -52,7 +50,12 @@ public class IAMService {
     }
   }
 
-  private String getRoleArn(String iamRoleName) {
+  /**
+   * get IAM role arn per role name.
+   * @param iamRoleName role name
+   * @return role arn
+   */
+  public String getRoleArn(String iamRoleName) {
     GetRoleResult getRoleResult =
         amazonIdentityManagement.getRole(new GetRoleRequest().withRoleName(iamRoleName));
 
@@ -70,17 +73,12 @@ public class IAMService {
     CreateRoleResult createRoleResult = amazonIdentityManagement.createRole(createRoleRequest);
     final String roleArn = createRoleResult.getRole().getArn();
 
-    for (String policy :
-        Arrays.asList(
-            String.format(
-                "arn:%s:iam::aws:policy/CloudWatchAgentServerPolicy", region.getPartition()),
-            String.format("arn:%s:iam::aws:policy/AWSXrayFullAccess", region.getPartition()),
-            String.format("arn:%s:iam::aws:policy/AmazonS3FullAccess", region.getPartition()))) {
-      AttachRolePolicyRequest attachRolePolicyRequest = new AttachRolePolicyRequest();
-      attachRolePolicyRequest.setRoleName(iamRoleName);
-      attachRolePolicyRequest.setPolicyArn(policy);
-      amazonIdentityManagement.attachRolePolicy(attachRolePolicyRequest);
-    }
+    AttachRolePolicyRequest attachRolePolicyRequest = new AttachRolePolicyRequest();
+    attachRolePolicyRequest.setRoleName(iamRoleName);
+
+    attachRolePolicyRequest.setPolicyArn(
+        String.format("arn:%s:iam::aws:policy/AdministratorAccess", region.getPartition()));
+    amazonIdentityManagement.attachRolePolicy(attachRolePolicyRequest);
 
     CreateInstanceProfileRequest createInstanceProfileRequest = new CreateInstanceProfileRequest();
     createInstanceProfileRequest.setInstanceProfileName(iamRoleName);

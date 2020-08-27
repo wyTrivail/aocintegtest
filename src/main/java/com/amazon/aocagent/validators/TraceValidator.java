@@ -82,7 +82,8 @@ public class TraceValidator implements IValidator {
     // the spaces so that the yaml format will be invalid to read
     ObjectMapper mapper = new ObjectMapper(new JsonFactory());
     TraceFromEmitter traceFromEmitter =
-        mapper.readValue(strTraceData.getBytes(StandardCharsets.UTF_8), new TypeReference<>() {});
+        mapper.readValue(strTraceData.getBytes(StandardCharsets.UTF_8),
+            new TypeReference<TraceFromEmitter>() {});
 
     // convert the trace data into xray format
     String yamlExpectedTrace = mustacheHelper.render(context.getExpectedTrace(), traceFromEmitter);
@@ -91,7 +92,8 @@ public class TraceValidator implements IValidator {
     mapper = new ObjectMapper(new YAMLFactory());
     List<Trace> expectedTraceList =
         mapper.readValue(
-            yamlExpectedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<>() {});
+            yamlExpectedTrace.getBytes(StandardCharsets.UTF_8),
+            new TypeReference<List<Trace>>() {});
 
     return expectedTraceList;
   }
@@ -110,7 +112,8 @@ public class TraceValidator implements IValidator {
 
     for (int i = 0; i != trace1.getSegments().size(); ++i) {
       // check span id
-      if (!trace1.getSegments().get(i).getId().equals(trace2.getSegments().get(i).getId())) {
+      if (!trace1.getSegments().get(i).getId()
+          .equals(trace2.getSegments().get(i).getId())) {
         throw new BaseException(ExceptionCode.TRACE_SPAN_NOT_MATCHED);
       }
     }

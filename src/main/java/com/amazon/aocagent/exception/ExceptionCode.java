@@ -18,6 +18,12 @@ public enum ExceptionCode {
   STACK_FILE_NOT_FOUND(20012, "stack file not found, please setup it"),
   S3_BUCKET_IS_EXISTED_IN_CURRENT_ACCOUNT(20013, "s3 bucket is already existed in your account"),
   S3_BUCKET_IS_EXISTED_GLOBALLY(20014, "s3 bucket is already existed globally"),
+  NO_DEFAULT_SECURITY_GROUP(20015, "no default security group found"),
+  NO_AVAILABLE_SUBNET(20016, "no available subnet found for vcp"),
+  ECS_INSTANCE_NOT_READY(20030, "ecs container instance is not ready"),
+  ECS_CLUSTER_NOT_EXIST(20031, "ecs cluster is not existed"),
+  ECS_TASK_EXECUTION_FAIL(20032, "ecs cluster task failed to start"),
+  ECS_TASK_DEFINITION_PARSE_FAIL(20033, "fail to parse ecs task definition template"),
 
   EXPECTED_METRIC_NOT_FOUND(30001, "expected metric not found"),
 

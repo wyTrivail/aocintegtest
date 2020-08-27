@@ -48,9 +48,23 @@ local-packages
 ### Run EC2 Integ-test
 
 ````
-gradle run --args="integ-test -t=EC2Test --package-version={the version you want to test}"
+gradle run --args="integ-test -t=EC2_TEST --package-version={the version you want to test}"
 ````
 
+### Run ECS Integ-test with EC2 on Sidecar mode (EMF Metrics)
+```
+gradle run --args="integ-test -t=ECS_TEST -a=EcsOptimizedAMI --package-version={the version you want to test} -e ecsLaunchType=EC2"
+```
+
+### Run ECS Integ-test with Fargate on Sidecar mode (EMF Metrics)
+```
+gradle run --args="integ-test -t=ECS_TEST --package-version={the version you want to test} -e ecsLaunchType=FARGATE"
+```
+
+### Clean ECS testing resources
+```
+gradle run --args="clean -t=ECSClean --package-version={the version you want to test}"
+```
 
 
 ### Command Help

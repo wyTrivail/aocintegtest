@@ -43,8 +43,10 @@ public class IntegTest implements ITask {
   public void execute() throws Exception {
     Context context = testBed.launchTestBed();
 
-    otInstaller.init(context);
-    otInstaller.installAndStart();
+    if (otInstaller != null) {
+      otInstaller.init(context);
+      otInstaller.installAndStart();
+    }
 
     for (OTEmitterInstaller emitterInstaller : this.otEmitterInstallerList) {
       emitterInstaller.init(context);

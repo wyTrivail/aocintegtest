@@ -5,8 +5,7 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
-import com.amazon.aocagent.models.Context;
-import com.amazon.aocagent.testamis.ITestAMI;
+import com.amazon.aocagent.models.EC2InstanceParams;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.AmazonEC2Exception;
@@ -27,13 +26,11 @@ import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.IpRange;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
 import com.amazonaws.services.ec2.model.Reservation;
-import com.amazonaws.services.ec2.model.ResourceType;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.SecurityGroup;
-import com.amazonaws.services.ec2.model.Tag;
-import com.amazonaws.services.ec2.model.TagSpecification;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
+import com.google.common.base.Strings;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import com.amazonaws.services.ec2.model.InstanceType;
@@ -70,36 +67,30 @@ public class EC2Service {
   /**
    * launchInstance launches one ec2 instance.
    *
-   * @param testAMI instance of ITestAMI
+   * @param params the instance setup configuration params
    * @return InstanceID
    */
-  public Instance launchInstance(ITestAMI testAMI) throws Exception {
-    // tag instance for management
-    TagSpecification tagSpecification =
-        new TagSpecification()
-            .withResourceType(ResourceType.Instance)
-            .withTags(
-                new Tag(
-                    GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
-                    GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()));
-
+  public Instance launchInstance(EC2InstanceParams params) throws Exception {
     // create request
     RunInstancesRequest runInstancesRequest =
         new RunInstancesRequest()
-            .withImageId(testAMI.getAMIId())
+            .withImageId(params.getAmiId())
             .withMonitoring(false)
             .withMaxCount(1)
             .withMinCount(1)
-            .withTagSpecifications(tagSpecification)
-            .withKeyName(GenericConstants.SSH_KEY_NAME.getVal())
+            .withTagSpecifications(params.getTagSpecification())
+            .withKeyName(params.getSshKeyName())
             .withSecurityGroupIds(
-                getOrCreateSecurityGroupByName(GenericConstants.SECURITY_GROUP_NAME.getVal()))
+                getOrCreateSecurityGroupByName(params.getSecurityGrpName()))
             .withIamInstanceProfile(
                 new IamInstanceProfileSpecification()
-                    .withName(GenericConstants.IAM_ROLE_NAME.getVal()));
+                    .withName(params.getIamRoleName()));
+    if (!Strings.isNullOrEmpty(params.getUserData())) {
+      runInstancesRequest.withUserData(params.getUserData());
+    }
 
 
-    if (testAMI.getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
+    if (params.getArch() == Architecture.ARM64) {
       runInstancesRequest.setInstanceType(InstanceType.A1Medium);
     }
 
@@ -194,6 +185,7 @@ public class EC2Service {
   public void createSSHKeyIfNotExisted(String keyPairName, String bucketToStore)
       throws IOException, BaseException {
     if (isKeyPairExisted(keyPairName)) {
+      log.info("{} - ssh key pair existed", keyPairName);
       return;
     }
 

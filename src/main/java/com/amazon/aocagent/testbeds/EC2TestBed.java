@@ -75,6 +75,7 @@ public class EC2TestBed implements TestBed {
             .securityGrpName(GenericConstants.SECURITY_GROUP_NAME.getVal())
             .tagSpecification(tagSpecification)
             .arch(context.getTestingAMI().getS3Package().getLocalPackage().getArchitecture())
+            .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
             .build();
   }
 

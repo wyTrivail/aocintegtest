@@ -102,11 +102,12 @@ public class S3Service {
 
   /**
    * getS3ObjectAsString get s3 object and transfer it to string.
+   *
    * @param bucketName the s3 bucket name
    * @param key the s3 object key name
    * @return object content as string
    */
-  public String getS3ObjectAsString(String bucketName, String key){
+  public String getS3ObjectAsString(String bucketName, String key) {
     log.info("get s3 object as string {}/{}", bucketName, key);
     return amazonS3.getObjectAsString(bucketName, key);
   }

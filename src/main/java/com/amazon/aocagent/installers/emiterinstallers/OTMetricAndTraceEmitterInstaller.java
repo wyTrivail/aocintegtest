@@ -4,14 +4,8 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
-import com.amazon.aocagent.models.TraceFromEmitter;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
   Context context;
@@ -34,7 +28,11 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
     // use host mode to interact with imds
     String dockerCommand =
         String.format(
-            "sudo docker run --network host -e S3_REGION=%s -e TRACE_DATA_BUCKET=%s -e TRACE_DATA_S3_KEY=%s -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=%s,service.name=%s -e INSTANCE_ID=%s -d %s",
+            "sudo docker run --network host "
+                + "-e S3_REGION=%s "
+                + "-e TRACE_DATA_BUCKET=%s -e TRACE_DATA_S3_KEY=%s "
+                + "-e OTEL_RESOURCE_ATTRIBUTES=service.namespace=%s,service.name=%s "
+                + "-e INSTANCE_ID=%s -d %s",
             context.getStack().getTestingRegion(),
             context.getStack().getTraceDataS3BucketName(),
             context.getInstanceId(), // use instanceid as the s3 key of trace data
@@ -54,6 +52,5 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
         () -> {
           sshHelper.executeCommands(Arrays.asList(curlCommand));
         });
-
   }
 }

@@ -18,7 +18,6 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,9 +46,10 @@ public class TraceValidator implements IValidator {
         MAX_RETRY_COUNT,
         () -> {
           List<Trace> traceList =
-              xrayService.listTraceByIds(expectedTraceList.stream()
-              .map(trace -> trace.getId())
-              .collect(Collectors.toList()));
+              xrayService.listTraceByIds(
+                  expectedTraceList.stream()
+                      .map(trace -> trace.getId())
+                      .collect(Collectors.toList()));
 
           traceList.sort(Comparator.comparing(Trace::getId));
 
@@ -60,7 +60,8 @@ public class TraceValidator implements IValidator {
           }
 
           for (int i = 0; i != expectedTraceList.size(); ++i) {
-            // remove the s3 span as the auto-instrumenting of s3 happens before we store trace data onto s3.
+            // remove the s3 span as the auto-instrumenting of s3 happens before we store trace data
+            // onto s3.
             Trace trace = traceList.get(i);
             trace.getSegments().removeIf(span -> span.getDocument().contains("AWS::S3"));
             compareTwoTraces(expectedTraceList.get(i), trace);
@@ -70,17 +71,18 @@ public class TraceValidator implements IValidator {
 
   private List<Trace> getExpectedTrace() throws IOException {
     // get expected trace from s3
-    String strTraceData = s3Service.getS3ObjectAsString(
-        context.getStack().getTraceDataS3BucketName(),
-        context.getInstanceId() // we use instanceid as the s3key
-    );
+    String strTraceData =
+        s3Service.getS3ObjectAsString(
+            context.getStack().getTraceDataS3BucketName(),
+            context.getInstanceId() // we use instanceid as the s3key
+            );
     log.info("get expected trace data from s3: {}", strTraceData);
 
-    // load traceData from json, we use json instead of yaml because storing yaml in s3 will lose the spaces so that the yaml format will be invalid to read
+    // load traceData from json, we use json instead of yaml because storing yaml in s3 will lose
+    // the spaces so that the yaml format will be invalid to read
     ObjectMapper mapper = new ObjectMapper(new JsonFactory());
     TraceFromEmitter traceFromEmitter =
-        mapper.readValue(
-            strTraceData.getBytes(StandardCharsets.UTF_8), new TypeReference<>() {});
+        mapper.readValue(strTraceData.getBytes(StandardCharsets.UTF_8), new TypeReference<>() {});
 
     // convert the trace data into xray format
     String yamlExpectedTrace = mustacheHelper.render(context.getExpectedTrace(), traceFromEmitter);

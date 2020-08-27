@@ -21,6 +21,4 @@ public class Context {
   private OTConfig otConfig;
   private ExpectedMetric expectedMetric;
   private ExpectedTrace expectedTrace;
-  private String expectedTraceId;
-  private List<String> expectedSpanIdList;
 }

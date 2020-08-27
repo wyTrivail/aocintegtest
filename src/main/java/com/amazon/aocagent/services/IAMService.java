@@ -14,6 +14,8 @@ import com.amazonaws.services.identitymanagement.model.GetRoleResult;
 import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.Arrays;
+
 @Log4j2
 public class IAMService {
   private static final String DNS_SUFFIX = ".amazonaws.com";
@@ -68,12 +70,17 @@ public class IAMService {
     CreateRoleResult createRoleResult = amazonIdentityManagement.createRole(createRoleRequest);
     final String roleArn = createRoleResult.getRole().getArn();
 
-    AttachRolePolicyRequest attachRolePolicyRequest = new AttachRolePolicyRequest();
-    attachRolePolicyRequest.setRoleName(iamRoleName);
-
-    attachRolePolicyRequest.setPolicyArn(
-        String.format("arn:%s:iam::aws:policy/CloudWatchAgentServerPolicy", region.getPartition()));
-    amazonIdentityManagement.attachRolePolicy(attachRolePolicyRequest);
+    for (String policy :
+        Arrays.asList(
+            String.format(
+                "arn:%s:iam::aws:policy/CloudWatchAgentServerPolicy", region.getPartition()),
+            String.format("arn:%s:iam::aws:policy/AWSXrayFullAccess", region.getPartition()),
+            String.format("arn:%s:iam::aws:policy/AmazonS3FullAccess", region.getPartition()))) {
+      AttachRolePolicyRequest attachRolePolicyRequest = new AttachRolePolicyRequest();
+      attachRolePolicyRequest.setRoleName(iamRoleName);
+      attachRolePolicyRequest.setPolicyArn(policy);
+      amazonIdentityManagement.attachRolePolicy(attachRolePolicyRequest);
+    }
 
     CreateInstanceProfileRequest createInstanceProfileRequest = new CreateInstanceProfileRequest();
     createInstanceProfileRequest.setInstanceProfileName(iamRoleName);

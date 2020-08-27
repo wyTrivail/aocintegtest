@@ -56,6 +56,8 @@ public class Setup implements Runnable {
 
     stack.setS3BucketName(String.join("-", GenericConstants.DEFAULT_S3_BUCKET.getVal(), timestamp));
 
+    stack.setTraceDataS3BucketName(String.join("-", GenericConstants.DEFAULT_TRACE_S3_BUCKET_NAME.getVal(), timestamp));
+
     stack.setTestingRegion(GenericConstants.DEFAULT_REGION.getVal());
 
     return stack;

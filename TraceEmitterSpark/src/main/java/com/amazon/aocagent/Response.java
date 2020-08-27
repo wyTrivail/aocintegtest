@@ -1,5 +1,9 @@
 package com.amazon.aocagent;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.List;
 
 public class Response {
@@ -17,5 +21,11 @@ public class Response {
 
   public List<String> getSpanIdList(){
     return spanIdList;
+  }
+
+  public String toJson() throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+    return mapper.writeValueAsString(this);
+
   }
 }

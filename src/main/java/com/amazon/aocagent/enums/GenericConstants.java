@@ -64,7 +64,7 @@ public enum GenericConstants {
   ECS_DEPLOY_MODE("ecsDeployMode"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
-  AOC_IMAGE("mxiamxia/awscollector:"),
+  AOC_IMAGE("josephwy/awscollector:"),
 
   // common constants
   EC2("EC2"),

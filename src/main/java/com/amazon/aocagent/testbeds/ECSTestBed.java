@@ -44,8 +44,10 @@ public class ECSTestBed implements TestBed {
    */
   @Override
   public Context launchTestBed() throws Exception {
+    // ECS uses current timestamp as instance id
+    context.setInstanceId(String.valueOf(System.currentTimeMillis()));
     // create ECS cluster
-    final String clusterName = this.generateEcsClusterName();
+    final String clusterName = this.generateEcsClusterName(context);
     this.context.setEcsClusterName(clusterName);
     if (!ecsService.describeCluster(clusterName).isPresent()) {
       ecsService.createCluster(clusterName);
@@ -82,8 +84,8 @@ public class ECSTestBed implements TestBed {
     context.setDefaultSubnets(subnetsResult.getSubnets());
   }
 
-  private String generateEcsClusterName() {
-    return GenericConstants.ECS_SIDECAR_CLUSTER.getVal() + "-" + System.currentTimeMillis();
+  private String generateEcsClusterName(Context context) {
+    return GenericConstants.ECS_SIDECAR_CLUSTER.getVal() + "-" + context.getInstanceId();
   }
 
   /**

@@ -51,8 +51,6 @@ public class ECSInstaller implements OTInstaller {
   private void setupEcsContext(Context context) {
     context.setAocImage(GenericConstants.AOC_IMAGE.getVal() + context.getAgentVersion());
     context.setDataEmitterImage(GenericConstants.TRACE_EMITTER_DOCKER_IMAGE_URL.getVal());
-    // ECS uses current timestamp as instance id
-    context.setInstanceId(String.valueOf(System.currentTimeMillis()));
     context.setRegion(context.getStack().getTestingRegion());
     String iamRoleArn = this.iamService.getRoleArn(GenericConstants.IAM_ROLE_NAME.getVal());
     context.setEcsTaskRoleArn(iamRoleArn);

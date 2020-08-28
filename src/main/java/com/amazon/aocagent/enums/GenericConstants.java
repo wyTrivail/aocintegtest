@@ -41,11 +41,6 @@ public enum GenericConstants {
   EC2_CONFIG_PATH("/tmp/test.yml"),
 
   // emitter
-  /* metric emitter
-  The code to generate the below docker image has been taken from below repository
-   * https://github.com/mxiamxia/aws-cloudwatch-opentelemetry-sample/tree/master/generator
-   * */
-  METRIC_EMITTER_DOCKER_IMAGE_URL("darwhs/aoc-metric-generator"),
   TRACE_EMITTER_ENDPOINT("http://localhost:4567/span0"),
   SERVICE_NAMESPACE("AWSObservability"),
   SERVICE_NAME("CloudWatchOTService"),
@@ -64,7 +59,7 @@ public enum GenericConstants {
   ECS_DEPLOY_MODE("ecsDeployMode"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
-  AOC_IMAGE("mxiamxia/awscollector:"),
+  AOC_IMAGE("josephwy/awscollector:"),
 
   // common constants
   EC2("EC2"),

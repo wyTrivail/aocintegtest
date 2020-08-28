@@ -62,7 +62,6 @@ public enum GenericConstants {
   //ECS
   ECS_LAUNCH_TYPE("ecsLaunchType"),
   ECS_DEPLOY_MODE("ecsDeployMode"),
-  ECS_IAM_ROLE_NAME("ecsInstanceRole"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
   AOC_IMAGE("mxiamxia/awscollector:"),

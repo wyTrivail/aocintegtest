@@ -42,7 +42,8 @@
         "options": {
           "awslogs-group": "/ecs/ecs-cwagent-sidecar-emitter",
           "awslogs-region": "{{region}}",
-          "awslogs-stream-prefix": "ecs"
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
         }
       }
     },
@@ -66,7 +67,8 @@
         "options": {
           "awslogs-group": "/ecs/ecs-cwagent-sidecar-collector",
           "awslogs-region": "{{region}}",
-          "awslogs-stream-prefix": "ecs"
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
         }
       }
     }

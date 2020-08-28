@@ -108,7 +108,7 @@ public class ECSTestBed implements TestBed {
                     .getBytes());
     return EC2InstanceParams.builder()
         .amiId(context.getTestingAMI().getAMIId())
-        .iamRoleName(GenericConstants.ECS_IAM_ROLE_NAME.getVal())
+        .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
         .securityGrpName(GenericConstants.DEFAULT.getVal())
         .tagSpecification(tagSpecification)
         .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())

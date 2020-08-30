@@ -2,19 +2,18 @@ package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.S3Package;
 
-public class AmazonLinux extends LinuxAMI {
-  @Override
-  public String getAMIId() {
-    return "ami-0e34e7b9ca0ace12d";
+public class CentosAMI extends LinuxAMI {
+  public CentosAMI(String amiId) {
+    super(amiId);
   }
 
   @Override
   public String getLoginUser() {
-    return "ec2-user";
+    return "centos";
   }
 
   @Override
   public S3Package getS3Package() {
-    return S3Package.AMAZON_LINUX_AMD64_RPM;
+    return S3Package.CENTOS_AMD64_RPM;
   }
 }

@@ -6,8 +6,16 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class LinuxAMI implements ITestAMI {
+  private String amiId;
+
+  public LinuxAMI(String amiId) {
+    this.amiId = amiId;
+  }
+
   @Override
-  public abstract String getAMIId();
+  public String getAMIId() {
+    return this.amiId;
+  }
 
   @Override
   public abstract String getLoginUser();

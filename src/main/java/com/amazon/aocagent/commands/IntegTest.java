@@ -1,12 +1,12 @@
 package com.amazon.aocagent.commands;
 
+import com.amazon.aocagent.enums.TestAMI;
 import com.amazon.aocagent.fileconfigs.ExpectedMetric;
 import com.amazon.aocagent.fileconfigs.ExpectedTrace;
 import com.amazon.aocagent.fileconfigs.OTConfig;
 import com.amazon.aocagent.enums.TestCase;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.tasks.IntegTestFactory;
-import com.amazon.aocagent.testamis.TestAMIFactory;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
@@ -20,8 +20,8 @@ public class IntegTest implements Runnable {
   @CommandLine.Option(
       names = {"-a", "--ami"},
       description = "Enum values: ${COMPLETION-CANDIDATES}, default: ${DEFAULT-VALUE}",
-      defaultValue = "AmazonLinux")
-  private String testAMI;
+      defaultValue = "AMAZON_LINUX")
+  private TestAMI testAMI;
 
   @CommandLine.Option(
       names = {"-c", "--config"},
@@ -51,7 +51,7 @@ public class IntegTest implements Runnable {
   @Override
   public void run() {
     Context context = commonOption.buildContext();
-    context.setTestingAMI(TestAMIFactory.getTestAMIFromName(testAMI));
+    context.setTestingAMI(testAMI.getTestAMIObj());
     context.setOtConfig(otConfig);
     context.setExpectedMetric(expectedMetric);
     context.setExpectedTrace(expectedTrace);

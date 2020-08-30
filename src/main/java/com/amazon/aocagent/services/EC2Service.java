@@ -129,6 +129,28 @@ public class EC2Service {
     }
   }
 
+
+  /**
+   * List all the ec2 instances.
+   * @return instance list
+   */
+  public List<Instance> listInstances() {
+    List<Instance> instanceList = new ArrayList<>();
+    DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
+    while (true) {
+      DescribeInstancesResult describeInstancesResult =
+          amazonEC2.describeInstances(describeInstancesRequest);
+      for (Reservation reservation : describeInstancesResult.getReservations()) {
+        instanceList.addAll(reservation.getInstances());
+      }
+
+      describeInstancesRequest.setNextToken(describeInstancesResult.getNextToken());
+      if (describeInstancesRequest.getNextToken() == null) {
+        return instanceList;
+      }
+    }
+  }
+
   /**
    * terminateInstance terminates ec2 instances base on the instance id list.
    *

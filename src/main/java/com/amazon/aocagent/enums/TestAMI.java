@@ -29,8 +29,6 @@ public enum TestAMI {
   // redhat
   REDHAT_8_0(new RedHatAMI("ami-079596bf7a949ddf8")),
   REDHAT_7_6(new RedHatAMI("ami-0a7e1ebfee7a4570e")),
-  REDHAT_7_5(new RedHatAMI("ami-28e07e50")),
-  REDHAT_7_4(new RedHatAMI("ami-9fa343e7")),
   REDHAT_7_2(new RedHatAMI("ami-775e4f16")),
   REDHAT_7_0(new RedHatAMI("ami-212e0911")),
   REDHAT_6_5(new RedHatAMI("ami-e08efbd0")),
@@ -38,19 +36,14 @@ public enum TestAMI {
   A1_REDHAT_7_0(new A1RedHatAMI("ami-0e00026dd0f3688e2")),
 
   // centos
-  CENTOS_7_6(new CentosAMI("ami-00d4ae0422100c609")),
-  CENTOS_7_2(new CentosAMI("ami-91ea11f1")),
-  CENTOS_7_0(new CentosAMI("ami-f4533694")),
-  CENTOS_6_8(new CentosAMI("ami-d7711cb7")),
-  CENTOS_6_5(new CentosAMI("ami-4dc28f7d")),
-  CENTOS_6_4(new CentosAMI("ami-50a73d60")),
-  CENTOS_6_3(new CentosAMI("ami-0e60eb3e")),
-  CENTOS_6_0(new CentosAMI("ami-e9503589")),
+  //CENTOS_8(new CentosAMI("ami-91ea11f1")),
+  CENTOS_7(new CentosAMI("ami-0bc06212a56393ee1")),
+  CENTOS_6(new CentosAMI("ami-052ff42ae3be02b6a")),
 
   // debian
   DEBIAN_10(new DebianAMI("ami-0bb8fb45872332e66")),
   DEBIAN_9(new DebianAMI("ami-0ccb963e85bc5c856")),
-  DEBIAN_8(new DebianAMI("ami-fde96b9d")),
+  //DEBIAN_8(new DebianAMI("ami-fde96b9d")),
 
   // ubuntu
   UBUNTU_18_04(new UbuntuAMI("ami-0edf3b95e26a682df")),

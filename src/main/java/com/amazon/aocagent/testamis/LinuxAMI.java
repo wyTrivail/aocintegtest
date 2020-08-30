@@ -47,8 +47,7 @@ public abstract class LinuxAMI implements ITestAMI {
     return Arrays.asList(
         "sudo yum update -y",
         "sudo yum install -y docker",
-        "sudo service docker start",
-        String.format("sudo usermod -a -G docker %s", this.getLoginUser()));
+        "sudo service docker start");
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.S3Package;
+import com.amazonaws.services.ec2.model.InstanceType;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface ITestAMI {
   String getStartingCommand(String configPath);
 
   List<String> getDockerInstallingCommands();
+
+  InstanceType getInstanceType();
 }

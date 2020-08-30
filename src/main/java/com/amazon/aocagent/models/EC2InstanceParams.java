@@ -1,6 +1,7 @@
 package com.amazon.aocagent.models;
 
 import com.amazon.aocagent.enums.Architecture;
+import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.TagSpecification;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ public class EC2InstanceParams {
   String securityGrpName;
   String iamRoleName;
   String userData;
+  InstanceType instanceType;
   Architecture arch;
   TagSpecification tagSpecification;
 }

@@ -32,6 +32,8 @@ public class DebianAMI extends LinuxAMI {
 
   @Override
   public List<String> getDockerInstallingCommands() {
-    return Arrays.asList("sudo snap install docker");
+    return Arrays.asList(
+        "curl -fsSL https://get.docker.com -o get-docker.sh",
+        "sudo sh get-docker.sh");
   }
 }

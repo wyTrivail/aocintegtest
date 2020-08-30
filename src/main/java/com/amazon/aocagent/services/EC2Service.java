@@ -84,15 +84,13 @@ public class EC2Service {
                 getOrCreateSecurityGroupByName(params.getSecurityGrpName()))
             .withIamInstanceProfile(
                 new IamInstanceProfileSpecification()
-                    .withName(params.getIamRoleName()));
+                    .withName(params.getIamRoleName()))
+            .withInstanceType(params.getInstanceType());
     if (!Strings.isNullOrEmpty(params.getUserData())) {
       runInstancesRequest.withUserData(params.getUserData());
     }
 
 
-    if (params.getArch() == Architecture.ARM64) {
-      runInstancesRequest.setInstanceType(InstanceType.A1Medium);
-    }
 
     RunInstancesResult runInstancesResult = amazonEC2.runInstances(runInstancesRequest);
 

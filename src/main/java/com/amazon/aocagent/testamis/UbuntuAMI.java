@@ -2,6 +2,9 @@ package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.S3Package;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class UbuntuAMI extends DebianAMI {
   public UbuntuAMI(String amiId) {
     super(amiId);
@@ -15,5 +18,10 @@ public class UbuntuAMI extends DebianAMI {
   @Override
   public S3Package getS3Package() {
     return S3Package.DEBIAN_AMD64_DEB;
+  }
+
+  @Override
+  public List<String> getDockerInstallingCommands() {
+    return Arrays.asList("sudo snap install docker");
   }
 }

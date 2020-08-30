@@ -71,6 +71,7 @@ public class EC2TestBed implements TestBed {
                                     GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()));
     return EC2InstanceParams.builder()
             .amiId(context.getTestingAMI().getAMIId())
+            .instanceType(context.getTestingAMI().getInstanceType())
             .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
             .securityGrpName(GenericConstants.SECURITY_GROUP_NAME.getVal())
             .tagSpecification(tagSpecification)

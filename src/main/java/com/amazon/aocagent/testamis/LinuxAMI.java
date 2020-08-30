@@ -1,6 +1,8 @@
 package com.amazon.aocagent.testamis;
 
+import com.amazon.aocagent.enums.Architecture;
 import com.amazon.aocagent.enums.S3Package;
+import com.amazonaws.services.ec2.model.InstanceType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,5 +49,13 @@ public abstract class LinuxAMI implements ITestAMI {
         "sudo yum install -y docker",
         "sudo service docker start",
         String.format("sudo usermod -a -G docker %s", this.getLoginUser()));
+  }
+
+  @Override
+  public InstanceType getInstanceType() {
+    if (getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
+      return InstanceType.A1Medium;
+    }
+    return InstanceType.T2Medium;
   }
 }

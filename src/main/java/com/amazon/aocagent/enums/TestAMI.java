@@ -47,8 +47,8 @@ public enum TestAMI {
   CENTOS_6_0(new CentosAMI("ami-e9503589")),
 
   // debian
-  DEBIAN_10(new DebianAMI("ami-0938679b83f65225d")),
-  DEBIAN_9(new DebianAMI("ami-07ef34081bb527ad5")),
+  DEBIAN_10(new DebianAMI("ami-0bb8fb45872332e66")),
+  DEBIAN_9(new DebianAMI("ami-0ccb963e85bc5c856")),
   DEBIAN_8(new DebianAMI("ami-fde96b9d")),
 
   // ubuntu

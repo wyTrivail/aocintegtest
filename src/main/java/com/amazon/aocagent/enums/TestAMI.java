@@ -2,6 +2,7 @@ package com.amazon.aocagent.enums;
 
 import com.amazon.aocagent.testamis.A1AmazonLinuxAMI;
 import com.amazon.aocagent.testamis.A1RedHatAMI;
+import com.amazon.aocagent.testamis.A1SuseAMI;
 import com.amazon.aocagent.testamis.A1UbuntuAMI;
 import com.amazon.aocagent.testamis.AmazonLinuxAMI;
 import com.amazon.aocagent.testamis.CentosAMI;
@@ -23,7 +24,7 @@ public enum TestAMI {
   // Suse
   SUSE_15(new SuseAMI("ami-063c2d222d223d0e9")),
   SUSE_12(new SuseAMI("ami-811794f9")),
-  A1_SUSE_15(new SuseAMI("ami-0bfc92b18fd79372c")),
+  A1_SUSE_15(new A1SuseAMI("ami-0bfc92b18fd79372c")),
 
   // redhat
   REDHAT_8_0(new RedHatAMI("ami-079596bf7a949ddf8")),

@@ -5,15 +5,20 @@ import com.amazon.aocagent.enums.S3Package;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class DebianAMI extends LinuxAMI {
-  @Override
-  public abstract String getAMIId();
+public class DebianAMI extends LinuxAMI {
+  public DebianAMI(String amiId) {
+    super(amiId);
+  }
 
   @Override
-  public abstract String getLoginUser();
+  public String getLoginUser() {
+    return "admin";
+  }
 
   @Override
-  public abstract S3Package getS3Package();
+  public S3Package getS3Package() {
+    return S3Package.DEBIAN_AMD64_DEB;
+  }
 
   @Override
   public String getDownloadingCommand(String fromUrl, String toLocation) {
@@ -23,10 +28,5 @@ public abstract class DebianAMI extends LinuxAMI {
   @Override
   public String getInstallingCommand(String packagePath) {
     return String.format("sudo dpkg -i %s", packagePath);
-  }
-
-  @Override
-  public List<String> getDockerInstallingCommands() {
-    return Arrays.asList("sudo snap install docker");
   }
 }

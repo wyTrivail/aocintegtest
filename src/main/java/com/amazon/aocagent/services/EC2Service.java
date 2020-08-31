@@ -1,6 +1,5 @@
 package com.amazon.aocagent.services;
 
-import com.amazon.aocagent.enums.Architecture;
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
@@ -33,7 +32,6 @@ import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import com.google.common.base.Strings;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
-import com.amazonaws.services.ec2.model.InstanceType;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,18 +78,12 @@ public class EC2Service {
             .withMinCount(1)
             .withTagSpecifications(params.getTagSpecification())
             .withKeyName(params.getSshKeyName())
-            .withSecurityGroupIds(
-                getOrCreateSecurityGroupByName(params.getSecurityGrpName()))
+            .withSecurityGroupIds(getOrCreateSecurityGroupByName(params.getSecurityGrpName()))
             .withIamInstanceProfile(
-                new IamInstanceProfileSpecification()
-                    .withName(params.getIamRoleName()));
+                new IamInstanceProfileSpecification().withName(params.getIamRoleName()))
+            .withInstanceType(params.getInstanceType());
     if (!Strings.isNullOrEmpty(params.getUserData())) {
       runInstancesRequest.withUserData(params.getUserData());
-    }
-
-
-    if (params.getArch() == Architecture.ARM64) {
-      runInstancesRequest.setInstanceType(InstanceType.A1Medium);
     }
 
     RunInstancesResult runInstancesResult = amazonEC2.runInstances(runInstancesRequest);
@@ -117,6 +109,28 @@ public class EC2Service {
 
     List<Instance> instanceList = new ArrayList<>();
 
+    while (true) {
+      DescribeInstancesResult describeInstancesResult =
+          amazonEC2.describeInstances(describeInstancesRequest);
+      for (Reservation reservation : describeInstancesResult.getReservations()) {
+        instanceList.addAll(reservation.getInstances());
+      }
+
+      describeInstancesRequest.setNextToken(describeInstancesResult.getNextToken());
+      if (describeInstancesRequest.getNextToken() == null) {
+        return instanceList;
+      }
+    }
+  }
+
+  /**
+   * List all the ec2 instances.
+   *
+   * @return instance list
+   */
+  public List<Instance> listInstances() {
+    List<Instance> instanceList = new ArrayList<>();
+    DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
     while (true) {
       DescribeInstancesResult describeInstancesResult =
           amazonEC2.describeInstances(describeInstancesRequest);
@@ -275,7 +289,7 @@ public class EC2Service {
       String vpcId = securityGroups.get(0).getVpcId();
 
       // create new security group and get the group id
-      String groupId =
+      final String groupId =
           amazonEC2
               .createSecurityGroup(
                   new CreateSecurityGroupRequest()
@@ -299,10 +313,18 @@ public class EC2Service {
           .withFromPort(3389)
           .withToPort(3389);
 
+      // limit the oltp access within private
+      IpPermission oltpIpPermission = new IpPermission();
+      rdpIpPermission
+          .withIpv4Ranges(new IpRange().withCidrIp("172.16.0.0/12"))
+          .withIpProtocol("tcp")
+          .withFromPort(Integer.valueOf(GenericConstants.AOC_PORT.getVal()))
+          .withToPort(Integer.valueOf(GenericConstants.AOC_PORT.getVal()));
+
       amazonEC2.authorizeSecurityGroupIngress(
           new AuthorizeSecurityGroupIngressRequest()
               .withGroupId(groupId)
-              .withIpPermissions(sshIpPermission, rdpIpPermission));
+              .withIpPermissions(sshIpPermission, rdpIpPermission, oltpIpPermission));
 
       return groupId;
     } catch (AmazonEC2Exception e) {

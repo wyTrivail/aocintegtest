@@ -2,11 +2,9 @@ package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.S3Package;
 
-public class A1Suse extends SuseAMI {
-
-  @Override
-  public String getAMIId() {
-    return "ami-0bfc92b18fd79372c";
+public class A1SuseAMI extends SuseAMI {
+  public A1SuseAMI(String amiId) {
+    super(amiId);
   }
 
   @Override

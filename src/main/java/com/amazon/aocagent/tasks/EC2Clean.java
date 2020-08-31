@@ -4,6 +4,7 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.EC2Service;
 import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.Tag;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,11 +21,8 @@ public class EC2Clean implements ITask {
 
   @Override
   public void execute() throws Exception {
-    // get ec2 instance with integ-test tag
-    List<Instance> instanceList =
-        ec2Service.listInstancesByTag(
-            GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
-            GenericConstants.EC2_INSTANCE_TAG_VAL.getVal());
+    // fetch all the instances
+    List<Instance> instanceList = ec2Service.listInstances();
 
     // filter instance older than 2 hours ago
     List<String> instanceIdListToBeTerminated = new ArrayList<>();
@@ -34,6 +32,16 @@ public class EC2Clean implements ITask {
 
     instanceList.forEach(
         instance -> {
+          if (instance.getTags().size() != 0
+              && !instance
+                  .getTags()
+                  .contains(
+                      new Tag(
+                          GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
+                          GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()))) {
+            // only clean the integ-test instances and the instances without tags
+            return;
+          }
           if (instance.getLaunchTime().before(twoHoursAgo) && instance.getTags().size() == 1) {
             instanceIdListToBeTerminated.add(instance.getInstanceId());
           }

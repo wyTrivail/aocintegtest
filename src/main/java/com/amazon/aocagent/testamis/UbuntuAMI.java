@@ -5,18 +5,18 @@ import com.amazon.aocagent.enums.S3Package;
 import java.util.Arrays;
 import java.util.List;
 
-public class SuseAMI extends LinuxAMI {
-  public SuseAMI(String amiId) {
+public class UbuntuAMI extends DebianAMI {
+  public UbuntuAMI(String amiId) {
     super(amiId);
   }
 
   @Override
   public String getLoginUser() {
-    return "ec2-user";
+    return "ubuntu";
   }
 
   @Override
   public S3Package getS3Package() {
-    return S3Package.SUSE_AMD64_RPM;
+    return S3Package.DEBIAN_AMD64_DEB;
   }
 }

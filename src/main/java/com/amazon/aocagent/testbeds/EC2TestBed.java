@@ -1,8 +1,6 @@
 package com.amazon.aocagent.testbeds;
 
 import com.amazon.aocagent.enums.GenericConstants;
-import com.amazon.aocagent.exception.BaseException;
-import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
@@ -14,7 +12,7 @@ import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.TagSpecification;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.List;
+import java.util.Arrays;
 
 @Log4j2
 public class EC2TestBed implements TestBed {
@@ -48,35 +46,38 @@ public class EC2TestBed implements TestBed {
 
     // wait until the instance is ready to login
     log.info("wait until the instance is ready to login");
-    RetryHelper.retry(
-        () -> sshHelper.isSSHReady());
+    RetryHelper.retry(() -> sshHelper.isSSHReady());
 
-    // install docker
-    RetryHelper.retry(() -> installDocker(sshHelper));
+    // iptables
+    if (context.getTestingAMI().getIptablesCommand() != null) {
+      sshHelper.executeCommands(Arrays.asList(context.getTestingAMI().getIptablesCommand()));
+    }
 
     // setup instance id and publicAddress into context
     context.setInstanceId(instance.getInstanceId());
     context.setInstancePublicIpAddress(instance.getPublicIpAddress());
+    context.setInstancePrivateIpAddress(instance.getPrivateIpAddress());
     return context;
   }
 
   private EC2InstanceParams buildEc2InstanceConfig(Context context) {
     // tag instance for management
     TagSpecification tagSpecification =
-            new TagSpecification()
-                    .withResourceType(ResourceType.Instance)
-                    .withTags(
-                            new Tag(
-                                    GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
-                                    GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()));
+        new TagSpecification()
+            .withResourceType(ResourceType.Instance)
+            .withTags(
+                new Tag(
+                    GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
+                    GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()));
     return EC2InstanceParams.builder()
-            .amiId(context.getTestingAMI().getAMIId())
-            .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
-            .securityGrpName(GenericConstants.SECURITY_GROUP_NAME.getVal())
-            .tagSpecification(tagSpecification)
-            .arch(context.getTestingAMI().getS3Package().getLocalPackage().getArchitecture())
-            .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
-            .build();
+        .amiId(context.getTestingAMI().getAMIId())
+        .instanceType(context.getTestingAMI().getInstanceType())
+        .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
+        .securityGrpName(GenericConstants.SECURITY_GROUP_NAME.getVal())
+        .tagSpecification(tagSpecification)
+        .arch(context.getTestingAMI().getS3Package().getLocalPackage().getArchitecture())
+        .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
+        .build();
   }
 
   private void prepareSSHKey(final Context context) {
@@ -93,16 +94,5 @@ public class EC2TestBed implements TestBed {
         GenericConstants.SSH_CERT_LOCAL_PATH.getVal()
     ));
     */
-  }
-
-  private void installDocker(SSHHelper sshHelper) throws Exception {
-    try {
-      List<String> installingCommands = context.getTestingAMI().getDockerInstallingCommands();
-      sshHelper.executeCommands(installingCommands);
-    } catch (BaseException ex) {
-      if (ExceptionCode.NO_MATCHED_DOCKER_INSTALLING_COMMAND.getCode() != ex.getCode()) {
-        throw ex;
-      }
-    }
   }
 }

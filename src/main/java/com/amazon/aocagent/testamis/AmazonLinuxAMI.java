@@ -2,19 +2,18 @@ package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.S3Package;
 
-public class Ubuntu extends DebianAMI {
-  @Override
-  public String getAMIId() {
-    return "ami-003634241a8fcdec0";
+public class AmazonLinuxAMI extends LinuxAMI {
+  public AmazonLinuxAMI(String amiId) {
+    super(amiId);
   }
 
   @Override
   public String getLoginUser() {
-    return "ubuntu";
+    return "ec2-user";
   }
 
   @Override
   public S3Package getS3Package() {
-    return S3Package.DEBIAN_AMD64_DEB;
+    return S3Package.AMAZON_LINUX_AMD64_RPM;
   }
 }

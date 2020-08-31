@@ -44,7 +44,7 @@ public enum GenericConstants {
   TRACE_EMITTER_ENDPOINT("http://localhost:4567/span0"),
   SERVICE_NAMESPACE("AWSObservability"),
   SERVICE_NAME("CloudWatchOTService"),
-  TRACE_EMITTER_DOCKER_IMAGE_URL("josephwy/integ-test-emitter"),
+  TRACE_EMITTER_DOCKER_IMAGE_URL("josephwy/integ-test-emitter:multiplatform"),
 
   // validator related
   METRIC_NAMESPACE("default"),
@@ -66,6 +66,8 @@ public enum GenericConstants {
   FARGATE("FARGATE"),
   DEFAULT("default"),
   AOC_PREFIX("aoc-"),
+  AOC_PORT("55680"),
+
   ;
 
   private String val;

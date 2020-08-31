@@ -110,6 +110,7 @@ public class ECSTestBed implements TestBed {
                     .getBytes());
     return EC2InstanceParams.builder()
         .amiId(context.getTestingAMI().getAMIId())
+        .instanceType(context.getTestingAMI().getInstanceType())
         .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
         .securityGrpName(GenericConstants.DEFAULT.getVal())
         .tagSpecification(tagSpecification)

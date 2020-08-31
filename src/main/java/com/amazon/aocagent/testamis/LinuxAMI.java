@@ -1,13 +1,20 @@
 package com.amazon.aocagent.testamis;
 
+import com.amazon.aocagent.enums.Architecture;
 import com.amazon.aocagent.enums.S3Package;
-
-import java.util.Arrays;
-import java.util.List;
+import com.amazonaws.services.ec2.model.InstanceType;
 
 public abstract class LinuxAMI implements ITestAMI {
+  private String amiId;
+
+  public LinuxAMI(String amiId) {
+    this.amiId = amiId;
+  }
+
   @Override
-  public abstract String getAMIId();
+  public String getAMIId() {
+    return this.amiId;
+  }
 
   @Override
   public abstract String getLoginUser();
@@ -33,11 +40,16 @@ public abstract class LinuxAMI implements ITestAMI {
   }
 
   @Override
-  public List<String> getDockerInstallingCommands() {
-    return Arrays.asList(
-        "sudo yum update -y",
-        "sudo yum install -y docker",
-        "sudo service docker start",
-        String.format("sudo usermod -a -G docker %s", this.getLoginUser()));
+  public InstanceType getInstanceType() {
+    if (getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
+      return InstanceType.A1Medium; // t2medium can't apply to arm instances.
+    }
+    return InstanceType.T2Medium;
+  }
+
+  @Override
+  public String getIptablesCommand() {
+    // in most of the case we don't need to handle iptables except for centos6
+    return null;
   }
 }

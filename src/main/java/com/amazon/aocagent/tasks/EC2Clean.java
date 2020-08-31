@@ -5,12 +5,14 @@ import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.EC2Service;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Tag;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+@Log4j2
 public class EC2Clean implements ITask {
   private EC2Service ec2Service;
 
@@ -32,19 +34,31 @@ public class EC2Clean implements ITask {
 
     instanceList.forEach(
         instance -> {
-          if (instance.getTags().size() != 0
+          // skip the instance which is not running
+          if (!instance.getState().getName().equals("running")) {
+            return;
+          }
+          log.info("check instance {}, status: {}", instance.getInstanceId(), instance.getState());
+          if (!instance.getLaunchTime().before(twoHoursAgo)) {
+            return;
+          }
+
+          if (instance.getTags().size() > 1) {
+            return;
+          }
+
+          if (instance.getTags().size() == 1
               && !instance
                   .getTags()
-                  .contains(
+                  .get(0)
+                  .equals(
                       new Tag(
                           GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
                           GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()))) {
-            // only clean the integ-test instances and the instances without tags
             return;
           }
-          if (instance.getLaunchTime().before(twoHoursAgo) && instance.getTags().size() == 1) {
-            instanceIdListToBeTerminated.add(instance.getInstanceId());
-          }
+
+          instanceIdListToBeTerminated.add(instance.getInstanceId());
         });
 
     // terminate instance

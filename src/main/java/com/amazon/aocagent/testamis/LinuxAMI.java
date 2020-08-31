@@ -4,9 +4,6 @@ import com.amazon.aocagent.enums.Architecture;
 import com.amazon.aocagent.enums.S3Package;
 import com.amazonaws.services.ec2.model.InstanceType;
 
-import java.util.Arrays;
-import java.util.List;
-
 public abstract class LinuxAMI implements ITestAMI {
   private String amiId;
 
@@ -44,6 +41,9 @@ public abstract class LinuxAMI implements ITestAMI {
 
   @Override
   public InstanceType getInstanceType() {
+    if (getS3Package() == null) {
+      return InstanceType.T2Medium;
+    }
     if (getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
       return InstanceType.A1Medium;
     }
@@ -52,7 +52,7 @@ public abstract class LinuxAMI implements ITestAMI {
 
   @Override
   public String getIptablesCommand() {
-    // in most of the case we don't need to handle iptables except for centos
+    // in most of the case we don't need to handle iptables except for centos6
     return null;
   }
 }

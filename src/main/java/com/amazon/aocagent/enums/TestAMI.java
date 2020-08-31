@@ -5,6 +5,7 @@ import com.amazon.aocagent.testamis.A1RedHatAMI;
 import com.amazon.aocagent.testamis.A1SuseAMI;
 import com.amazon.aocagent.testamis.A1UbuntuAMI;
 import com.amazon.aocagent.testamis.AmazonLinuxAMI;
+import com.amazon.aocagent.testamis.Centos6AMI;
 import com.amazon.aocagent.testamis.CentosAMI;
 import com.amazon.aocagent.testamis.DebianAMI;
 import com.amazon.aocagent.testamis.EcsOptimizedAMI;
@@ -36,7 +37,7 @@ public enum TestAMI {
   // centos
   //CENTOS_8(new CentosAMI("ami-91ea11f1")),
   CENTOS_7(new CentosAMI("ami-0bc06212a56393ee1")),
-  CENTOS_6(new CentosAMI("ami-052ff42ae3be02b6a")),
+  CENTOS_6(new Centos6AMI("ami-052ff42ae3be02b6a")),
 
   // debian
   DEBIAN_10(new DebianAMI("ami-0bb8fb45872332e66")),

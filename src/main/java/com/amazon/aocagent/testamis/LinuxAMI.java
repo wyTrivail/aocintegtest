@@ -43,18 +43,16 @@ public abstract class LinuxAMI implements ITestAMI {
   }
 
   @Override
-  public List<String> getDockerInstallingCommands() {
-    return Arrays.asList(
-        "sudo yum update -y",
-        "sudo yum install -y docker",
-        "sudo service docker start");
-  }
-
-  @Override
   public InstanceType getInstanceType() {
     if (getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
       return InstanceType.A1Medium;
     }
     return InstanceType.T2Medium;
+  }
+
+  @Override
+  public String getIptablesCommand() {
+    // in most of the case we don't need to handle iptables except for centos
+    return null;
   }
 }

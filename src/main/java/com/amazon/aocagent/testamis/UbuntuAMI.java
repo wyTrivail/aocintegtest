@@ -19,9 +19,4 @@ public class UbuntuAMI extends DebianAMI {
   public S3Package getS3Package() {
     return S3Package.DEBIAN_AMD64_DEB;
   }
-
-  @Override
-  public List<String> getDockerInstallingCommands() {
-    return Arrays.asList("sudo snap install docker");
-  }
 }

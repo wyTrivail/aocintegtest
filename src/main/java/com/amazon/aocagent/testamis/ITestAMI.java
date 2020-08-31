@@ -18,7 +18,7 @@ public interface ITestAMI {
 
   String getStartingCommand(String configPath);
 
-  List<String> getDockerInstallingCommands();
+  String getIptablesCommand();
 
   InstanceType getInstanceType();
 }

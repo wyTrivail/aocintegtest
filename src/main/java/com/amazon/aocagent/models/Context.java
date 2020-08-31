@@ -18,6 +18,7 @@ public class Context {
   private ITestAMI testingAMI;
   private String instanceId;
   private String instancePublicIpAddress;
+  private String instancePrivateIpAddress;
   private String githubSha;
   private OTConfig otConfig;
   private ExpectedMetric expectedMetric;

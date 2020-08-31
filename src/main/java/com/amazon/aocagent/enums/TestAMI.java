@@ -27,13 +27,11 @@ public enum TestAMI {
   A1_SUSE_15(new A1SuseAMI("ami-0bfc92b18fd79372c")),
 
   // redhat
-  REDHAT_8_0(new RedHatAMI("ami-079596bf7a949ddf8")),
-  REDHAT_7_6(new RedHatAMI("ami-0a7e1ebfee7a4570e")),
-  REDHAT_7_2(new RedHatAMI("ami-775e4f16")),
-  REDHAT_7_0(new RedHatAMI("ami-212e0911")),
-  REDHAT_6_5(new RedHatAMI("ami-e08efbd0")),
-  A1_REDHAT_8_0(new A1RedHatAMI("ami-0f7a968a2c17fb48b")),
-  A1_REDHAT_7_0(new A1RedHatAMI("ami-0e00026dd0f3688e2")),
+  REDHAT_8(new RedHatAMI("ami-079596bf7a949ddf8")),
+  REDHAT_7(new RedHatAMI("ami-078a6a18fb73909b2")),
+  REDHAT_6(new RedHatAMI("ami-274ba847")),
+  A1_REDHAT_8(new A1RedHatAMI("ami-0f7a968a2c17fb48b")),
+  A1_REDHAT_7(new A1RedHatAMI("ami-0e00026dd0f3688e2")),
 
   // centos
   //CENTOS_8(new CentosAMI("ami-91ea11f1")),

@@ -29,11 +29,4 @@ public class DebianAMI extends LinuxAMI {
   public String getInstallingCommand(String packagePath) {
     return String.format("sudo dpkg -i %s", packagePath);
   }
-
-  @Override
-  public List<String> getDockerInstallingCommands() {
-    return Arrays.asList(
-        "curl -fsSL https://get.docker.com -o get-docker.sh",
-        "sudo sh get-docker.sh");
-  }
 }

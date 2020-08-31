@@ -16,11 +16,6 @@ public class SuseAMI extends LinuxAMI {
   }
 
   @Override
-  public List<String> getDockerInstallingCommands() {
-    return Arrays.asList("sudo service docker start");
-  }
-
-  @Override
   public S3Package getS3Package() {
     return S3Package.SUSE_AMD64_RPM;
   }

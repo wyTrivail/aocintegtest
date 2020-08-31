@@ -66,6 +66,8 @@ public enum GenericConstants {
   FARGATE("FARGATE"),
   DEFAULT("default"),
   AOC_PREFIX("aoc-"),
+  AOC_PORT("55680"),
+
   ;
 
   private String val;

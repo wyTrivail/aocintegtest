@@ -41,11 +41,8 @@ public abstract class LinuxAMI implements ITestAMI {
 
   @Override
   public InstanceType getInstanceType() {
-    if (getS3Package() == null) {
-      return InstanceType.T2Medium;
-    }
     if (getS3Package().getLocalPackage().getArchitecture() == Architecture.ARM64) {
-      return InstanceType.A1Medium;
+      return InstanceType.A1Medium; // t2medium can't apply to arm instances.
     }
     return InstanceType.T2Medium;
   }

@@ -1,6 +1,7 @@
 package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.S3Package;
+import com.amazonaws.services.ec2.model.InstanceType;
 
 public class EcsOptimizedAMI extends LinuxAMI {
 
@@ -16,5 +17,10 @@ public class EcsOptimizedAMI extends LinuxAMI {
   @Override
   public S3Package getS3Package() {
     return null;
+  }
+
+  @Override
+  public InstanceType getInstanceType() {
+    return InstanceType.T2Medium;
   }
 }

@@ -68,6 +68,7 @@ public class SSHHelper {
       String compositeCommand = String.join("&&", commands);
       log.info("run remote commands: {}", compositeCommand);
       channelExec.setCommand(compositeCommand);
+      channelExec.setPty(true);
 
       InputStream in = channel.getInputStream();
       InputStream err = ((ChannelExec) channel).getErrStream();

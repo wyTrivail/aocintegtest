@@ -10,6 +10,7 @@ import com.amazon.aocagent.testamis.CentosAMI;
 import com.amazon.aocagent.testamis.DebianAMI;
 import com.amazon.aocagent.testamis.EcsOptimizedAMI;
 import com.amazon.aocagent.testamis.ITestAMI;
+import com.amazon.aocagent.testamis.RedHat6AMI;
 import com.amazon.aocagent.testamis.RedHatAMI;
 import com.amazon.aocagent.testamis.SuseAMI;
 import com.amazon.aocagent.testamis.UbuntuAMI;
@@ -30,7 +31,7 @@ public enum TestAMI {
   // redhat
   REDHAT_8(new RedHatAMI("ami-079596bf7a949ddf8")),
   REDHAT_7(new RedHatAMI("ami-078a6a18fb73909b2")),
-  REDHAT_6(new RedHatAMI("ami-274ba847")),
+  REDHAT_6(new RedHat6AMI("ami-4dc28f7d")),
   A1_REDHAT_8(new A1RedHatAMI("ami-0f7a968a2c17fb48b")),
   A1_REDHAT_7(new A1RedHatAMI("ami-0e00026dd0f3688e2")),
 

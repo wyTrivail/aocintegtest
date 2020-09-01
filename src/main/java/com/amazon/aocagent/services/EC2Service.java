@@ -151,6 +151,7 @@ public class EC2Service {
    * @param instanceIds ec2 instance ids to be terminated
    */
   public void terminateInstance(List<String> instanceIds) {
+    log.info("clean instances {}", instanceIds);
     if (instanceIds.size() == 0) {
       return;
     }

@@ -2,6 +2,7 @@ package com.amazon.aocagent;
 
 import io.opentelemetry.trace.Span;
 import io.opentelemetry.trace.TracingContextUtils;
+import java.util.Random;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -150,7 +151,8 @@ public class App {
   }
 
   private static int mimicPayloadSize() {
-    return (int) Math.random() * 1000;
+    Random randomGenerator = new Random();
+    return randomGenerator.nextInt(1000);
   }
 
 }

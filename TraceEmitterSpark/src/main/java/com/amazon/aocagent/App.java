@@ -103,6 +103,9 @@ public class App {
           req.pathInfo(),
           statusCode
       );
+
+      // emit http request load size
+      metricEmitter.emitBytesSentMetric(req.bodyAsBytes().length, req.pathInfo(), statusCode);
     });
 
     exception(Exception.class, (exception, request, response) -> {

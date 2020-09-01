@@ -27,7 +27,7 @@ public class MetricEmitter {
     String apiBytesSentMetricName = API_COUNTER_METRIC;
     String instanceId = System.getenv("INSTANCE_ID");
     if(instanceId != null && !instanceId.trim().equals("")){
-      latencyMetricName += API_LATENCY_METRIC + "_" + instanceId;
+      latencyMetricName = API_LATENCY_METRIC + "_" + instanceId;
       apiBytesSentMetricName = API_COUNTER_METRIC + "_" + instanceId;
     }
 

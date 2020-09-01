@@ -105,7 +105,10 @@ public class App {
       );
 
       // emit http request load size
-      metricEmitter.emitBytesSentMetric(req.bodyAsBytes().length, req.pathInfo(), statusCode);
+      metricEmitter.emitBytesSentMetric(
+          req.contentLength() + mimicPayloadSize(),
+          req.pathInfo(),
+          statusCode);
     });
 
     exception(Exception.class, (exception, request, response) -> {
@@ -146,5 +149,8 @@ public class App {
     }
   }
 
+  private static int mimicPayloadSize() {
+    return (int) Math.random() * 1000;
+  }
 
 }

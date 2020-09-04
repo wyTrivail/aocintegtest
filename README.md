@@ -11,7 +11,16 @@ gradle run --args="setup"
 ``
 
 this command will generate a file .aoc-stack.yml in the current work dir. 
-you can also provide .aoc-stack.yml in the current work dir before setup so that the setup command will create the resources base on your stack file.
+you can also provide .aoc-stack.yml in the current work dir before setup so that the setup command will create the resources base on your stack file, below is an example of the stack file(you will need to adjust the s3 bucket name as it's global unique and someone has already occupy it):
+
+```
+---
+testingRegion: "us-west-2"
+s3ReleaseCandidateBucketName: "aoc-release-candidate"
+s3BucketName: "aws-opentelemetry-collector-test"
+sshKeyS3BucketName: "aoc-ssh-key"
+traceDataS3BucketName: "trace-expected-data"
+```
 
 ### Run S3 Uploading
 
@@ -53,7 +62,7 @@ gradle run --args="integ-test -t=EC2_TEST --package-version={the version you wan
 
 ### Run ECS Integ-test with EC2 on Sidecar mode (EMF Metrics)
 ```
-gradle run --args="integ-test -t=ECS_TEST -a=EcsOptimizedAMI --package-version={the version you want to test} -e ecsLaunchType=EC2"
+gradle run --args="integ-test -t=ECS_TEST -a=ECS_OPTIMIZED --package-version={the version you want to test} -e ecsLaunchType=EC2"
 ```
 
 ### Run ECS Integ-test with Fargate on Sidecar mode (EMF Metrics)

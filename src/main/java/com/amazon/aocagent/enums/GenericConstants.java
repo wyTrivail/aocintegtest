@@ -9,12 +9,12 @@ public enum GenericConstants {
   DEFAULT_STACK_FILE_PATH(".aoc-stack.yml"),
   DEFAULT_REGION("us-west-2"),
   DEFAULT_S3_RELEASE_CANDIDATE_BUCKET("aoc-release-candidate"),
-  DEFAULT_S3_BUCKET("aws-opentelemetry-collector-test"),
+  DEFAULT_S3_BUCKET("aws-observability-collector-test"),
   DEFAULT_SSH_KEY_S3_BUCKET_NAME("aoc-ssh-key"),
   DEFAULT_TRACE_S3_BUCKET_NAME("trace-expected-data"),
 
   // release related
-  PACKAGE_NAME_PREFIX("aws-opentelemetry-collector."),
+  PACKAGE_NAME_PREFIX("aws-observability-collector."),
   LOCAL_PACKAGES_DIR("build/packages"),
   GITHUB_SHA_FILE_NAME("GITHUB_SHA"),
 
@@ -59,7 +59,7 @@ public enum GenericConstants {
   ECS_DEPLOY_MODE("ecsDeployMode"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
-  AOC_IMAGE("josephwy/awscollector:"),
+  AOC_IMAGE("josephwy/aws-observability-collector:"),
 
   // common constants
   EC2("EC2"),

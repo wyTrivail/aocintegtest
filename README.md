@@ -80,6 +80,10 @@ gradle run --args="clean -t=ECSClean --package-version={the version you want to 
 gradle run --args="integ-test -t=EKS_TEST --package-version={the version you want to test} -k eksClusterName=my-cluster-name -k awsAuthenticatorPath=/my/authenticator/path"
 ```
 
+### Clean EKS testing resources
+```
+gradle run --args="clean -t=EKSClean --package-version={the version you want to test} -k eksClusterName=my-cluster-name -k awsAuthenticatorPath=/my/authenticator/path"
+```
 
 ### Command Help
 

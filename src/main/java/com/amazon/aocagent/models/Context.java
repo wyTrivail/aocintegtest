@@ -59,4 +59,18 @@ public class Context {
   /** Test resources region. */
   private String region;
 
+  /** EKS cluster attributes. */
+  private String eksEndpoint;
+
+  /** EKS cluster certificate. */
+  private String eksCertificate;
+
+  /** EKS cluster name. */
+  private String eksClusterName;
+
+  /** EKS iam authenticator binary path. */
+  private String iamAuthenticatorPath;
+
+  /** EKS test deployment name. */
+  private String eksDeploymentName;
 }

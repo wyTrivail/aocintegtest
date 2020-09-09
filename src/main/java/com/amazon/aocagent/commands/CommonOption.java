@@ -39,10 +39,16 @@ public class CommonOption {
   private String stackFilePath;
 
   @CommandLine.Option(
-      names = {"-e", "--extra-context"},
+      names = {"-e", "--ecs-context"},
       description = "eg, -e ecsLaunchType=EC2 -e ecsDeployMode=SIDECAR",
       defaultValue = "ecsLaunchType=EC2")
-  private Map<String, String> extraContexts;
+  private Map<String, String> ecsContexts;
+
+  @CommandLine.Option(
+      names = {"-k", "--eks-context"},
+      description =
+          "eg, -k eksClusterName=my-cluster-name -k awsAuthenticatorPath=/my/authenticator/path")
+  private Map<String, String> eksContexts;
 
   /**
    * buildContext build the context object based on the command args.
@@ -72,19 +78,8 @@ public class CommonOption {
     }
     context.setAgentVersion(this.version);
 
-    if (!extraContexts.isEmpty()) {
-      extraContexts
-          .entrySet()
-          .forEach(
-              e -> {
-                if (e.getKey().equals(GenericConstants.ECS_LAUNCH_TYPE.getVal())) {
-                  context.setEcsLaunchType(e.getValue());
-                } else if (e.getKey().equals(GenericConstants.ECS_DEPLOY_MODE.getVal())) {
-                  context.setEcsDeploymentMode(e.getValue());
-                }
-              });
-    }
-
+    setExtraContext(ecsContexts, context);
+    setExtraContext(eksContexts, context);
     return context;
   }
 
@@ -97,5 +92,24 @@ public class CommonOption {
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     return mapper.readValue(
         new String(Files.readAllBytes(Paths.get(this.stackFilePath))), Stack.class);
+  }
+
+  private void setExtraContext(Map<String, String> extra, Context context) {
+    if (extra != null) {
+      extra
+          .entrySet()
+          .forEach(
+              e -> {
+                if (e.getKey().equals(GenericConstants.ECS_LAUNCH_TYPE.getVal())) {
+                  context.setEcsLaunchType(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.ECS_DEPLOY_MODE.getVal())) {
+                  context.setEcsDeploymentMode(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.AUTHENTICATOR_PATH.getVal())) {
+                  context.setIamAuthenticatorPath(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.EKS_CLUSTER_NAME.getVal())) {
+                  context.setEksClusterName(e.getValue());
+                }
+              });
+    }
   }
 }

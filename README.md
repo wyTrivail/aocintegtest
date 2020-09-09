@@ -75,6 +75,11 @@ gradle run --args="integ-test -t=ECS_TEST --package-version={the version you wan
 gradle run --args="clean -t=ECSClean --package-version={the version you want to test}"
 ```
 
+### Run EKS Integ-test on Sidecar mode (EMF Metrics)
+```
+gradle run --args="integ-test -t=EKS_TEST --package-version={the version you want to test} -k eksClusterName=my-cluster-name -k awsAuthenticatorPath=/my/authenticator/path"
+```
+
 
 ### Command Help
 

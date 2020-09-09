@@ -43,7 +43,7 @@ public class IntegTest implements Runnable {
 
   @CommandLine.Option(
       names = {"-t", "--test-case"},
-      description = "EC2_TEST,ECS_TEST",
+      description = "EC2_TEST,ECS_TEST,EKS_TEST",
       defaultValue = "EC2_TEST")
   private TestCase testCase;
 

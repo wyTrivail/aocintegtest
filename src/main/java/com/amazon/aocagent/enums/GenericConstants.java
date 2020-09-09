@@ -61,6 +61,11 @@ public enum GenericConstants {
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
   AOC_IMAGE("josephwy/aws-observability-collector:"),
 
+  //EKS
+  AUTHENTICATOR_PATH("awsAuthenticatorPath"),
+  EKS_CLUSTER_NAME("eksClusterName"),
+  EKS_SIDECAR_DEPLOYMENT_NAME("aoc-eks-sidecar"),
+
   // common constants
   EC2("EC2"),
   FARGATE("FARGATE"),

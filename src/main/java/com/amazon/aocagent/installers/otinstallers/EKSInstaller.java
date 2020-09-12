@@ -36,7 +36,8 @@ public class EKSInstaller implements OTInstaller {
   }
 
   private void setupEKSContext(Context context) {
-    context.setAocImage(GenericConstants.AOC_IMAGE.getVal() + context.getAgentVersion());
+    context.setAocImage(context.getStack().getTestingImageRepoName()
+            + ":" + context.getAgentVersion());
     context.setDataEmitterImage(GenericConstants.TRACE_EMITTER_DOCKER_IMAGE_URL.getVal());
     // Uses current timestamp as instance id which is used as a uniq test id
     context.setInstanceId(String.valueOf(System.currentTimeMillis()));

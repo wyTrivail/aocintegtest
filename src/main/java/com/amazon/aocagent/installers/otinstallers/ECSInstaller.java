@@ -1,10 +1,6 @@
 package com.amazon.aocagent.installers.otinstallers;
 
 import com.amazon.aocagent.enums.GenericConstants;
-import com.amazon.aocagent.exception.BaseException;
-import com.amazon.aocagent.exception.ExceptionCode;
-import com.amazon.aocagent.fileconfigs.EcsEc2Template;
-import com.amazon.aocagent.fileconfigs.EcsFargateTemplate;
 import com.amazon.aocagent.helpers.MustacheHelper;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.ECSService;
@@ -36,7 +32,7 @@ public class ECSInstaller implements OTInstaller {
     this.setupEcsContext(context);
 
     // create and run ECS target task definitions from template
-    final String taskDefinitionStr = this.getTaskDefinition(this.context);
+    final String taskDefinitionStr = mustacheHelper.render(context.getEcsTaskDef(), context);
 
     // register the task definition in ECS
     ecsService.registerTaskDefinition(taskDefinitionStr);
@@ -49,7 +45,8 @@ public class ECSInstaller implements OTInstaller {
   }
 
   private void setupEcsContext(Context context) {
-    context.setAocImage(GenericConstants.AOC_IMAGE.getVal() + context.getAgentVersion());
+    context.setAocImage(context.getStack().getTestingImageRepoName()
+        + ":" + context.getAgentVersion());
     context.setDataEmitterImage(GenericConstants.TRACE_EMITTER_DOCKER_IMAGE_URL.getVal());
     context.setRegion(context.getStack().getTestingRegion());
     String iamRoleArn = this.iamService.getRoleArn(GenericConstants.IAM_ROLE_NAME.getVal());
@@ -61,36 +58,23 @@ public class ECSInstaller implements OTInstaller {
     String launchType = context.getEcsLaunchType();
     if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
       return new RunTaskRequest()
-              .withLaunchType(LaunchType.EC2)
-              .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
-              .withCluster(context.getEcsClusterName())
-              .withCount(1);
+          .withLaunchType(LaunchType.EC2)
+          .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
+          .withCluster(context.getEcsClusterName())
+          .withCount(1);
     } else {
       return new RunTaskRequest()
-              .withLaunchType(LaunchType.FARGATE)
-              .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
-              .withCluster(context.getEcsClusterName())
-              .withCount(1)
-              .withNetworkConfiguration(
-                  new NetworkConfiguration()
-                      .withAwsvpcConfiguration(
-                          new AwsVpcConfiguration()
-                              .withAssignPublicIp(AssignPublicIp.ENABLED)
-                              .withSecurityGroups(context.getDefaultSecurityGrpId())
-                              .withSubnets(context.getDefaultSubnets().get(0).getSubnetId())));
-    }
-  }
-
-  private String getTaskDefinition(Context context) throws BaseException {
-    String launchType = context.getEcsLaunchType();
-    try {
-      if (launchType.equalsIgnoreCase(GenericConstants.EC2.getVal())) {
-        return mustacheHelper.render(EcsEc2Template.ECS_EC2_TEMPLATE, context);
-      } else {
-        return mustacheHelper.render(EcsFargateTemplate.ECS_FARGATE_TEMPLATE, context);
-      }
-    } catch (Exception e) {
-      throw new BaseException(ExceptionCode.ECS_TASK_EXECUTION_FAIL, e.getMessage());
+          .withLaunchType(LaunchType.FARGATE)
+          .withTaskDefinition(GenericConstants.AOC_PREFIX.getVal() + launchType)
+          .withCluster(context.getEcsClusterName())
+          .withCount(1)
+          .withNetworkConfiguration(
+              new NetworkConfiguration()
+                  .withAwsvpcConfiguration(
+                      new AwsVpcConfiguration()
+                          .withAssignPublicIp(AssignPublicIp.ENABLED)
+                          .withSecurityGroups(context.getDefaultSecurityGrpId())
+                          .withSubnets(context.getDefaultSubnets().get(0).getSubnetId())));
     }
   }
 }

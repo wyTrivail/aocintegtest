@@ -3,6 +3,7 @@ package com.amazon.aocagent.commands;
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
+import com.amazon.aocagent.fileconfigs.ECSTaskDefTemplate;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.models.Stack;
 import com.amazonaws.util.StringUtils;
@@ -48,10 +49,10 @@ public class CommonOption {
       names = {"-k", "--eks-context"},
       description =
           "eg, -k eksClusterName=my-cluster-name "
-                  + "-k kubectlPath=/my/kubectl/path "
-                  + "-k kubeconfigPath=/my/kubeconfig/path "
-                  + "-k awsAuthenticatorPath=/my/authenticator/path "
-                  + "-k eksTestManifestName=testManifest")
+              + "-k kubectlPath=/my/kubectl/path "
+              + "-k kubeconfigPath=/my/kubeconfig/path "
+              + "-k awsAuthenticatorPath=/my/authenticator/path "
+              + "-k eksTestManifestName=testManifest")
   private Map<String, String> eksContexts;
 
   /**
@@ -108,6 +109,8 @@ public class CommonOption {
                   context.setEcsLaunchType(e.getValue());
                 } else if (e.getKey().equals(GenericConstants.ECS_DEPLOY_MODE.getVal())) {
                   context.setEcsDeploymentMode(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.ECS_TASK_DEF.getVal())) {
+                  context.setEcsTaskDef(ECSTaskDefTemplate.valueOf(e.getValue()));
                 } else if (e.getKey().equals(GenericConstants.AUTHENTICATOR_PATH.getVal())) {
                   context.setIamAuthenticatorPath(e.getValue());
                 } else if (e.getKey().equals(GenericConstants.EKS_CLUSTER_NAME.getVal())) {

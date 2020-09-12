@@ -12,6 +12,7 @@ public enum GenericConstants {
   DEFAULT_S3_BUCKET("aws-observability-collector-test"),
   DEFAULT_SSH_KEY_S3_BUCKET_NAME("aoc-ssh-key"),
   DEFAULT_TRACE_S3_BUCKET_NAME("trace-expected-data"),
+  DEFAULT_DOCKER_IMAGE_REPO_NAME("josephwy/aws-observability-collector"),
 
   // release related
   PACKAGE_NAME_PREFIX("aws-observability-collector."),
@@ -57,9 +58,9 @@ public enum GenericConstants {
   // ECS
   ECS_LAUNCH_TYPE("ecsLaunchType"),
   ECS_DEPLOY_MODE("ecsDeployMode"),
+  ECS_TASK_DEF("ecsTaskDef"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
-  AOC_IMAGE("josephwy/aws-observability-collector:"),
 
   // EKS
   AUTHENTICATOR_PATH("awsAuthenticatorPath"),

@@ -1,5 +1,6 @@
 package com.amazon.aocagent.models;
 
+import com.amazon.aocagent.fileconfigs.ECSTaskDefTemplate;
 import com.amazon.aocagent.fileconfigs.ExpectedMetric;
 import com.amazon.aocagent.fileconfigs.ExpectedTrace;
 import com.amazon.aocagent.fileconfigs.OTConfig;
@@ -49,6 +50,9 @@ public class Context {
 
   /** ECS task execution role arn. */
   private String ecsExecutionRoleArn;
+
+  /** ECS task def. */
+  private ECSTaskDefTemplate ecsTaskDef;
 
   /** ECS data emitter image. */
   private String dataEmitterImage;

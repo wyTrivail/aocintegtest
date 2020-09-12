@@ -36,7 +36,7 @@ public abstract class LinuxAMI implements ITestAMI {
   public String getStartingCommand(String configPath) {
     return String.format(
         "sudo %s -c %s -a start",
-        "/opt/aws/aws-opentelemetry-collector/bin/aws-observability-collector-ctl", configPath);
+        "/opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl", configPath);
   }
 
   @Override

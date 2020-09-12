@@ -9,4 +9,5 @@ public class Stack {
   String s3BucketName;
   String sshKeyS3BucketName;
   String traceDataS3BucketName;
+  String testingImageRepoName;
 }

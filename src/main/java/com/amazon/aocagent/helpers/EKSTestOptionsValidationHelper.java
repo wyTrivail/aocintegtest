@@ -1,6 +1,5 @@
 package com.amazon.aocagent.helpers;
 
-import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.fileconfigs.EksKubeConfigTemplate;
@@ -42,10 +41,6 @@ public class EKSTestOptionsValidationHelper {
     if (context.getKubeconfigPath() == null) {
       // generate default kubeconfig. It requires a valid "iamAuthenticatorPath" in context
       generateKubeconfig(context);
-    }
-
-    if (context.getEksTestManifestName() == null) {
-      context.setEksTestManifestName(GenericConstants.EKS_DEFAULT_TEST_MANIFEST.getVal());
     }
   }
 

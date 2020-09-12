@@ -35,10 +35,13 @@ public class EKSClean implements ITask {
         String namespace = line.split(" ")[0];
         // extract creation time (in milliseconds) of the namespace, i.e.
         // eks-integ-test-1599881334414
-        String timestamp = namespace.split("-", 4)[3];
-        // add to target namespaces if it was created 2 hours ago
-        if (new Date(Long.parseLong(timestamp)).before(new DateTime().minusHours(2).toDate())) {
-          namespaces.add(namespace);
+        String[] elements = namespace.split("-", 4);
+        if (elements.length == 4) {
+          String timestamp = elements[3];
+          // add to target namespaces if it was created 2 hours ago
+          if (new Date(Long.parseLong(timestamp)).before(new DateTime().minusHours(2).toDate())) {
+            namespaces.add(namespace);
+          }
         }
       }
     }
@@ -50,6 +53,7 @@ public class EKSClean implements ITask {
               "%s delete ns %s --kubeconfig %s",
               context.getKubectlPath(), namespace, context.getKubeconfigPath());
       CommandExecutionHelper.runChildProcessWithAWSCred(command);
+      log.info("namespace {} has been deleted !", namespace);
     }
   }
 }

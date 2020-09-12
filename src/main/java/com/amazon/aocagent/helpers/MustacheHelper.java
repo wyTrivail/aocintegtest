@@ -27,15 +27,7 @@ public class MustacheHelper {
     return render(fileConfig.getPath(), dataToInject);
   }
 
-  /**
-   * Render the template file with injecting the data.
-   *
-   * @param path any object implementing the FileConfig interface
-   * @param dataToInject the object to inject to the template
-   * @return generated content
-   * @throws IOException when the template file is not existed
-   */
-  public String render(String path, Object dataToInject) throws IOException {
+  private String render(String path, Object dataToInject) throws IOException {
     log.info("fetch config: {}", path);
     String templateContent = IOUtils.toString(getClass().getResource(path));
     Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path);

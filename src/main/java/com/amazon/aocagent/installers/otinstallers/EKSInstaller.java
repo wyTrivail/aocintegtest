@@ -41,6 +41,9 @@ public class EKSInstaller implements OTInstaller {
     context.setDataEmitterImage(GenericConstants.TRACE_EMITTER_DOCKER_IMAGE_URL.getVal());
     // Uses current timestamp as instance id which is used as a uniq test id
     context.setInstanceId(String.valueOf(System.currentTimeMillis()));
+    if (context.getEksTestManifestName() == null) {
+      context.setEksTestManifestName(GenericConstants.EKS_DEFAULT_TEST_MANIFEST.getVal());
+    }
   }
 
   private void generateEKSTestManifestFile(Context context) throws Exception {

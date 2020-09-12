@@ -75,14 +75,25 @@ gradle run --args="integ-test -t=ECS_TEST --package-version={the version you wan
 gradle run --args="clean -t=ECSClean --package-version={the version you want to test}"
 ```
 
-### Run EKS Integ-test on Sidecar mode (EMF Metrics)
+### Run EKS Integ-test (EMF Metrics)
+#### extra parameters:
+* "-k eksClusterName": provide the name of EKS cluster on which run this test. (mandatory unless your specify kubeconfigPath)
+* "-k kubectlPath": provide the path of kubectl binary to connect to your EKS cluster. (optional, if absent, a default binary will be downloaded)
+* "-k kubeconfigPath": provide the path of kubeconfig. (optional, if absent, the kubeconfig will be generated according to your EKS cluster)
+* "-k iamAuthenticatorPath": provide the path of aws-iam-authenticator binary to authenticate connection to your EKS cluster. (optional, if absent, a default binary will be downloaded)
+* "-k eksTestManifestName": specify the test manifest under dir /templates/eks to deploy to your EKS cluster for testing. (optional, if absent, a default test manifest will be used)
 ```
-gradle run --args="integ-test -t=EKS_TEST --package-version={the version you want to test} -k eksClusterName=my-cluster-name -k awsAuthenticatorPath=/my/authenticator/path"
+gradle run --args="integ-test -t=EKS_TEST --package-version={the version you want to test} -k eksClusterName=my-cluster-name"
 ```
 
 ### Clean EKS testing resources
+#### extra parameters:
+* "-k eksClusterName": provide the name of EKS cluster on which run this test. (mandatory unless your specify kubeconfigPath)
+* "-k kubectlPath": provide the path of kubectl binary to connect to your EKS cluster. (optional, if absent, a default binary will be downloaded)
+* "-k kubeconfigPath": provide the path of kubeconfig. (optional, if absent, the kubeconfig will be generated according to your EKS cluster)
+* "-k iamAuthenticatorPath": provide the path of aws-iam-authenticator binary to authenticate connection to your EKS cluster. (optional, if absent, a default binary will be downloaded)
 ```
-gradle run --args="clean -t=EKSClean --package-version={the version you want to test} -k eksClusterName=my-cluster-name -k awsAuthenticatorPath=/my/authenticator/path"
+gradle run --args="clean -t=EKSClean --package-version={the version you want to test} -k eksClusterName=my-cluster-name"
 ```
 
 ### Command Help

@@ -54,17 +54,20 @@ public enum GenericConstants {
   CANDIDATE_DOWNLOAD_TO("build/candidate-downloaded.tar.gz"),
   CANDIDATE_UNPACK_TO("."),
 
-  //ECS
+  // ECS
   ECS_LAUNCH_TYPE("ecsLaunchType"),
   ECS_DEPLOY_MODE("ecsDeployMode"),
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
   AOC_IMAGE("josephwy/aws-observability-collector:"),
 
-  //EKS
+  // EKS
   AUTHENTICATOR_PATH("awsAuthenticatorPath"),
   EKS_CLUSTER_NAME("eksClusterName"),
-  EKS_SIDECAR_DEPLOYMENT_NAME("aoc-eks-sidecar"),
+  KUBECTL_PATH("kubectlPath"),
+  KUBECONFIG_PATH("kubeconfigPath"),
+  TEST_MANIFEST_NAME("eksTestManifestName"),
+  EKS_DEFAULT_TEST_MANIFEST("aoc-eks-sidecar"),
 
   // common constants
   EC2("EC2"),
@@ -72,7 +75,6 @@ public enum GenericConstants {
   DEFAULT("default"),
   AOC_PREFIX("aoc-"),
   AOC_PORT("55680"),
-
   ;
 
   private String val;

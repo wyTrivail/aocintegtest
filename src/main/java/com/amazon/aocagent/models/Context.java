@@ -1,8 +1,8 @@
 package com.amazon.aocagent.models;
 
 import com.amazon.aocagent.fileconfigs.ExpectedMetric;
-import com.amazon.aocagent.fileconfigs.OTConfig;
 import com.amazon.aocagent.fileconfigs.ExpectedTrace;
+import com.amazon.aocagent.fileconfigs.OTConfig;
 import com.amazon.aocagent.testamis.ITestAMI;
 import com.amazonaws.services.ec2.model.Subnet;
 import lombok.Data;
@@ -68,9 +68,15 @@ public class Context {
   /** EKS cluster name. */
   private String eksClusterName;
 
+  /** kubectl binary path. */
+  private String kubectlPath;
+
+  /** kubeconfig path. */
+  private String kubeconfigPath;
+
   /** EKS iam authenticator binary path. */
   private String iamAuthenticatorPath;
 
-  /** EKS test deployment name. */
-  private String eksDeploymentName;
+  /** EKS test manifest file name. */
+  private String eksTestManifestName;
 }

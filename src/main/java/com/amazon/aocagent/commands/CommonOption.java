@@ -47,7 +47,11 @@ public class CommonOption {
   @CommandLine.Option(
       names = {"-k", "--eks-context"},
       description =
-          "eg, -k eksClusterName=my-cluster-name -k awsAuthenticatorPath=/my/authenticator/path")
+          "eg, -k eksClusterName=my-cluster-name "
+                  + "-k kubectlPath=/my/kubectl/path "
+                  + "-k kubeconfigPath=/my/kubeconfig/path "
+                  + "-k awsAuthenticatorPath=/my/authenticator/path "
+                  + "-k eksTestManifestName=testManifest")
   private Map<String, String> eksContexts;
 
   /**
@@ -108,6 +112,12 @@ public class CommonOption {
                   context.setIamAuthenticatorPath(e.getValue());
                 } else if (e.getKey().equals(GenericConstants.EKS_CLUSTER_NAME.getVal())) {
                   context.setEksClusterName(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.KUBECTL_PATH.getVal())) {
+                  context.setKubectlPath(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.KUBECONFIG_PATH.getVal())) {
+                  context.setKubeconfigPath(e.getValue());
+                } else if (e.getKey().equals(GenericConstants.TEST_MANIFEST_NAME.getVal())) {
+                  context.setEksTestManifestName(e.getValue());
                 }
               });
     }

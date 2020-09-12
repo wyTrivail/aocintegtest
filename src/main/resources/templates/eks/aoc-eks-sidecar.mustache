@@ -1,19 +1,28 @@
+# create namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eks-integ-test-{{instanceId}}
+  labels:
+    name: eks-integ-test-{{instanceId}}
+---
+# create deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{eksDeploymentName}} # the name of the deployment
-  namespace: default
+  name: {{eksTestManifestName}}
+  namespace: eks-integ-test-{{instanceId}}
   labels:
-    name: {{eksDeploymentName}}
+    name: {{eksTestManifestName}}
 spec:
-  replicas: 1 # tells deployment to run 1 pods matching the template
+  replicas: 1
   selector:
     matchLabels:
-      name: {{eksDeploymentName}}
-  template: # create pods using pod definition in this template
+      name: {{eksTestManifestName}}
+  template:
     metadata:
       labels:
-        name: {{eksDeploymentName}}
+        name: {{eksTestManifestName}}
     spec:
       containers:
         - name: emitter

@@ -10,12 +10,12 @@ public class EKSTestBed implements TestBed {
 
   @Override
   public void init(Context context) {
-    EKSTestOptionsValidationHelper.checkEKSTestOptions(context);
     this.context = context;
   }
 
   @Override
   public Context launchTestBed() throws Exception {
+    EKSTestOptionsValidationHelper.checkEKSTestOptions(context);
     return this.context;
   }
 }

@@ -53,7 +53,6 @@ dependencies {
 
     // command cli
     compile 'info.picocli:picocli:4.3.2'
-    compile 'io.kubernetes:client-java:9.0.0'
 
     compileOnly 'info.picocli:picocli-codegen:4.3.2'
 
@@ -96,10 +95,6 @@ dependencies {
 compileJava {
     options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
-
-// Workaround for OpenJDK bug when using Kubernetes client java https://github.com/kubernetes-client/java/issues/854
-apply plugin: 'application'
-applicationDefaultJvmArgs = ["-Djdk.tls.client.protocols=TLSv1.2"]
 
 application {
     // Define the main class for the application.

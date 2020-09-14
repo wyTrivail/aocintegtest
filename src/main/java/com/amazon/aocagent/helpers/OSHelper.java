@@ -27,6 +27,6 @@ public class OSHelper {
    * @return current OS is Linux or not
    */
   public static boolean isLinux() {
-    return OS.startsWith("linux");
+    return OS.startsWith("linux") || OS.startsWith("ubuntu");
   }
 }

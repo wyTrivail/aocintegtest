@@ -3,10 +3,12 @@ package com.amazon.aocagent.enums;
 import com.amazon.aocagent.installers.emiterinstallers.OTEmitterInstaller;
 import com.amazon.aocagent.installers.emiterinstallers.OTMetricAndTraceEmitterInstaller;
 import com.amazon.aocagent.installers.otinstallers.ECSInstaller;
+import com.amazon.aocagent.installers.otinstallers.EKSInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTPackageInstaller;
 import com.amazon.aocagent.testbeds.EC2TestBed;
 import com.amazon.aocagent.testbeds.ECSTestBed;
+import com.amazon.aocagent.testbeds.EKSTestBed;
 import com.amazon.aocagent.testbeds.TestBed;
 import com.amazon.aocagent.validators.IValidator;
 import com.amazon.aocagent.validators.MetricValidator;
@@ -29,6 +31,13 @@ public enum TestCase {
   ECS_TEST(
       new ECSTestBed(),
       new ECSInstaller(),
+      Arrays.asList(), // data emitter is included in sidecar installer
+      Arrays.asList(new MetricValidator(), new TraceValidator())),
+
+  // run AOC with data emitter in EKS as sidecar
+  EKS_TEST(
+      new EKSTestBed(),
+      new EKSInstaller(),
       Arrays.asList(), // data emitter is included in sidecar installer
       Arrays.asList(new MetricValidator(), new TraceValidator())),
   ;

@@ -62,6 +62,14 @@ public enum GenericConstants {
   EC2_INSTANCE_ECS_TAG_VAL("aoc-integ-test-ecs"),
   ECS_SIDECAR_CLUSTER("aoc-sidecar-integ-test"),
 
+  // EKS
+  AUTHENTICATOR_PATH("awsAuthenticatorPath"),
+  EKS_CLUSTER_NAME("eksClusterName"),
+  KUBECTL_PATH("kubectlPath"),
+  KUBECONFIG_PATH("kubeconfigPath"),
+  TEST_MANIFEST_NAME("eksTestManifestName"),
+  EKS_DEFAULT_TEST_MANIFEST("aoc-eks-sidecar"),
+
   // common constants
   EC2("EC2"),
   FARGATE("FARGATE"),

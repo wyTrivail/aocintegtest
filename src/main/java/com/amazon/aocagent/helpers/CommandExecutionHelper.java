@@ -2,6 +2,9 @@ package com.amazon.aocagent.helpers;
 
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSSessionCredentials;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -10,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,20 +59,66 @@ public class CommandExecutionHelper {
    * runChildProcess executes the command in a child process.
    *
    * @param command the command to be executed
+   * @return output of the command execution
    * @throws BaseException when the command fails to execute
    */
-  public static void runChildProcess(String command) throws BaseException {
+  public static String runChildProcess(String command) throws BaseException {
+    return runChildProcessInternal(command, new String[] {});
+  }
+
+  /**
+   * runChildProcessWithAWSCred executes the command in a child process with aws credential.
+   *
+   * @param command the command to be executed
+   * @return output of the command execution
+   * @throws BaseException when the command fails to execute
+   */
+  public static String runChildProcessWithAWSCred(String command) throws BaseException {
+    // construct environment variable array
+    List<String> envList = new ArrayList();
+    AWSCredentials credentials = DefaultAWSCredentialsProviderChain.getInstance().getCredentials();
+    envList.add("AWS_ACCESS_KEY_ID=" + credentials.getAWSAccessKeyId());
+    envList.add("AWS_SECRET_ACCESS_KEY=" + credentials.getAWSSecretKey());
+    if (credentials instanceof AWSSessionCredentials) {
+      AWSSessionCredentials sessionCredentials = (AWSSessionCredentials) credentials;
+      envList.add("AWS_SESSION_TOKEN=" + sessionCredentials.getSessionToken());
+    }
+
+    return runChildProcessInternal(command, envList.toArray(new String[0]));
+  }
+
+  /**
+   * runChildProcessWithEnvs executes the command in a child process with environment variables.
+   *
+   * @param command the command to be executed
+   * @param envs environment variables
+   * @return output of the command execution
+   * @throws BaseException when the command fails to execute
+   */
+  public static String runChildProcessWithEnvs(String command, String[] envs) throws BaseException {
+    return runChildProcessInternal(command, envs);
+  }
+
+  private static String runChildProcessInternal(String command, String[] envs)
+      throws BaseException {
     log.info("execute command: {}", command);
+    StringBuilder output = new StringBuilder();
+
     Process p;
     Future<?> stdoutFuture;
     Future<?> stderrFuture;
 
     try {
-      p = Runtime.getRuntime().exec(command, new String[] {});
+      p = Runtime.getRuntime().exec(command, envs);
 
       // p is set up by default to just have pipes for its stdout/stderr, so those will buffer until
       // we set up consumers
-      StreamRedirecter stdoutRedirector = new StreamRedirecter(p.getInputStream(), log::info);
+      StreamRedirecter stdoutRedirector =
+          new StreamRedirecter(
+              p.getInputStream(),
+              s -> {
+                output.append(s).append("\n");
+              });
       stdoutFuture = THREAD_POOL.submit(stdoutRedirector);
 
       StreamRedirecter stderrRedirector = new StreamRedirecter(p.getErrorStream(), log::error);
@@ -90,5 +141,6 @@ public class CommandExecutionHelper {
       p.destroyForcibly();
       throw new RuntimeException("Timed out while waiting for command to complete.", e);
     }
+    return output.toString();
   }
 }

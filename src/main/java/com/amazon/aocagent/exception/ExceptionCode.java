@@ -35,6 +35,12 @@ public enum ExceptionCode {
   TRACE_SPAN_LIST_NOT_MATCHED(50002, "trace span list has different length"),
   TRACE_SPAN_NOT_MATCHED(50003, "trace span not matched"),
   TRACE_LIST_NOT_MATCHED(50004, "trace list has different length"),
+
+  // eks option errors
+  EKS_CLUSTER_UNAVAIL(60001, "cluster is not available"),
+  EKS_CLUSTER_NAME_UNAVAIL(60002, "cluster name is not available"),
+  EKS_KUBECTL_PATH_UNAVAIL(60003, "kubectl path is not available"),
+  EKS_IAM_AUTHENTICATOR_PATH_UNAVAIL(60004, "aws-iam-authenticator path is not available"),
   ;
   private int code;
   private String message;

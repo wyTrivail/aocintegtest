@@ -24,10 +24,13 @@ public class MustacheHelper {
    * @throws IOException when the template file is not existed
    */
   public String render(FileConfig fileConfig, Object dataToInject) throws IOException {
-    log.info("fetch config: {}", fileConfig.getPath());
-    String templateContent = IOUtils.toString(getClass().getResource(fileConfig.getPath()));
-    Mustache mustache = mustacheFactory
-        .compile(new StringReader(templateContent), fileConfig.getPath());
+    return render(fileConfig.getPath(), dataToInject);
+  }
+
+  private String render(String path, Object dataToInject) throws IOException {
+    log.info("fetch config: {}", path);
+    String templateContent = IOUtils.toString(getClass().getResource(path));
+    Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path);
     StringWriter stringWriter = new StringWriter();
     mustache.execute(stringWriter, dataToInject).flush();
     return stringWriter.getBuffer().toString();

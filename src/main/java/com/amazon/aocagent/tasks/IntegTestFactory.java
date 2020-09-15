@@ -7,6 +7,7 @@ public class IntegTestFactory {
 
   /**
    * run the testcase.
+   *
    * @param testCase the testcase to run
    * @param context the testing context
    * @throws Exception when the test fails
@@ -19,7 +20,11 @@ public class IntegTestFactory {
             testCase.getOtEmitterInstallerList(),
             testCase.getValidatorList());
 
-    integTest.init(context);
-    integTest.execute();
+    try {
+      integTest.init(context);
+      integTest.execute();
+    } finally {
+      integTest.clean();
+    }
   }
 }

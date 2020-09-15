@@ -69,6 +69,7 @@ public enum GenericConstants {
   KUBECONFIG_PATH("kubeconfigPath"),
   TEST_MANIFEST_NAME("eksTestManifestName"),
   EKS_DEFAULT_TEST_MANIFEST("aoc-eks-sidecar"),
+  EKS_INTEG_TEST("EKSIntegTest"),
 
   // common constants
   EC2("EC2"),
@@ -76,6 +77,7 @@ public enum GenericConstants {
   DEFAULT("default"),
   AOC_PREFIX("aoc-"),
   AOC_PORT("55680"),
+  RESOURCE_CLEAN_THRESHOLD("120"),
   ;
 
   private String val;

@@ -1,7 +1,10 @@
 package com.amazon.aocagent.tasks;
 
+import com.amazon.aocagent.enums.GenericConstants;
+import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.helpers.CommandExecutionHelper;
 import com.amazon.aocagent.helpers.EKSTestOptionsValidationHelper;
+import com.amazon.aocagent.helpers.TempDirHelper;
 import com.amazon.aocagent.models.Context;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.DateTime;
@@ -16,12 +19,23 @@ public class EKSClean implements ITask {
 
   @Override
   public void init(Context context) throws Exception {
+    context.setEksTestArtifactsDir(new TempDirHelper(GenericConstants.EKS_INTEG_TEST.getVal()));
     EKSTestOptionsValidationHelper.checkEKSTestOptions(context);
     this.context = context;
   }
 
   @Override
   public void execute() throws Exception {
+    cleanNamespaces();
+    TempDirHelper.cleanTempDirs();
+  }
+
+  @Override
+  public void clean() throws Exception {
+    context.getEksTestArtifactsDir().deletePath();
+  }
+
+  private void cleanNamespaces() throws BaseException {
     String command =
         String.format(
             "%s get ns --kubeconfig %s", context.getKubectlPath(), context.getKubeconfigPath());
@@ -39,7 +53,12 @@ public class EKSClean implements ITask {
         if (elements.length == 4) {
           String timestamp = elements[3];
           // add to target namespaces if it was created 2 hours ago
-          if (new Date(Long.parseLong(timestamp)).before(new DateTime().minusHours(2).toDate())) {
+          if (new Date(Long.parseLong(timestamp))
+              .before(
+                  new DateTime()
+                      .minusMinutes(
+                          Integer.parseInt(GenericConstants.RESOURCE_CLEAN_THRESHOLD.getVal()))
+                      .toDate())) {
             namespaces.add(namespace);
           }
         }

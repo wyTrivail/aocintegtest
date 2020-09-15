@@ -3,7 +3,6 @@ package com.amazon.aocagent.helpers;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.fileconfigs.EksKubeConfigTemplate;
-import com.amazon.aocagent.installers.otinstallers.EKSInstaller;
 import com.amazon.aocagent.models.Context;
 import com.amazon.aocagent.services.EKSService;
 import com.amazonaws.services.eks.model.Cluster;
@@ -16,8 +15,6 @@ import java.net.URL;
 
 @Log4j2
 public class EKSTestOptionsValidationHelper {
-  public static String manifestsDir = EKSInstaller.class.getResource("/").getPath();
-
   /**
    * validate EKS test options.
    *
@@ -54,7 +51,7 @@ public class EKSTestOptionsValidationHelper {
 
     log.info("kubeConfigContent: \n" + kubeConfigContent);
 
-    File kubeconfig = new File(String.format("%s/kubeconfig", manifestsDir));
+    File kubeconfig = new File(context.getEksTestArtifactsDir().getPath().toFile(), "kubeconfig");
     FileUtils.writeStringToFile(kubeconfig, kubeConfigContent);
     context.setKubeconfigPath(kubeconfig.getPath());
   }
@@ -111,7 +108,7 @@ public class EKSTestOptionsValidationHelper {
 
   private static String downloadBinary(String binaryUrl, String binaryName, Context context)
       throws IOException {
-    File binaryFile = new File(manifestsDir + "/" + binaryName);
+    File binaryFile = new File(context.getEksTestArtifactsDir().getPath().toFile(), binaryName);
 
     FileUtils.copyURLToFile(new URL(binaryUrl), binaryFile);
     binaryFile.setExecutable(true);

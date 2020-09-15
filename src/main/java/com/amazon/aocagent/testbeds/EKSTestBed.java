@@ -1,6 +1,7 @@
 package com.amazon.aocagent.testbeds;
 
 import com.amazon.aocagent.helpers.EKSTestOptionsValidationHelper;
+import com.amazon.aocagent.helpers.TempDirHelper;
 import com.amazon.aocagent.models.Context;
 import lombok.extern.log4j.Log4j2;
 
@@ -15,6 +16,7 @@ public class EKSTestBed implements TestBed {
 
   @Override
   public Context launchTestBed() throws Exception {
+    context.setEksTestArtifactsDir(new TempDirHelper("EKSIntegTest"));
     EKSTestOptionsValidationHelper.checkEKSTestOptions(context);
     return this.context;
   }

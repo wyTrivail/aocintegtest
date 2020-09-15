@@ -55,5 +55,9 @@ public class IntegTest implements ITask {
 
     batchedValidator.init(context);
     batchedValidator.validate();
+
+    if (context.getEksTestArtifactsDir() != null) {
+      context.getEksTestArtifactsDir().deleteDir();
+    }
   }
 }

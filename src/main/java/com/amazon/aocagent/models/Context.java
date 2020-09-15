@@ -4,6 +4,7 @@ import com.amazon.aocagent.fileconfigs.ECSTaskDefTemplate;
 import com.amazon.aocagent.fileconfigs.ExpectedMetric;
 import com.amazon.aocagent.fileconfigs.ExpectedTrace;
 import com.amazon.aocagent.fileconfigs.OTConfig;
+import com.amazon.aocagent.helpers.TempDirHelper;
 import com.amazon.aocagent.testamis.ITestAMI;
 import com.amazonaws.services.ec2.model.Subnet;
 import lombok.Data;
@@ -83,4 +84,7 @@ public class Context {
 
   /** EKS test manifest file name. */
   private String eksTestManifestName;
+
+  /** EKS test artifacts dir. */
+  private TempDirHelper eksTestArtifactsDir;
 }

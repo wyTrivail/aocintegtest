@@ -1,7 +1,9 @@
 package com.amazon.aocagent.tasks;
 
+import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.helpers.CommandExecutionHelper;
 import com.amazon.aocagent.helpers.EKSTestOptionsValidationHelper;
+import com.amazon.aocagent.helpers.TempDirHelper;
 import com.amazon.aocagent.models.Context;
 import lombok.extern.log4j.Log4j2;
 import org.joda.time.DateTime;
@@ -22,6 +24,11 @@ public class EKSClean implements ITask {
 
   @Override
   public void execute() throws Exception {
+    cleanNamespaces();
+    TempDirHelper.cleanTempDirs();
+  }
+
+  private void cleanNamespaces() throws BaseException {
     String command =
         String.format(
             "%s get ns --kubeconfig %s", context.getKubectlPath(), context.getKubeconfigPath());

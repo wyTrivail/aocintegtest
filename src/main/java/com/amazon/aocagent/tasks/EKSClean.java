@@ -1,5 +1,6 @@
 package com.amazon.aocagent.tasks;
 
+import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.helpers.CommandExecutionHelper;
 import com.amazon.aocagent.helpers.EKSTestOptionsValidationHelper;
@@ -18,6 +19,7 @@ public class EKSClean implements ITask {
 
   @Override
   public void init(Context context) throws Exception {
+    context.setEksTestArtifactsDir(new TempDirHelper(GenericConstants.EKS_INTEG_TEST.getVal()));
     EKSTestOptionsValidationHelper.checkEKSTestOptions(context);
     this.context = context;
   }
@@ -25,6 +27,7 @@ public class EKSClean implements ITask {
   @Override
   public void execute() throws Exception {
     cleanNamespaces();
+    context.getEksTestArtifactsDir().deleteDir();
     TempDirHelper.cleanTempDirs();
   }
 
@@ -46,7 +49,12 @@ public class EKSClean implements ITask {
         if (elements.length == 4) {
           String timestamp = elements[3];
           // add to target namespaces if it was created 2 hours ago
-          if (new Date(Long.parseLong(timestamp)).before(new DateTime().minusHours(2).toDate())) {
+          if (new Date(Long.parseLong(timestamp))
+              .before(
+                  new DateTime()
+                      .minusMinutes(
+                          Integer.parseInt(GenericConstants.RESOURCE_CLEAN_THRESHOLD.getVal()))
+                      .toDate())) {
             namespaces.add(namespace);
           }
         }

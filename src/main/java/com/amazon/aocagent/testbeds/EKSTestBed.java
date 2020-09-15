@@ -1,5 +1,6 @@
 package com.amazon.aocagent.testbeds;
 
+import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.helpers.EKSTestOptionsValidationHelper;
 import com.amazon.aocagent.helpers.TempDirHelper;
 import com.amazon.aocagent.models.Context;
@@ -16,7 +17,7 @@ public class EKSTestBed implements TestBed {
 
   @Override
   public Context launchTestBed() throws Exception {
-    context.setEksTestArtifactsDir(new TempDirHelper("EKSIntegTest"));
+    context.setEksTestArtifactsDir(new TempDirHelper(GenericConstants.EKS_INTEG_TEST.getVal()));
     EKSTestOptionsValidationHelper.checkEKSTestOptions(context);
     return this.context;
   }

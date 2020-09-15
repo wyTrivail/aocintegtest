@@ -6,10 +6,9 @@ import com.amazon.aocagent.services.EC2Service;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Log4j2
@@ -28,9 +27,6 @@ public class EC2Clean implements ITask {
 
     // filter instance older than 2 hours ago
     List<String> instanceIdListToBeTerminated = new ArrayList<>();
-    Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.HOUR_OF_DAY, -2);
-    Date twoHoursAgo = calendar.getTime();
 
     instanceList.forEach(
         instance -> {
@@ -39,7 +35,13 @@ public class EC2Clean implements ITask {
             return;
           }
           log.info("check instance {}, status: {}", instance.getInstanceId(), instance.getState());
-          if (!instance.getLaunchTime().before(twoHoursAgo)) {
+          if (!instance
+              .getLaunchTime()
+              .before(
+                  new DateTime()
+                      .minusMinutes(
+                          Integer.parseInt(GenericConstants.RESOURCE_CLEAN_THRESHOLD.getVal()))
+                      .toDate())) {
             return;
           }
 

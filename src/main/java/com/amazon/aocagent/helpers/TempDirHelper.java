@@ -1,5 +1,6 @@
 package com.amazon.aocagent.helpers;
 
+import com.amazon.aocagent.enums.GenericConstants;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
@@ -29,7 +30,12 @@ public class TempDirHelper {
         if (elements.length == 2) {
           String timestamp = elements[1];
           // delete dir if it was created two hours ago
-          if (new Date(Long.parseLong(timestamp)).before(new DateTime().minusHours(2).toDate())) {
+          if (new Date(Long.parseLong(timestamp))
+              .before(
+                  new DateTime()
+                      .minusMinutes(
+                          Integer.parseInt(GenericConstants.RESOURCE_CLEAN_THRESHOLD.getVal()))
+                      .toDate())) {
             FileUtils.deleteDirectory(subdir);
           }
         } else {

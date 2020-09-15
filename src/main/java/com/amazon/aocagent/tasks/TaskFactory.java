@@ -14,7 +14,11 @@ public class TaskFactory {
     ITask task =
         (ITask)
             Class.forName(TaskFactory.class.getPackage().getName() + "." + taskName).newInstance();
-    task.init(context);
-    task.execute();
+    try {
+      task.init(context);
+      task.execute();
+    } finally {
+      task.clean();
+    }
   }
 }

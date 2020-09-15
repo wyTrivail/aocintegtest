@@ -27,8 +27,12 @@ public class EKSClean implements ITask {
   @Override
   public void execute() throws Exception {
     cleanNamespaces();
-    context.getEksTestArtifactsDir().deleteDir();
     TempDirHelper.cleanTempDirs();
+  }
+
+  @Override
+  public void clean() throws Exception {
+    context.getEksTestArtifactsDir().deletePath();
   }
 
   private void cleanNamespaces() throws BaseException {

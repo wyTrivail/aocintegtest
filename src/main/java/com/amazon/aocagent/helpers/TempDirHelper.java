@@ -1,7 +1,6 @@
 package com.amazon.aocagent.helpers;
 
 import com.amazon.aocagent.enums.GenericConstants;
-import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 
@@ -11,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 
-@Getter
 public class TempDirHelper {
   private static String delimiter = "-";
   private static Path topLevelPath = Paths.get(System.getProperty("java.io.tmpdir"), "AOCTestTemp");
@@ -47,6 +45,7 @@ public class TempDirHelper {
   }
 
   private Path path;
+  private String dirPrefix;
 
   /**
    * constructor of TempDirHelper.
@@ -54,12 +53,23 @@ public class TempDirHelper {
    * @param dirPrefix prefix of the temp dir which is going to be created
    */
   public TempDirHelper(String dirPrefix) {
-    path =
-        Paths.get(
-            topLevelPath.toString(),
-            String.format("%s%s%d", dirPrefix, delimiter, System.currentTimeMillis()));
-    // create the dir
-    path.toFile().mkdir();
+    this.dirPrefix = dirPrefix;
+  }
+
+  /**
+   * get the temp dir created by this object.
+   *
+   * @return path
+   */
+  public Path getPath() {
+    if (path == null) {
+      path =
+          Paths.get(
+              topLevelPath.toString(),
+              String.format("%s%s%d", dirPrefix, delimiter, System.currentTimeMillis()));
+      path.toFile().mkdir();
+    }
+    return path;
   }
 
   /**
@@ -67,7 +77,8 @@ public class TempDirHelper {
    *
    * @throws IOException fail to delete file
    */
-  public void deleteDir() throws IOException {
+  public void deletePath() throws IOException {
     FileUtils.deleteDirectory(path.toFile());
+    path = null;
   }
 }

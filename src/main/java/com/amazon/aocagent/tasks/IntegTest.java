@@ -14,6 +14,7 @@ public class IntegTest implements ITask {
   OTInstaller otInstaller;
   List<OTEmitterInstaller> otEmitterInstallerList;
   BatchedValidator batchedValidator;
+  Context context;
 
   /**
    * Construct IntegTest Object.
@@ -41,7 +42,7 @@ public class IntegTest implements ITask {
 
   @Override
   public void execute() throws Exception {
-    Context context = testBed.launchTestBed();
+    context = testBed.launchTestBed();
 
     if (otInstaller != null) {
       otInstaller.init(context);
@@ -55,9 +56,12 @@ public class IntegTest implements ITask {
 
     batchedValidator.init(context);
     batchedValidator.validate();
+  }
 
+  @Override
+  public void clean() throws Exception {
     if (context.getEksTestArtifactsDir() != null) {
-      context.getEksTestArtifactsDir().deleteDir();
+      context.getEksTestArtifactsDir().deletePath();
     }
   }
 }

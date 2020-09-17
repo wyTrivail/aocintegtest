@@ -28,7 +28,7 @@ public class Setup implements ITask {
   Context context;
 
   @Override
-  public void init(Context context) {
+  public void init(Context context) throws Exception {
     ec2Service = new EC2Service(context.getStack().getTestingRegion());
     s3Service = new S3Service(context.getStack().getTestingRegion());
     this.context = context;

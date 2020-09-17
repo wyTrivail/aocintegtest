@@ -1,6 +1,7 @@
 package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.Architecture;
+import com.amazon.aocagent.enums.OSType;
 import com.amazon.aocagent.enums.S3Package;
 import com.amazonaws.services.ec2.model.InstanceType;
 
@@ -14,6 +15,11 @@ public abstract class LinuxAMI implements ITestAMI {
   @Override
   public String getAMIId() {
     return this.amiId;
+  }
+
+  @Override
+  public OSType getOSType() {
+      return OSType.LINUX;
   }
 
   @Override

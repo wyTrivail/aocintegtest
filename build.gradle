@@ -65,6 +65,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-xray'
     implementation 'com.amazonaws:aws-java-sdk-ecs'
     implementation 'com.amazonaws:aws-java-sdk-eks'
+    implementation 'com.amazonaws:aws-java-sdk-ssm'
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 

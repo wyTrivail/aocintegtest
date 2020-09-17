@@ -4,6 +4,7 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
+import com.amazon.aocagent.helpers.SSMHelper;
 import com.amazon.aocagent.models.EC2InstanceParams;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
@@ -46,6 +47,7 @@ public class EC2Service {
   private AmazonEC2 amazonEC2;
   private String region;
   private S3Service s3Service;
+  private SSMHelper ssmHelper;
   private static final String ERROR_CODE_KEY_PAIR_NOT_FOUND = "InvalidKeyPair.NotFound";
   private static final String ERROR_CODE_KEY_PAIR_ALREADY_EXIST = "InvalidKeyPair.Duplicate";
   private static final String ERROR_CODE_SECURITY_GROUP_ALREADY_EXIST = "InvalidGroup.Duplicate";
@@ -56,19 +58,23 @@ public class EC2Service {
    *
    * @param region the region to launch ec2 instance
    */
-  public EC2Service(String region) {
+  public EC2Service(String region) throws Exception {
     this.region = region;
     amazonEC2 = AmazonEC2ClientBuilder.standard().withRegion(region).build();
     s3Service = new S3Service(region);
+    ssmHelper = new SSMHelper(region);
   }
 
+  public SSMHelper getSsmHelper(){
+    return ssmHelper;
+  }
   /**
    * launchInstance launches one ec2 instance.
    *
    * @param params the instance setup configuration params
    * @return InstanceID
    */
-  public Instance launchInstance(EC2InstanceParams params) throws Exception {
+  public Instance launchInstance(EC2InstanceParams params, boolean isWindowsInstance) throws Exception {
     // create request
     RunInstancesRequest runInstancesRequest =
         new RunInstancesRequest()
@@ -92,7 +98,7 @@ public class EC2Service {
     Instance instance = runInstancesResult.getReservation().getInstances().get(0);
 
     // return the instance until it's ready
-    return getInstanceUntilReady(instance.getInstanceId());
+    return getInstanceUntilReady(instance.getInstanceId(), isWindowsInstance);
   }
 
   /**
@@ -161,12 +167,13 @@ public class EC2Service {
     amazonEC2.terminateInstances(terminateInstancesRequest);
   }
 
-  private Instance getInstanceUntilReady(String targetInstanceId) throws Exception {
+  private Instance getInstanceUntilReady(String targetInstanceId, boolean isWindowsInstance) throws Exception {
     DescribeInstancesRequest describeInstancesRequest =
         new DescribeInstancesRequest().withInstanceIds(targetInstanceId);
 
     AtomicReference<Instance> runningInstance = new AtomicReference<>();
-    RetryHelper.retry(
+    RetryHelper.retry(Integer.valueOf(GenericConstants.MAX_RETRIES.getVal()),
+            Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()) * 3,
         () -> {
           DescribeInstancesResult describeInstancesResult =
               amazonEC2.describeInstances(describeInstancesRequest);
@@ -178,6 +185,10 @@ public class EC2Service {
               String instanceStateName = instance.getState().getName();
               if (!InstanceStateName.Running.toString().equals(instanceStateName)) {
                 throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_PENDING);
+              }
+              if (isWindowsInstance && !ssmHelper.isInstanceReadyForSsm(instance.getInstanceId())) {
+                log.error("Instance with ID " + instance.getInstanceId() + " not ready for SSM in time. Check EC2 console.");
+                throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_BAD);
               }
               log.info("instance network is ready");
               runningInstance.set(instance);

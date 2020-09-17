@@ -1,6 +1,7 @@
 package com.amazon.aocagent.testbeds;
 
 import com.amazon.aocagent.enums.GenericConstants;
+import com.amazon.aocagent.enums.OSType;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
@@ -13,6 +14,7 @@ import com.amazonaws.services.ec2.model.TagSpecification;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class EC2TestBed implements TestBed {
@@ -21,38 +23,38 @@ public class EC2TestBed implements TestBed {
   private Context context;
 
   @Override
-  public void init(Context context) {
+  public void init(Context context) throws Exception{
     this.context = context;
+    this.context.setRegion(context.getStack().getTestingRegion());
     this.ec2Service = new EC2Service(context.getStack().getTestingRegion());
   }
 
   @Override
   public Context launchTestBed() throws Exception {
-    prepareSSHKey(context);
-
     ec2Service = new EC2Service(context.getStack().getTestingRegion());
 
     EC2InstanceParams instanceParams = this.buildEc2InstanceConfig(context);
 
     // launch ec2 instance for testing
-    Instance instance = ec2Service.launchInstance(instanceParams);
+    Instance instance = ec2Service.launchInstance(instanceParams, context.getTestingAMI().getOSType().equals(OSType.WINDOWS));
 
-    // init sshHelper
-    SSHHelper sshHelper =
-        new SSHHelper(
-            context.getTestingAMI().getLoginUser(),
-            instance.getPublicIpAddress(),
-            GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+    if (!context.getTestingAMI().getOSType().equals(OSType.WINDOWS)) {
+      prepareSSHKey(context);
+      // init sshHelper
+      SSHHelper sshHelper =
+          new SSHHelper(
+              context.getTestingAMI().getLoginUser(),
+              instance.getPublicIpAddress(),
+              GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
 
-    // wait until the instance is ready to login
-    log.info("wait until the instance is ready to login");
-    RetryHelper.retry(() -> sshHelper.isSSHReady());
-
-    // iptables
-    if (context.getTestingAMI().getIptablesCommand() != null) {
-      sshHelper.executeCommands(Arrays.asList(context.getTestingAMI().getIptablesCommand()));
+      // wait until the instance is ready to login
+      log.info("wait until the instance is ready to login");
+      RetryHelper.retry(() -> sshHelper.isSSHReady());
+      // iptables
+      if (context.getTestingAMI().getIptablesCommand() != null) {
+        sshHelper.executeCommands(Arrays.asList(context.getTestingAMI().getIptablesCommand()));
+      }
     }
-
     // setup instance id and publicAddress into context
     context.setInstanceId(instance.getInstanceId());
     context.setInstancePublicIpAddress(instance.getPublicIpAddress());

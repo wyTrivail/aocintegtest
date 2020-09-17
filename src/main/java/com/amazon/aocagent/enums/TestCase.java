@@ -26,6 +26,12 @@ public enum TestCase {
       Arrays.asList(new OTMetricAndTraceEmitterInstaller()),
       Arrays.asList(new MetricValidator(), new TraceValidator())),
 
+  EC2_WIN_TEST(
+      new EC2TestBed(),
+      new OTPackageInstaller(),
+      Arrays.asList(new OTMetricAndTraceEmitterInstaller()),
+      Arrays.asList(new MetricValidator(), new TraceValidator())),
+
   // run AOC with data emitter in ECS as sidecar
   // tested both ECS fargate and EC2 modes
   ECS_TEST(

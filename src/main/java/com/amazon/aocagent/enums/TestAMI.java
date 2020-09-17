@@ -14,6 +14,7 @@ import com.amazon.aocagent.testamis.RedHat6AMI;
 import com.amazon.aocagent.testamis.RedHatAMI;
 import com.amazon.aocagent.testamis.SuseAMI;
 import com.amazon.aocagent.testamis.UbuntuAMI;
+import com.amazon.aocagent.testamis.WindowsAMI;
 import lombok.Getter;
 
 @Getter
@@ -51,6 +52,9 @@ public enum TestAMI {
   UBUNTU_14_04(new UbuntuAMI("ami-718c6909")),
   A1_UBUNTU_18_04(new A1UbuntuAMI("ami-0db180c518750ee4f")),
   A1_UBUNTU_16_04(new A1UbuntuAMI("ami-05e1b2aec3b47890f")),
+
+  //Windows
+  WINDOWS_2019_BASE(new WindowsAMI("ami-09fa39d0afa9024db")),
 
   // ECS Optimized AMI
   ECS_OPTIMIZED(new EcsOptimizedAMI("ami-004e1655142a7ea0d")),

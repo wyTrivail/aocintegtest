@@ -30,7 +30,7 @@ public class ECSTestBed implements TestBed {
       "#!/bin/bash\n" + "echo ECS_CLUSTER=%s >> /etc/ecs/ecs.config";
 
   @Override
-  public void init(Context context) {
+  public void init(Context context) throws Exception {
     this.context = context;
     this.ecsService = new ECSService(context.getStack().getTestingRegion());
     this.ec2Service = new EC2Service(context.getStack().getTestingRegion());
@@ -61,7 +61,7 @@ public class ECSTestBed implements TestBed {
         && !ecsService.isContainerInstanceAvail(clusterName)) {
       log.info("launching up a container instance");
       EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
-      Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams);
+      Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams, false);
       log.info(
           "created new ECS container instance: {} - {} ",
           containerInstance.getInstanceId(),

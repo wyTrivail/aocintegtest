@@ -33,6 +33,7 @@ public enum GenericConstants {
 
   // retry
   SLEEP_IN_MILLISECONDS("10000"), // ms
+  SLEEP_IN_SECONDS("30"),
   MAX_RETRIES("10"),
 
   // task
@@ -40,6 +41,7 @@ public enum GenericConstants {
 
   // configuration
   EC2_CONFIG_PATH("/tmp/test.yml"),
+  EC2_WIN_CONFIG_PATH("C:\\test.yml"),
 
   // emitter
   TRACE_EMITTER_ENDPOINT("http://localhost:4567/span0"),

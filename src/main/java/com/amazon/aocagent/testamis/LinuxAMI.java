@@ -1,15 +1,22 @@
 package com.amazon.aocagent.testamis;
 
 import com.amazon.aocagent.enums.Architecture;
+import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.enums.OSType;
 import com.amazon.aocagent.enums.S3Package;
 import com.amazonaws.services.ec2.model.InstanceType;
 
 public abstract class LinuxAMI implements ITestAMI {
   private String amiId;
+  private boolean useSSM;
 
   public LinuxAMI(String amiId) {
+    this(amiId, false);
+  }
+
+  public LinuxAMI(String amiId, boolean useSSM) {
     this.amiId = amiId;
+    this.useSSM = useSSM;
   }
 
   @Override
@@ -18,8 +25,8 @@ public abstract class LinuxAMI implements ITestAMI {
   }
 
   @Override
-  public OSType getOSType() {
-    return OSType.LINUX;
+  public boolean isUseSSM() {
+    return useSSM;
   }
 
   @Override
@@ -39,10 +46,28 @@ public abstract class LinuxAMI implements ITestAMI {
   }
 
   @Override
+  public String getConfiguringCommand(String configContent) {
+    return String.format(
+            "(\n" + "cat<<EOF\n" + "%s\n" + "EOF\n" + ") | sudo tee %s",
+            configContent, GenericConstants.EC2_CONFIG_PATH.getVal());
+  }
+
+  @Override
   public String getStartingCommand(String configPath) {
     return String.format(
             "sudo %s -c %s -a start",
             "/opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl", configPath);
+  }
+
+  @Override
+  public String getDisableFirewallCommand() {
+    return null;
+  }
+
+  @Override
+  public String getSSMDocument() {
+    // TODO: modify this once we add SSM test for linux
+    return null;
   }
 
   @Override

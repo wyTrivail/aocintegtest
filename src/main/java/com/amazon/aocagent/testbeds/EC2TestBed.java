@@ -36,9 +36,9 @@ public class EC2TestBed implements TestBed {
 
     // launch ec2 instance for testing
     Instance instance = ec2Service.launchInstance(instanceParams,
-            context.getTestingAMI().getOSType().equals(OSType.WINDOWS));
+            context.getTestingAMI().isUseSSM());
 
-    if (!context.getTestingAMI().getOSType().equals(OSType.WINDOWS)) {
+    if (!context.getTestingAMI().isUseSSM()) {
       prepareSSHKey(context);
       // init sshHelper
       SSHHelper sshHelper =

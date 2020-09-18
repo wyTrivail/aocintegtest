@@ -9,7 +9,7 @@ import java.util.List;
 public interface ITestAMI {
   String getAMIId();
 
-  OSType getOSType();
+  boolean isUseSSM();
 
   String getLoginUser();
 
@@ -19,7 +19,13 @@ public interface ITestAMI {
 
   String getInstallingCommand(String packagePath);
 
+  String getConfiguringCommand(String configContent);
+
   String getStartingCommand(String configPath);
+
+  String getDisableFirewallCommand();
+
+  String getSSMDocument();
 
   String getIptablesCommand();
 

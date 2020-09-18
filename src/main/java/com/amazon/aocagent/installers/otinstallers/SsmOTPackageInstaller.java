@@ -2,29 +2,27 @@ package com.amazon.aocagent.installers.otinstallers;
 
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.helpers.MustacheHelper;
-import com.amazon.aocagent.helpers.RetryHelper;
-import com.amazon.aocagent.helpers.SSHHelper;
+import com.amazon.aocagent.services.SSMService;
 import com.amazon.aocagent.models.Context;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Log4j2
-public class OTPackageInstaller implements OTInstaller {
+public class SsmOTPackageInstaller implements OTInstaller {
   Context context;
-  SSHHelper sshHelper;
   MustacheHelper mustacheHelper;
+  SSMService ssmService;
 
   @Override
   public void init(Context context) throws Exception {
     this.context = context;
 
-    // init sshHelper
-    this.sshHelper =
-            new SSHHelper(
-                    this.context.getTestingAMI().getLoginUser(),
-                    this.context.getInstancePublicIpAddress(),
-                    GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+    // init ssmService
+    ssmService = new SSMService(context.getRegion());
+    ssmService.updateSsmAgentToLatest(context.getInstanceId());
 
     this.mustacheHelper = new MustacheHelper();
   }
@@ -51,10 +49,9 @@ public class OTPackageInstaller implements OTInstaller {
                             context.getTestingAMI().getS3Package().getPackageName());
 
     // execute downloading command
-    RetryHelper.retry(
-        () -> {
-          sshHelper.executeCommands(Arrays.asList(downloadingCommand));
-        });
+    ssmService.runShellScriptCommand(context.getInstanceId(), Arrays.asList(downloadingCommand),
+            context.getTestingAMI().getSSMDocument());
+
   }
 
   private void installPackage() throws Exception {
@@ -65,10 +62,8 @@ public class OTPackageInstaller implements OTInstaller {
                     .getInstallingCommand(context.getTestingAMI().getS3Package().getPackageName());
 
     // execute installing command
-    RetryHelper.retry(
-        () -> {
-          sshHelper.executeCommands(Arrays.asList(installingCommand));
-        });
+    ssmService.runShellScriptCommand(context.getInstanceId(), Arrays.asList(installingCommand),
+            context.getTestingAMI().getSSMDocument());
   }
 
   private void configureAndStart() throws Exception {
@@ -77,17 +72,20 @@ public class OTPackageInstaller implements OTInstaller {
 
     // write config onto the remote instance
     String configuringCommand = context.getTestingAMI().getConfiguringCommand(configContent);
+    ssmService.runShellScriptCommand(context.getInstanceId(), Arrays.asList(configuringCommand),
+            context.getTestingAMI().getSSMDocument());
 
-    RetryHelper.retry(
-        () -> {
-          sshHelper.executeCommands(Arrays.asList(configuringCommand));
-        });
     // start ot collector
+    List<String> ssmCommands = new ArrayList<>();
     String startingCommand = context.getTestingAMI()
-            .getStartingCommand(GenericConstants.EC2_CONFIG_PATH.getVal());
-    RetryHelper.retry(
-        () -> {
-          sshHelper.executeCommands(Arrays.asList(startingCommand));
-        });
+            .getStartingCommand(GenericConstants.EC2_WIN_CONFIG_PATH.getVal());
+    ssmCommands.add(startingCommand);
+    //Disable windows firewall so that the emitter can send metrics to it
+    String disableFirewallCommand = context.getTestingAMI().getDisableFirewallCommand();
+    if (disableFirewallCommand != null) {
+      ssmCommands.add(disableFirewallCommand);
+    }
+    ssmService.runShellScriptCommand(context.getInstanceId(),
+            ssmCommands, context.getTestingAMI().getSSMDocument());
   }
 }

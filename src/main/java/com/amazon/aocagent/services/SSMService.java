@@ -1,4 +1,4 @@
-package com.amazon.aocagent.helpers;
+package com.amazon.aocagent.services;
 
 import com.amazon.aocagent.enums.GenericConstants;
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement;
@@ -22,15 +22,15 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
-public class SSMHelper {
+public class SSMService {
   private AWSSimpleSystemsManagement ssmClient;
 
   /**
-   * SSMHelper Constructor.
+   * SSMService Constructor.
    *
-   * @param region AWS region used to init SSM helper
+   * @param region AWS region used to init SSM Service
    */
-  public SSMHelper(String region) throws Exception {
+  public SSMService(String region) throws Exception {
     AWSSimpleSystemsManagement ssm = AWSSimpleSystemsManagementClientBuilder.standard()
             .withRegion(region).build();
     ssmClient = ssm;

@@ -6,6 +6,7 @@ import com.amazon.aocagent.installers.otinstallers.ECSInstaller;
 import com.amazon.aocagent.installers.otinstallers.EKSInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTInstaller;
 import com.amazon.aocagent.installers.otinstallers.OTPackageInstaller;
+import com.amazon.aocagent.installers.otinstallers.SsmOTPackageInstaller;
 import com.amazon.aocagent.testbeds.EC2TestBed;
 import com.amazon.aocagent.testbeds.ECSTestBed;
 import com.amazon.aocagent.testbeds.EKSTestBed;
@@ -28,7 +29,7 @@ public enum TestCase {
 
   EC2_WIN_TEST(
       new EC2TestBed(),
-      new OTPackageInstaller(),
+      new SsmOTPackageInstaller(),
       Arrays.asList(new OTMetricAndTraceEmitterInstaller()),
       Arrays.asList(new MetricValidator(), new TraceValidator())),
 

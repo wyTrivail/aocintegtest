@@ -7,9 +7,11 @@ import com.amazonaws.services.ec2.model.InstanceType;
 
 public class WindowsAMI implements ITestAMI {
   private String amiId;
+  private boolean useSSM;
 
   public WindowsAMI(String amiId) {
     this.amiId = amiId;
+    this.useSSM = true;
   }
 
   @Override
@@ -18,8 +20,8 @@ public class WindowsAMI implements ITestAMI {
   }
 
   @Override
-  public OSType getOSType() {
-    return OSType.WINDOWS;
+  public boolean isUseSSM() {
+    return useSSM;
   }
 
   // getLoginUser() is not used in WindowsAMI, simply return null here
@@ -44,10 +46,27 @@ public class WindowsAMI implements ITestAMI {
   }
 
   @Override
+  public String getConfiguringCommand(String configContent) {
+    return String.format(
+            "Set-Content -Path %s -Value \"%s\"\n",
+            GenericConstants.EC2_WIN_CONFIG_PATH.getVal(), configContent);
+  }
+
+  @Override
   public String getStartingCommand(String configPath) {
     return String.format(
         "& %s -ConfigLocation %s -Action start",
         GenericConstants.WINDOWS_CTL_PATH.getVal(), configPath);
+  }
+
+  @Override
+  public String getDisableFirewallCommand() {
+    return "Set-NetFirewallProfile -Profile Public -Enabled False";
+  }
+
+  @Override
+  public String getSSMDocument() {
+    return GenericConstants.RUN_POWER_SHELL_SCRIPT_DOCUMENT.getVal();
   }
 
   @Override

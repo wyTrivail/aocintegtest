@@ -4,7 +4,6 @@ import com.amazon.aocagent.enums.GenericConstants;
 import com.amazon.aocagent.exception.BaseException;
 import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.RetryHelper;
-import com.amazon.aocagent.helpers.SSMHelper;
 import com.amazon.aocagent.models.EC2InstanceParams;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
@@ -53,7 +52,7 @@ public class EC2Service {
   private AmazonEC2 amazonEC2;
   private String region;
   private S3Service s3Service;
-  private SSMHelper ssmHelper;
+  private SSMService ssmService;
 
   /**
    * Construct ec2 service base on region.
@@ -64,11 +63,11 @@ public class EC2Service {
     this.region = region;
     amazonEC2 = AmazonEC2ClientBuilder.standard().withRegion(region).build();
     s3Service = new S3Service(region);
-    ssmHelper = new SSMHelper(region);
+    ssmService = new SSMService(region);
   }
 
-  public SSMHelper getSsmHelper() {
-    return ssmHelper;
+  public SSMService getSsmService() {
+    return ssmService;
   }
 
   /**
@@ -77,7 +76,7 @@ public class EC2Service {
    * @param params the instance setup configuration params
    * @return InstanceID
    */
-  public Instance launchInstance(EC2InstanceParams params, boolean isWindowsInstance)
+  public Instance launchInstance(EC2InstanceParams params, boolean isUseSSM)
           throws Exception {
     // create request
     RunInstancesRequest runInstancesRequest =
@@ -102,7 +101,7 @@ public class EC2Service {
     Instance instance = runInstancesResult.getReservation().getInstances().get(0);
 
     // return the instance until it's ready
-    return getInstanceUntilReady(instance.getInstanceId(), isWindowsInstance);
+    return getInstanceUntilReady(instance.getInstanceId(), isUseSSM);
   }
 
   /**
@@ -171,7 +170,7 @@ public class EC2Service {
     amazonEC2.terminateInstances(terminateInstancesRequest);
   }
 
-  private Instance getInstanceUntilReady(String targetInstanceId, boolean isWindowsInstance)
+  private Instance getInstanceUntilReady(String targetInstanceId, boolean isUseSSM)
           throws Exception {
     DescribeInstancesRequest describeInstancesRequest =
             new DescribeInstancesRequest().withInstanceIds(targetInstanceId);
@@ -191,7 +190,7 @@ public class EC2Service {
               if (!InstanceStateName.Running.toString().equals(instanceStateName)) {
                 throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_PENDING);
               }
-              if (isWindowsInstance && !ssmHelper.isInstanceReadyForSsm(instance.getInstanceId())) {
+              if (isUseSSM && !ssmService.isInstanceReadyForSsm(instance.getInstanceId())) {
                 log.error("Instance with ID " + instance.getInstanceId()
                         + " not ready for SSM in time. Check EC2 console.");
                 throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_BAD);

@@ -19,7 +19,7 @@ public abstract class LinuxAMI implements ITestAMI {
 
   @Override
   public OSType getOSType() {
-      return OSType.LINUX;
+    return OSType.LINUX;
   }
 
   @Override
@@ -41,8 +41,8 @@ public abstract class LinuxAMI implements ITestAMI {
   @Override
   public String getStartingCommand(String configPath) {
     return String.format(
-        "sudo %s -c %s -a start",
-        "/opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl", configPath);
+            "sudo %s -c %s -a start",
+            "/opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl", configPath);
   }
 
   @Override

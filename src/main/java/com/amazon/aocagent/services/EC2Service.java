@@ -41,17 +41,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** EC2Service is a wrapper of Amazon EC2 Client. */
+/**
+ * EC2Service is a wrapper of Amazon EC2 Client.
+ */
 @Log4j2
 public class EC2Service {
-  private AmazonEC2 amazonEC2;
-  private String region;
-  private S3Service s3Service;
-  private SSMHelper ssmHelper;
   private static final String ERROR_CODE_KEY_PAIR_NOT_FOUND = "InvalidKeyPair.NotFound";
   private static final String ERROR_CODE_KEY_PAIR_ALREADY_EXIST = "InvalidKeyPair.Duplicate";
   private static final String ERROR_CODE_SECURITY_GROUP_ALREADY_EXIST = "InvalidGroup.Duplicate";
   private static final String ERROR_CODE_SECURITY_GROUP_NOT_FOUND = "InvalidGroup.NotFound";
+  private AmazonEC2 amazonEC2;
+  private String region;
+  private S3Service s3Service;
+  private SSMHelper ssmHelper;
 
   /**
    * Construct ec2 service base on region.
@@ -65,29 +67,31 @@ public class EC2Service {
     ssmHelper = new SSMHelper(region);
   }
 
-  public SSMHelper getSsmHelper(){
+  public SSMHelper getSsmHelper() {
     return ssmHelper;
   }
+
   /**
    * launchInstance launches one ec2 instance.
    *
    * @param params the instance setup configuration params
    * @return InstanceID
    */
-  public Instance launchInstance(EC2InstanceParams params, boolean isWindowsInstance) throws Exception {
+  public Instance launchInstance(EC2InstanceParams params, boolean isWindowsInstance)
+          throws Exception {
     // create request
     RunInstancesRequest runInstancesRequest =
         new RunInstancesRequest()
-            .withImageId(params.getAmiId())
-            .withMonitoring(false)
-            .withMaxCount(1)
-            .withMinCount(1)
-            .withTagSpecifications(params.getTagSpecification())
-            .withKeyName(params.getSshKeyName())
-            .withSecurityGroupIds(getOrCreateSecurityGroupByName(params.getSecurityGrpName()))
-            .withIamInstanceProfile(
-                new IamInstanceProfileSpecification().withName(params.getIamRoleName()))
-            .withInstanceType(params.getInstanceType());
+          .withImageId(params.getAmiId())
+          .withMonitoring(false)
+          .withMaxCount(1)
+          .withMinCount(1)
+          .withTagSpecifications(params.getTagSpecification())
+          .withKeyName(params.getSshKeyName())
+          .withSecurityGroupIds(getOrCreateSecurityGroupByName(params.getSecurityGrpName()))
+          .withIamInstanceProfile(
+                  new IamInstanceProfileSpecification().withName(params.getIamRoleName()))
+          .withInstanceType(params.getInstanceType());
     if (!Strings.isNullOrEmpty(params.getUserData())) {
       runInstancesRequest.withUserData(params.getUserData());
     }
@@ -104,20 +108,20 @@ public class EC2Service {
   /**
    * listInstancesByTag gets ec2 instance info list based on the tag.
    *
-   * @param tagName tag key name
+   * @param tagName  tag key name
    * @param tagValue tag value
    * @return the list of ec2 instance
    */
   public List<Instance> listInstancesByTag(String tagName, String tagValue) {
     DescribeInstancesRequest describeInstancesRequest =
-        new DescribeInstancesRequest()
-            .withFilters(new Filter("tag:" + tagName).withValues(tagValue));
+            new DescribeInstancesRequest()
+                    .withFilters(new Filter("tag:" + tagName).withValues(tagValue));
 
     List<Instance> instanceList = new ArrayList<>();
 
     while (true) {
       DescribeInstancesResult describeInstancesResult =
-          amazonEC2.describeInstances(describeInstancesRequest);
+              amazonEC2.describeInstances(describeInstancesRequest);
       for (Reservation reservation : describeInstancesResult.getReservations()) {
         instanceList.addAll(reservation.getInstances());
       }
@@ -139,7 +143,7 @@ public class EC2Service {
     DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest();
     while (true) {
       DescribeInstancesResult describeInstancesResult =
-          amazonEC2.describeInstances(describeInstancesRequest);
+              amazonEC2.describeInstances(describeInstancesRequest);
       for (Reservation reservation : describeInstancesResult.getReservations()) {
         instanceList.addAll(reservation.getInstances());
       }
@@ -162,21 +166,22 @@ public class EC2Service {
       return;
     }
     TerminateInstancesRequest terminateInstancesRequest =
-        new TerminateInstancesRequest().withInstanceIds(instanceIds);
+            new TerminateInstancesRequest().withInstanceIds(instanceIds);
 
     amazonEC2.terminateInstances(terminateInstancesRequest);
   }
 
-  private Instance getInstanceUntilReady(String targetInstanceId, boolean isWindowsInstance) throws Exception {
+  private Instance getInstanceUntilReady(String targetInstanceId, boolean isWindowsInstance)
+          throws Exception {
     DescribeInstancesRequest describeInstancesRequest =
-        new DescribeInstancesRequest().withInstanceIds(targetInstanceId);
+            new DescribeInstancesRequest().withInstanceIds(targetInstanceId);
 
     AtomicReference<Instance> runningInstance = new AtomicReference<>();
     RetryHelper.retry(Integer.valueOf(GenericConstants.MAX_RETRIES.getVal()),
             Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()) * 3,
         () -> {
           DescribeInstancesResult describeInstancesResult =
-              amazonEC2.describeInstances(describeInstancesRequest);
+                  amazonEC2.describeInstances(describeInstancesRequest);
           for (Reservation reservation : describeInstancesResult.getReservations()) {
             for (Instance instance : reservation.getInstances()) {
               if (!targetInstanceId.equals(instance.getInstanceId())) {
@@ -187,7 +192,8 @@ public class EC2Service {
                 throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_PENDING);
               }
               if (isWindowsInstance && !ssmHelper.isInstanceReadyForSsm(instance.getInstanceId())) {
-                log.error("Instance with ID " + instance.getInstanceId() + " not ready for SSM in time. Check EC2 console.");
+                log.error("Instance with ID " + instance.getInstanceId()
+                        + " not ready for SSM in time. Check EC2 console.");
                 throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_BAD);
               }
               log.info("instance network is ready");
@@ -203,13 +209,13 @@ public class EC2Service {
    * createSSHKeyIfNotExisted creates the ssh keypair for ec2 login and upload it to s3 private
    * bucket for future usage.
    *
-   * @param keyPairName the keypair name used to login
+   * @param keyPairName   the keypair name used to login
    * @param bucketToStore the s3 bucket name to store the sshkey pair
-   * @throws IOException on failing to write keypair to disk
+   * @throws IOException   on failing to write keypair to disk
    * @throws BaseException on s3 uploading failure
    */
   public void createSSHKeyIfNotExisted(String keyPairName, String bucketToStore)
-      throws IOException, BaseException {
+          throws IOException, BaseException {
     if (isKeyPairExisted(keyPairName)) {
       log.info("{} - ssh key pair existed", keyPairName);
       return;
@@ -228,7 +234,7 @@ public class EC2Service {
       FileUtils.writeStringToFile(new File(keyPairLocalPath), keyMaterial);
       S3Service s3Service = new S3Service(region);
       s3Service.uploadS3ObjectWithPrivateAccess(
-          keyPairLocalPath, bucketToStore, keyPairFileName, false);
+              keyPairLocalPath, bucketToStore, keyPairFileName, false);
 
     } catch (AmazonEC2Exception e) {
       if (!ERROR_CODE_KEY_PAIR_ALREADY_EXIST.equals(e.getErrorCode())) {
@@ -242,7 +248,7 @@ public class EC2Service {
       DescribeKeyPairsRequest describeKeyPairsRequest = new DescribeKeyPairsRequest();
       describeKeyPairsRequest.setKeyNames(Collections.singletonList(keyPairName));
       DescribeKeyPairsResult describeKeyPairsResult =
-          amazonEC2.describeKeyPairs(describeKeyPairsRequest);
+              amazonEC2.describeKeyPairs(describeKeyPairsRequest);
       List<KeyPairInfo> keyPairInfoList = describeKeyPairsResult.getKeyPairs();
       if (keyPairInfoList.isEmpty()) {
         return false;
@@ -302,41 +308,41 @@ public class EC2Service {
 
       // create new security group and get the group id
       final String groupId =
-          amazonEC2
-              .createSecurityGroup(
-                  new CreateSecurityGroupRequest()
-                      .withGroupName(groupName)
-                      .withDescription(groupName + " used for aoc integration test")
-                      .withVpcId(vpcId))
-              .getGroupId();
+              amazonEC2
+                      .createSecurityGroup(
+                              new CreateSecurityGroupRequest()
+                                      .withGroupName(groupName)
+                                      .withDescription(groupName + " used for aoc integration test")
+                                      .withVpcId(vpcId))
+                      .getGroupId();
 
       // add the incoming ip request permission
       IpPermission sshIpPermission = new IpPermission();
       sshIpPermission
-          .withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
-          .withIpProtocol("tcp")
-          .withFromPort(22)
-          .withToPort(22);
+              .withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
+              .withIpProtocol("tcp")
+              .withFromPort(22)
+              .withToPort(22);
 
       IpPermission rdpIpPermission = new IpPermission();
       rdpIpPermission
-          .withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
-          .withIpProtocol("tcp")
-          .withFromPort(3389)
-          .withToPort(3389);
+              .withIpv4Ranges(new IpRange().withCidrIp("0.0.0.0/0"))
+              .withIpProtocol("tcp")
+              .withFromPort(3389)
+              .withToPort(3389);
 
       // limit the oltp access within private
       IpPermission oltpIpPermission = new IpPermission();
       rdpIpPermission
-          .withIpv4Ranges(new IpRange().withCidrIp("172.16.0.0/12"))
-          .withIpProtocol("tcp")
-          .withFromPort(Integer.valueOf(GenericConstants.AOC_PORT.getVal()))
-          .withToPort(Integer.valueOf(GenericConstants.AOC_PORT.getVal()));
+              .withIpv4Ranges(new IpRange().withCidrIp("172.16.0.0/12"))
+              .withIpProtocol("tcp")
+              .withFromPort(Integer.valueOf(GenericConstants.AOC_PORT.getVal()))
+              .withToPort(Integer.valueOf(GenericConstants.AOC_PORT.getVal()));
 
       amazonEC2.authorizeSecurityGroupIngress(
-          new AuthorizeSecurityGroupIngressRequest()
-              .withGroupId(groupId)
-              .withIpPermissions(sshIpPermission, rdpIpPermission, oltpIpPermission));
+              new AuthorizeSecurityGroupIngressRequest()
+                      .withGroupId(groupId)
+                      .withIpPermissions(sshIpPermission, rdpIpPermission, oltpIpPermission));
 
       return groupId;
     } catch (AmazonEC2Exception e) {

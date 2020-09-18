@@ -14,7 +14,6 @@ import com.amazonaws.services.ec2.model.TagSpecification;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class EC2TestBed implements TestBed {
@@ -23,7 +22,7 @@ public class EC2TestBed implements TestBed {
   private Context context;
 
   @Override
-  public void init(Context context) throws Exception{
+  public void init(Context context) throws Exception {
     this.context = context;
     this.context.setRegion(context.getStack().getTestingRegion());
     this.ec2Service = new EC2Service(context.getStack().getTestingRegion());
@@ -36,16 +35,17 @@ public class EC2TestBed implements TestBed {
     EC2InstanceParams instanceParams = this.buildEc2InstanceConfig(context);
 
     // launch ec2 instance for testing
-    Instance instance = ec2Service.launchInstance(instanceParams, context.getTestingAMI().getOSType().equals(OSType.WINDOWS));
+    Instance instance = ec2Service.launchInstance(instanceParams,
+            context.getTestingAMI().getOSType().equals(OSType.WINDOWS));
 
     if (!context.getTestingAMI().getOSType().equals(OSType.WINDOWS)) {
       prepareSSHKey(context);
       // init sshHelper
       SSHHelper sshHelper =
-          new SSHHelper(
-              context.getTestingAMI().getLoginUser(),
-              instance.getPublicIpAddress(),
-              GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+              new SSHHelper(
+                      context.getTestingAMI().getLoginUser(),
+                      instance.getPublicIpAddress(),
+                      GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
 
       // wait until the instance is ready to login
       log.info("wait until the instance is ready to login");
@@ -65,29 +65,29 @@ public class EC2TestBed implements TestBed {
   private EC2InstanceParams buildEc2InstanceConfig(Context context) {
     // tag instance for management
     TagSpecification tagSpecification =
-        new TagSpecification()
-            .withResourceType(ResourceType.Instance)
-            .withTags(
-                new Tag(
-                    GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
-                    GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()));
+            new TagSpecification()
+                    .withResourceType(ResourceType.Instance)
+                    .withTags(
+                            new Tag(
+                                    GenericConstants.EC2_INSTANCE_TAG_KEY.getVal(),
+                                    GenericConstants.EC2_INSTANCE_TAG_VAL.getVal()));
     return EC2InstanceParams.builder()
-        .amiId(context.getTestingAMI().getAMIId())
-        .instanceType(context.getTestingAMI().getInstanceType())
-        .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
-        .securityGrpName(GenericConstants.SECURITY_GROUP_NAME.getVal())
-        .tagSpecification(tagSpecification)
-        .arch(context.getTestingAMI().getS3Package().getLocalPackage().getArchitecture())
-        .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
-        .build();
+            .amiId(context.getTestingAMI().getAMIId())
+            .instanceType(context.getTestingAMI().getInstanceType())
+            .iamRoleName(GenericConstants.IAM_ROLE_NAME.getVal())
+            .securityGrpName(GenericConstants.SECURITY_GROUP_NAME.getVal())
+            .tagSpecification(tagSpecification)
+            .arch(context.getTestingAMI().getS3Package().getLocalPackage().getArchitecture())
+            .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
+            .build();
   }
 
   private void prepareSSHKey(final Context context) {
     // download the ssh keypair from s3
     ec2Service.downloadSSHKey(
-        context.getStack().getSshKeyS3BucketName(),
-        GenericConstants.SSH_KEY_NAME.getVal(),
-        GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+            context.getStack().getSshKeyS3BucketName(),
+            GenericConstants.SSH_KEY_NAME.getVal(),
+            GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
 
     // change its permission to 400
     /*

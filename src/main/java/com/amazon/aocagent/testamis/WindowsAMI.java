@@ -37,26 +37,46 @@ public class WindowsAMI implements ITestAMI {
 
   @Override
   public String getDownloadingCommand(String fromUrl, String toLocation) {
-    return String.format("wget %s -outfile C:\\%s", fromUrl, toLocation);
+    return null;
   }
 
   @Override
   public String getInstallingCommand(String packagePath) {
-    return String.format("msiexec /i C:\\%s", packagePath);
+    return null;
   }
 
   @Override
   public String getConfiguringCommand(String configContent) {
+    return null;
+  }
+
+  @Override
+  public String getStartingCommand(String configPath) {
+    return null;
+  }
+
+  @Override
+  public String getSsmDownloadingCommand(String fromUrl, String toLocation) {
+    return String.format("wget %s -outfile C:\\%s", fromUrl, toLocation);
+  }
+
+  @Override
+  public String getSsmInstallingCommand(String packagePath) {
+    return String.format("msiexec /i C:\\%s", packagePath);
+  }
+
+  @Override
+  public String getSsmConfiguringCommand(String configContent) {
     return String.format(
             "Set-Content -Path %s -Value \"%s\"\n",
             GenericConstants.EC2_WIN_CONFIG_PATH.getVal(), configContent);
   }
 
   @Override
-  public String getStartingCommand(String configPath) {
+  public String getSsmStartingCommand() {
     return String.format(
         "& %s -ConfigLocation %s -Action start",
-        GenericConstants.WINDOWS_CTL_PATH.getVal(), configPath);
+        GenericConstants.WINDOWS_CTL_PATH.getVal(), GenericConstants.EC2_WIN_CONFIG_PATH.getVal());
   }
 
   @Override
@@ -72,10 +92,5 @@ public class WindowsAMI implements ITestAMI {
   @Override
   public InstanceType getInstanceType() {
     return InstanceType.T2Medium;
-  }
-
-  @Override
-  public String getIptablesCommand() {
-    return null;
   }
 }

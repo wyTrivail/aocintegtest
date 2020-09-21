@@ -60,7 +60,32 @@ public abstract class LinuxAMI implements ITestAMI {
   }
 
   @Override
+  public String getSsmDownloadingCommand(String fromUrl, String toLocation) {
+    // TODO: modify this once we add SSM test for linux
+    return null;
+  }
+
+  @Override
+  public String getSsmInstallingCommand(String packagePath) {
+    // TODO: modify this once we add SSM test for linux
+    return null;
+  }
+
+  @Override
+  public String getSsmConfiguringCommand(String configContent) {
+    // TODO: modify this once we add SSM test for linux
+    return null;
+  }
+
+  @Override
+  public String getSsmStartingCommand() {
+    // TODO: modify this once we add SSM test for linux
+    return null;
+  }
+
+  @Override
   public String getDisableFirewallCommand() {
+    // in most of the case we don't need to handle firewall except for centos6/redhat6
     return null;
   }
 
@@ -76,11 +101,5 @@ public abstract class LinuxAMI implements ITestAMI {
       return InstanceType.A1Medium; // t2medium can't apply to arm instances.
     }
     return InstanceType.T2Medium;
-  }
-
-  @Override
-  public String getIptablesCommand() {
-    // in most of the case we don't need to handle iptables except for centos6
-    return null;
   }
 }

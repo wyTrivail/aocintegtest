@@ -35,26 +35,7 @@ public class EC2TestBed implements TestBed {
     EC2InstanceParams instanceParams = this.buildEc2InstanceConfig(context);
 
     // launch ec2 instance for testing
-    Instance instance = ec2Service.launchInstance(instanceParams,
-            context.getTestingAMI().isUseSSM());
-
-    if (!context.getTestingAMI().isUseSSM()) {
-      prepareSSHKey(context);
-      // init sshHelper
-      SSHHelper sshHelper =
-              new SSHHelper(
-                      context.getTestingAMI().getLoginUser(),
-                      instance.getPublicIpAddress(),
-                      GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
-
-      // wait until the instance is ready to login
-      log.info("wait until the instance is ready to login");
-      RetryHelper.retry(() -> sshHelper.isSSHReady());
-      // iptables
-      if (context.getTestingAMI().getIptablesCommand() != null) {
-        sshHelper.executeCommands(Arrays.asList(context.getTestingAMI().getIptablesCommand()));
-      }
-    }
+    Instance instance = ec2Service.launchInstance(instanceParams);
     // setup instance id and publicAddress into context
     context.setInstanceId(instance.getInstanceId());
     context.setInstancePublicIpAddress(instance.getPublicIpAddress());

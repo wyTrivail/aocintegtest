@@ -5,6 +5,7 @@ import com.amazon.aocagent.helpers.MustacheHelper;
 import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.helpers.SSHHelper;
 import com.amazon.aocagent.models.Context;
+import com.amazon.aocagent.services.EC2Service;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Arrays;
@@ -19,12 +20,21 @@ public class OTPackageInstaller implements OTInstaller {
   public void init(Context context) throws Exception {
     this.context = context;
 
+    prepareSSHKey(this.context);
     // init sshHelper
     this.sshHelper =
             new SSHHelper(
                     this.context.getTestingAMI().getLoginUser(),
                     this.context.getInstancePublicIpAddress(),
                     GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
+
+    // wait until the instance is ready to login
+    log.info("wait until the instance is ready to login");
+    RetryHelper.retry(() -> sshHelper.isSSHReady());
+    // handle firewall
+    if (context.getTestingAMI().getDisableFirewallCommand() != null) {
+      sshHelper.executeCommands(Arrays.asList(context.getTestingAMI().getDisableFirewallCommand()));
+    }
 
     this.mustacheHelper = new MustacheHelper();
   }
@@ -89,5 +99,14 @@ public class OTPackageInstaller implements OTInstaller {
         () -> {
           sshHelper.executeCommands(Arrays.asList(startingCommand));
         });
+  }
+
+  private void prepareSSHKey(final Context context) throws Exception {
+    EC2Service ec2Service = new EC2Service(context.getStack().getTestingRegion());
+    // download the ssh keypair from s3
+    ec2Service.downloadSSHKey(
+            context.getStack().getSshKeyS3BucketName(),
+            GenericConstants.SSH_KEY_NAME.getVal(),
+            GenericConstants.SSH_CERT_LOCAL_PATH.getVal());
   }
 }

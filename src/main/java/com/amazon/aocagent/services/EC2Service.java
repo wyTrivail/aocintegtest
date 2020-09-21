@@ -76,7 +76,7 @@ public class EC2Service {
    * @param params the instance setup configuration params
    * @return InstanceID
    */
-  public Instance launchInstance(EC2InstanceParams params, boolean isUseSSM)
+  public Instance launchInstance(EC2InstanceParams params)
           throws Exception {
     // create request
     RunInstancesRequest runInstancesRequest =
@@ -101,7 +101,7 @@ public class EC2Service {
     Instance instance = runInstancesResult.getReservation().getInstances().get(0);
 
     // return the instance until it's ready
-    return getInstanceUntilReady(instance.getInstanceId(), isUseSSM);
+    return getInstanceUntilReady(instance.getInstanceId());
   }
 
   /**
@@ -170,7 +170,7 @@ public class EC2Service {
     amazonEC2.terminateInstances(terminateInstancesRequest);
   }
 
-  private Instance getInstanceUntilReady(String targetInstanceId, boolean isUseSSM)
+  private Instance getInstanceUntilReady(String targetInstanceId)
           throws Exception {
     DescribeInstancesRequest describeInstancesRequest =
             new DescribeInstancesRequest().withInstanceIds(targetInstanceId);
@@ -189,11 +189,6 @@ public class EC2Service {
               String instanceStateName = instance.getState().getName();
               if (!InstanceStateName.Running.toString().equals(instanceStateName)) {
                 throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_PENDING);
-              }
-              if (isUseSSM && !ssmService.isInstanceReadyForSsm(instance.getInstanceId())) {
-                log.error("Instance with ID " + instance.getInstanceId()
-                        + " not ready for SSM in time. Check EC2 console.");
-                throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_BAD);
               }
               log.info("instance network is ready");
               runningInstance.set(instance);

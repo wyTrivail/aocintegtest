@@ -27,7 +27,7 @@ public enum TestCase {
       Arrays.asList(new OTMetricAndTraceEmitterInstaller()),
       Arrays.asList(new MetricValidator(), new TraceValidator())),
 
-  EC2_WIN_TEST(
+  EC2_SSM_TEST(
       new EC2TestBed(),
       new SsmOTPackageInstaller(),
       Arrays.asList(new OTMetricAndTraceEmitterInstaller()),

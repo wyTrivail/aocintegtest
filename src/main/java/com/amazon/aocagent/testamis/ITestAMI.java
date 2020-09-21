@@ -25,9 +25,15 @@ public interface ITestAMI {
 
   String getDisableFirewallCommand();
 
-  String getSSMDocument();
+  String getSsmDownloadingCommand(String fromUrl, String toLocation);
 
-  String getIptablesCommand();
+  String getSsmInstallingCommand(String packagePath);
+
+  String getSsmConfiguringCommand(String configContent);
+
+  String getSsmStartingCommand();
+
+  String getSSMDocument();
 
   InstanceType getInstanceType();
 }

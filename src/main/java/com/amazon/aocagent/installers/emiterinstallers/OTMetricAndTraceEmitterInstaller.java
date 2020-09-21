@@ -83,7 +83,7 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
                 .tagSpecification(tagSpecification)
                 .arch(testAMI.getS3Package().getLocalPackage().getArchitecture())
                 .sshKeyName(GenericConstants.SSH_KEY_NAME.getVal())
-                .build(), false);
+                .build());
 
     // wait until the instance is ready to login
     // init sshHelper

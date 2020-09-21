@@ -1,7 +1,10 @@
 package com.amazon.aocagent.installers.otinstallers;
 
 import com.amazon.aocagent.enums.GenericConstants;
+import com.amazon.aocagent.exception.BaseException;
+import com.amazon.aocagent.exception.ExceptionCode;
 import com.amazon.aocagent.helpers.MustacheHelper;
+import com.amazon.aocagent.helpers.RetryHelper;
 import com.amazon.aocagent.services.SSMService;
 import com.amazon.aocagent.models.Context;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +24,17 @@ public class SsmOTPackageInstaller implements OTInstaller {
     this.context = context;
 
     // init ssmService
-    ssmService = new SSMService(context.getRegion());
+    this.ssmService = new SSMService(context.getRegion());
+    RetryHelper.retry(Integer.valueOf(GenericConstants.MAX_RETRIES.getVal()),
+            Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()) * 3,
+        () -> {
+          if (!ssmService.isInstanceReadyForSsm(this.context.getInstanceId())) {
+            log.error("Instance with ID " + this.context.getInstanceId()
+                    + " not ready for SSM in time. Check EC2 console.");
+            throw new BaseException(ExceptionCode.EC2INSTANCE_STATUS_BAD);
+          }
+        });
+
     ssmService.updateSsmAgentToLatest(context.getInstanceId());
 
     this.mustacheHelper = new MustacheHelper();
@@ -44,7 +57,7 @@ public class SsmOTPackageInstaller implements OTInstaller {
     String downloadingCommand =
             context
                     .getTestingAMI()
-                    .getDownloadingCommand(
+                    .getSsmDownloadingCommand(
                             downloadingLink,
                             context.getTestingAMI().getS3Package().getPackageName());
 
@@ -58,8 +71,8 @@ public class SsmOTPackageInstaller implements OTInstaller {
     // get installing command
     String installingCommand =
             context
-                    .getTestingAMI()
-                    .getInstallingCommand(context.getTestingAMI().getS3Package().getPackageName());
+                .getTestingAMI()
+                .getSsmInstallingCommand(context.getTestingAMI().getS3Package().getPackageName());
 
     // execute installing command
     ssmService.runShellScriptCommand(context.getInstanceId(), Arrays.asList(installingCommand),
@@ -70,17 +83,16 @@ public class SsmOTPackageInstaller implements OTInstaller {
     // generate configuration file
     String configContent = mustacheHelper.render(context.getOtConfig(), context);
 
+    List<String> ssmCommands = new ArrayList<>();
     // write config onto the remote instance
-    String configuringCommand = context.getTestingAMI().getConfiguringCommand(configContent);
-    ssmService.runShellScriptCommand(context.getInstanceId(), Arrays.asList(configuringCommand),
-            context.getTestingAMI().getSSMDocument());
+    String configuringCommand = context.getTestingAMI().getSsmConfiguringCommand(configContent);
+    ssmCommands.add(configuringCommand);
 
     // start ot collector
-    List<String> ssmCommands = new ArrayList<>();
     String startingCommand = context.getTestingAMI()
-            .getStartingCommand(GenericConstants.EC2_WIN_CONFIG_PATH.getVal());
+            .getSsmStartingCommand();
     ssmCommands.add(startingCommand);
-    //Disable windows firewall so that the emitter can send metrics to it
+    //Disable firewall so that the emitter can send metrics to it
     String disableFirewallCommand = context.getTestingAMI().getDisableFirewallCommand();
     if (disableFirewallCommand != null) {
       ssmCommands.add(disableFirewallCommand);

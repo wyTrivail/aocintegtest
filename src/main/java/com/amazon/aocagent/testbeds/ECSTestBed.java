@@ -61,7 +61,7 @@ public class ECSTestBed implements TestBed {
         && !ecsService.isContainerInstanceAvail(clusterName)) {
       log.info("launching up a container instance");
       EC2InstanceParams ec2InstanceParams = this.buildEc2ConfigForEcs(context);
-      Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams, false);
+      Instance containerInstance = ec2Service.launchInstance(ec2InstanceParams);
       log.info(
           "created new ECS container instance: {} - {} ",
           containerInstance.getInstanceId(),

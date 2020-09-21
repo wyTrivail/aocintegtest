@@ -30,7 +30,7 @@ public class ECSTestBed implements TestBed {
       "#!/bin/bash\n" + "echo ECS_CLUSTER=%s >> /etc/ecs/ecs.config";
 
   @Override
-  public void init(Context context) {
+  public void init(Context context) throws Exception {
     this.context = context;
     this.ecsService = new ECSService(context.getStack().getTestingRegion());
     this.ec2Service = new EC2Service(context.getStack().getTestingRegion());

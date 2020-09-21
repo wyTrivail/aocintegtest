@@ -26,6 +26,10 @@ public enum GenericConstants {
   SECURITY_GROUP_NAME("aoc-integ-test-sp"),
   IAM_ROLE_NAME("aoc-integ-test-iam-role"),
 
+  // ssm related
+  UPDATE_SSM_AGENT_DOCUMENT("AWS-UpdateSSMAgent"),
+  RUN_POWER_SHELL_SCRIPT_DOCUMENT("AWS-RunPowerShellScript"),
+
   // ssh related
   SSH_KEY_NAME("aoc-ssh-key-2020-07-22"),
   SSH_CERT_LOCAL_PATH("sshkey.pem"),
@@ -33,6 +37,7 @@ public enum GenericConstants {
 
   // retry
   SLEEP_IN_MILLISECONDS("10000"), // ms
+  SLEEP_IN_SECONDS("30"),
   MAX_RETRIES("10"),
 
   // task
@@ -40,6 +45,7 @@ public enum GenericConstants {
 
   // configuration
   EC2_CONFIG_PATH("/tmp/test.yml"),
+  EC2_WIN_CONFIG_PATH("C:\\test.yml"),
 
   // emitter
   TRACE_EMITTER_ENDPOINT("http://localhost:4567/span0"),
@@ -70,6 +76,10 @@ public enum GenericConstants {
   TEST_MANIFEST_NAME("eksTestManifestName"),
   EKS_DEFAULT_TEST_MANIFEST("aoc-eks-sidecar"),
   EKS_INTEG_TEST("EKSIntegTest"),
+
+  //Windows
+  WINDOWS_CTL_PATH("'C:\\Program Files\\Amazon\\AwsObservabilityCollector"
+          + "\\aws-observability-collector-ctl.ps1'"),
 
   // common constants
   EC2("EC2"),

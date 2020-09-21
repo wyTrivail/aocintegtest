@@ -6,7 +6,7 @@ public class Centos6AMI extends CentosAMI {
   }
 
   @Override
-  public String getIptablesCommand() {
+  public String getDisableFirewallCommand() {
     return "sudo iptables -I INPUT -p tcp -m tcp --dport 55680 -j ACCEPT"
         + "&& sudo service iptables save";
   }
